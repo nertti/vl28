@@ -11,76 +11,92 @@ use Bitrix\Main\Page\Asset;
     <div class="footer__main">
         <nav class="footer__nav">
             <ul class="footer__list">
-                <li class="footer__item">
-                    <a href="#" class="footer__link">Каталог</a>
-                </li>
-                <li class="footer__item">
-                    <a href="#" class="footer__link">Повседневная одежда</a>
-                </li>
-                <li class="footer__item">
-                    <a href="#" class="footer__link">Мотоэкипировка</a>
-                </li>
+                <?php $APPLICATION->IncludeComponent("bitrix:menu", "bottom", Array(
+                    "ALLOW_MULTI_SELECT" => "N",	// Разрешить несколько активных пунктов одновременно
+                    "CHILD_MENU_TYPE" => "left",	// Тип меню для остальных уровней
+                    "COMPONENT_TEMPLATE" => "bottom",
+                    "DELAY" => "N",	// Откладывать выполнение шаблона меню
+                    "MAX_LEVEL" => "1",	// Уровень вложенности меню
+                    "MENU_CACHE_GET_VARS" => "",	// Значимые переменные запроса
+                    "MENU_CACHE_TIME" => "3600",	// Время кеширования (сек.)
+                    "MENU_CACHE_TYPE" => "Y",	// Тип кеширования
+                    "MENU_CACHE_USE_GROUPS" => "Y",	// Учитывать права доступа
+                    "ROOT_MENU_TYPE" => "bottom",	// Тип меню для первого уровня
+                    "USE_EXT" => "N",	// Подключать файлы с именами вида .тип_меню.menu_ext.php
+                ),
+                    false
+                ); ?>
             </ul>
             <ul class="footer__list">
-                <li class="footer__item">
-                    <a href="#" class="footer__link">Клиентам</a>
-                </li>
-                <li class="footer__item">
-                    <a href="#" class="footer__link">Оплата и доставка</a>
-                </li>
-                <li class="footer__item">
-                    <a href="#" class="footer__link">Условия возврата</a>
-                </li>
-                <li class="footer__item">
-                    <a href="#" class="footer__link">Программа лояльности</a>
-                </li>
-                <li class="footer__item">
-                    <a href="#" class="footer__link">Новости</a>
-                </li>
+                <?php $APPLICATION->IncludeComponent("bitrix:menu", "bottom", Array(
+                    "ALLOW_MULTI_SELECT" => "N",	// Разрешить несколько активных пунктов одновременно
+                    "CHILD_MENU_TYPE" => "left",	// Тип меню для остальных уровней
+                    "COMPONENT_TEMPLATE" => "bottom",
+                    "DELAY" => "N",	// Откладывать выполнение шаблона меню
+                    "MAX_LEVEL" => "1",	// Уровень вложенности меню
+                    "MENU_CACHE_GET_VARS" => "",	// Значимые переменные запроса
+                    "MENU_CACHE_TIME" => "3600",	// Время кеширования (сек.)
+                    "MENU_CACHE_TYPE" => "Y",	// Тип кеширования
+                    "MENU_CACHE_USE_GROUPS" => "Y",	// Учитывать права доступа
+                    "ROOT_MENU_TYPE" => "bottom1",	// Тип меню для первого уровня
+                    "USE_EXT" => "N",	// Подключать файлы с именами вида .тип_меню.menu_ext.php
+                ),
+                    false
+                ); ?>
             </ul>
             <ul class="footer__list">
-                <li class="footer__item">
-                    <a href="#" class="footer__link">Контакты</a>
-                </li>
-                <li class="footer__item">
-                    <a href="tel:+79996622835" class="footer__link">+7 999 662 28 35</a>
-                </li>
-                <li class="footer__item">
-                    <a href="mailto:info@vl28.pro" class="footer__link">info@vl28.pro</a>
-                    <span class="footer__subtext">для вопросов</span>
-                </li>
-                <li class="footer__item">
-                    <a href="mailto:vl28@commerce.ru" class="footer__link">vl28@commerce.ru</a>
-                    <span class="footer__subtext">для сотрудничества</span>
-                </li>
+                <?php $APPLICATION->IncludeComponent("bitrix:menu", "bottom", Array(
+                    "ALLOW_MULTI_SELECT" => "N",	// Разрешить несколько активных пунктов одновременно
+                    "CHILD_MENU_TYPE" => "left",	// Тип меню для остальных уровней
+                    "COMPONENT_TEMPLATE" => "bottom",
+                    "DELAY" => "N",	// Откладывать выполнение шаблона меню
+                    "MAX_LEVEL" => "1",	// Уровень вложенности меню
+                    "MENU_CACHE_GET_VARS" => "",	// Значимые переменные запроса
+                    "MENU_CACHE_TIME" => "3600",	// Время кеширования (сек.)
+                    "MENU_CACHE_TYPE" => "Y",	// Тип кеширования
+                    "MENU_CACHE_USE_GROUPS" => "Y",	// Учитывать права доступа
+                    "ROOT_MENU_TYPE" => "bottom2",	// Тип меню для первого уровня
+                    "USE_EXT" => "N",	// Подключать файлы с именами вида .тип_меню.menu_ext.php
+                ),
+                    false
+                ); ?>
             </ul>
             <ul class="footer__list">
-                <li class="footer__item">
-                    <a href="#" class="footer__link">Социальные сетиг</a>
-                </li>
-                <li class="footer__item">
-                    <a href="#" class="footer__link">Instagram</a>
-                    <span class="footer__subtext">*компания meta признана в РФ экстремистской</span>
-                </li>
-                <li class="footer__item">
-                    <a href="#" class="footer__link">Telegram</a>
-                </li>
+                <?php $APPLICATION->IncludeComponent("bitrix:menu", "bottom", Array(
+                    "ALLOW_MULTI_SELECT" => "N",	// Разрешить несколько активных пунктов одновременно
+                    "CHILD_MENU_TYPE" => "left",	// Тип меню для остальных уровней
+                    "COMPONENT_TEMPLATE" => "bottom",
+                    "DELAY" => "N",	// Откладывать выполнение шаблона меню
+                    "MAX_LEVEL" => "1",	// Уровень вложенности меню
+                    "MENU_CACHE_GET_VARS" => "",	// Значимые переменные запроса
+                    "MENU_CACHE_TIME" => "3600",	// Время кеширования (сек.)
+                    "MENU_CACHE_TYPE" => "Y",	// Тип кеширования
+                    "MENU_CACHE_USE_GROUPS" => "Y",	// Учитывать права доступа
+                    "ROOT_MENU_TYPE" => "bottom3",	// Тип меню для первого уровня
+                    "USE_EXT" => "N",	// Подключать файлы с именами вида .тип_меню.menu_ext.php
+                ),
+                    false
+                ); ?>
             </ul>
             <ul class="footer__list">
-                <li class="footer__item">
-                    <a href="#" class="footer__link">Документация</a>
-                </li>
-                <li class="footer__item">
-                    <a href="#" class="footer__link">Договор оферты</a>
-                </li>
-                <li class="footer__item">
-                    <a href="#" class="footer__link">Политика конфиденциальности</a>
-                </li>
-                <li class="footer__item">
-                    <a href="#" class="footer__link">Реквизиты </a>
-                </li>
+                <?php $APPLICATION->IncludeComponent("bitrix:menu", "bottom", Array(
+                    "ALLOW_MULTI_SELECT" => "N",	// Разрешить несколько активных пунктов одновременно
+                    "CHILD_MENU_TYPE" => "left",	// Тип меню для остальных уровней
+                    "COMPONENT_TEMPLATE" => "bottom",
+                    "DELAY" => "N",	// Откладывать выполнение шаблона меню
+                    "MAX_LEVEL" => "1",	// Уровень вложенности меню
+                    "MENU_CACHE_GET_VARS" => "",	// Значимые переменные запроса
+                    "MENU_CACHE_TIME" => "3600",	// Время кеширования (сек.)
+                    "MENU_CACHE_TYPE" => "Y",	// Тип кеширования
+                    "MENU_CACHE_USE_GROUPS" => "Y",	// Учитывать права доступа
+                    "ROOT_MENU_TYPE" => "bottom4",	// Тип меню для первого уровня
+                    "USE_EXT" => "N",	// Подключать файлы с именами вида .тип_меню.menu_ext.php
+                ),
+                    false
+                ); ?>
             </ul>
         </nav>
+        <?php //todo: Продумать форму или не нужно? ?>
         <div class="subs">
             <p class="subs__text">Будьте в курсе всех новинок и специальных предложений</p>
             <a href="#" class="subs__btn main-btn">Подписаться</a>

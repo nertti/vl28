@@ -22,7 +22,7 @@ $isMainPage = $APPLICATION->GetCurPage(false) === '/';
     <?php $APPLICATION->ShowHead(); ?>
 </head>
 <body>
-<?php //$APPLICATION->ShowPanel(); ?>
+<?php $APPLICATION->ShowPanel(); ?>
 <!-- header -->
 <header class="header">
     <div class="header__left">
