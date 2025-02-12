@@ -381,4 +381,19 @@ $isMainPage = $APPLICATION->GetCurPage(false) === '/';
                 ); ?>
             </div>
         </section>
+    <?php else:?>
+    <div class="container">
+        <?php $APPLICATION->IncludeComponent(
+            "bitrix:breadcrumb",
+            "breadcrumb",
+            array(
+                "COMPONENT_TEMPLATE" => "breadcrumb",
+                "PATH" => "",
+                "SITE_ID" => "s1",
+                "START_FROM" => "-1"
+            ),
+            false
+        ); ?>
+        <p class="h2"><?php $APPLICATION->ShowTitle(); ?></p>
+      </div>
     <?php endif; ?>
