@@ -77,7 +77,6 @@ $APPLICATION->SetTitle("Новости / блог");
 			1 => "CONTENT",
 			2 => "RESULT",
 			3 => "PHOTOS",
-			4 => "",
 		),
 		"DETAIL_DISPLAY_TOP_PAGER" => "N",
 		"DETAIL_DISPLAY_BOTTOM_PAGER" => "N",
