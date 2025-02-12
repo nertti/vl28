@@ -11,10 +11,12 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 $count = count($arResult);
 $result = '<div class="breadcrumbs">';
 for ($i = 0; $i < $count; $i++) {
-    if ($i >= $count - 1) {
+    if ($i == 0) {
+        $result .= '<a class="breadcrumbs__item" href="' . $arResult[$i]['LINK'] . '">' . $arResult[$i]['TITLE'] . '</a>';
+    } elseif ($i >= $count - 1) {
         $result .= '<span class="breadcrumbs__item">/</span><span class="breadcrumbs__item">' . $arResult[$i]['TITLE'] . '</span>';
     } else {
-        $result .= '<a class="breadcrumbs__item" href="' . $arResult[$i]['LINK'] . '">' . $arResult[$i]['TITLE'] . '</a>';
+        $result .= '<span class="breadcrumbs__item">/</span><a class="breadcrumbs__item" href="' . $arResult[$i]['LINK'] . '">' . $arResult[$i]['TITLE'] . '</a>';
     }
 }
 $result .= '</div>';
