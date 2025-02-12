@@ -21,13 +21,13 @@ $this->setFrameMode(true);
         $this->AddDeleteAction($arItem['ID'], $arItem['DELETE_LINK'], CIBlock::GetArrayByID($arItem["IBLOCK_ID"], "ELEMENT_DELETE"), array("CONFIRM" => GetMessage('CT_BNL_ELEMENT_DELETE_CONFIRM')));
         ?>
             <?php if ($arItem['PROPERTIES']['TYPE']['VALUE_XML_ID'] === 'video'): ?>
-            <div class="content__video video-block content__item">
+            <div id="<?= $this->GetEditAreaId($arItem['ID']); ?>" class="content__video video-block content__item">
                 <video loop="" muted="" defaultmuted="" playsinline="" autoplay="" height="838">
                     <source src="<?= CFile::GetPath($arItem['PROPERTIES']['VIDEO_FILE']['VALUE']); ?>" type="video/mp4">
                 </video>
             </div>
             <?php else: ?>
-                <img src="<?=$arItem['PREVIEW_PICTURE']['SRC']?>" alt="<?=$arItem['NAME']?>" class="content__item">
+                <img id="<?= $this->GetEditAreaId($arItem['ID']); ?>" src="<?=$arItem['PREVIEW_PICTURE']['SRC']?>" alt="<?=$arItem['NAME']?>" class="content__item">
             <?php endif; ?>
     <?php endforeach; ?>
     </div>

@@ -19,7 +19,7 @@ $this->setFrameMode(true);
         $this->AddEditAction($arItem['ID'], $arItem['EDIT_LINK'], CIBlock::GetArrayByID($arItem["IBLOCK_ID"], "ELEMENT_EDIT"));
         $this->AddDeleteAction($arItem['ID'], $arItem['DELETE_LINK'], CIBlock::GetArrayByID($arItem["IBLOCK_ID"], "ELEMENT_DELETE"), array("CONFIRM" => GetMessage('CT_BNL_ELEMENT_DELETE_CONFIRM')));
         ?>
-        <section class="banner">
+        <section id="<?= $this->GetEditAreaId($arItem['ID']); ?>" class="banner">
             <?php if ($arItem['PROPERTIES']['TYPE']['VALUE_XML_ID'] === 'video'): ?>
                 <div class="banner__video video-block">
                     <video loop="" muted="" defaultmuted="" playsinline="" autoplay="">
