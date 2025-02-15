@@ -480,18 +480,20 @@ $isAboutPage = $APPLICATION->GetCurPage(false) === '/about/';
               </div>
             </section>
         <?php endif;?>
-    <div class="container top40">
-        <?php $APPLICATION->IncludeComponent(
-            "bitrix:breadcrumb",
-            "breadcrumb",
-            array(
-                "COMPONENT_TEMPLATE" => "breadcrumb",
-                "PATH" => "",
-                "SITE_ID" => "s1",
-                "START_FROM" => "-1"
-            ),
-            false
-        ); ?>
-        <p class="h2"><?php $APPLICATION->ShowTitle(); ?></p>
-    </div>
+        <?php if(!defined('ERROR_404')):?>
+            <div class="container top40">
+                <?php $APPLICATION->IncludeComponent(
+                    "bitrix:breadcrumb",
+                    "breadcrumb",
+                    array(
+                        "COMPONENT_TEMPLATE" => "breadcrumb",
+                        "PATH" => "",
+                        "SITE_ID" => "s1",
+                        "START_FROM" => "-1"
+                    ),
+                    false
+                ); ?>
+                <p class="h2"><?php $APPLICATION->ShowTitle(); ?></p>
+            </div>
+        <?php endif; ?>
     <?php endif; ?>
