@@ -480,7 +480,7 @@ $isAboutPage = $APPLICATION->GetCurPage(false) === '/about/';
               </div>
             </section>
         <?php endif;?>
-    <div class="container top100">
+    <div class="container top40">
         <?php $APPLICATION->IncludeComponent(
             "bitrix:breadcrumb",
             "breadcrumb",
