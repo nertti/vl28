@@ -12,7 +12,7 @@ $isAboutPage = $APPLICATION->GetCurPage(false) === '/about/';
 <!doctype html>
 <html lang="ru">
 <head>
-    <?php Asset::getInstance()->addString("<meta name=’viewport’ content=’width=device-width, initial-scale=1’>") ?>
+    <?php Asset::getInstance()->addString("<meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1'>") ?>
     <title><?php $APPLICATION->ShowTitle(); ?></title>
     <?php
     Asset::getInstance()->addCss(SITE_TEMPLATE_PATH . '/assets/css/hystmodal.min.css');
