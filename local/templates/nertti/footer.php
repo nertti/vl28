@@ -5,6 +5,7 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
 use Bitrix\Main\Page\Asset;
 
 /** @var \CMain $APPLICATION */
+/** @var bool $isMainPage */
 ?>
 </main>
 <footer class="footer">

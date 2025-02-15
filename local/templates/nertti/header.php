@@ -460,7 +460,27 @@ $isAboutPage = $APPLICATION->GetCurPage(false) === '/about/';
 ); ?>
         </section>
     <?php else:?>
-    <div class="container">
+        <?php if ($isAboutPage):?>
+            <section class="banner">
+              <div class="banner__video video-block">
+                <video loop="" muted="" defaultmuted="" playsinline="" autoplay="">
+                  <source src="<?=SITE_TEMPLATE_PATH?>/assets/img/banner1.mp4" type="video/mp4">
+                </video>
+              </div>
+              <div class="banner__content banner__content_space">
+                <p class="banner__title">
+                <?php $APPLICATION->IncludeFile(
+                    "/include/about/title_banner.php",
+                    array(),
+                    array(
+                        "MODE" => "text"
+                    )
+                ); ?>
+                </p>
+              </div>
+            </section>
+        <?php endif;?>
+    <div class="container top100">
         <?php $APPLICATION->IncludeComponent(
             "bitrix:breadcrumb",
             "breadcrumb",
@@ -473,5 +493,5 @@ $isAboutPage = $APPLICATION->GetCurPage(false) === '/about/';
             false
         ); ?>
         <p class="h2"><?php $APPLICATION->ShowTitle(); ?></p>
-      </div>
+    </div>
     <?php endif; ?>
