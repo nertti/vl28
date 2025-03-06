@@ -19,7 +19,7 @@ $currentPage = $APPLICATION->GetCurPage();
     <div class="container">
         <div class="catalog__settings">
             <div class="category">
-                <a href="/catalog/" class="category__item<?php if ($currentPage == '/catalog/'):?> category__item_current<?php endif;?>">Все изделия</a>
+                <a href="/catalog/" class="category__item<?php if ($currentPage === '/catalog/'):?> category__item_current<?php endif;?>">Все изделия</a>
                 <?php foreach ($arResult['SECTIONS'] as $section):?>
                     <a href="<?=$section['SECTION_PAGE_URL']?>"
                         class="category__item<?php if ($currentPage == $section['SECTION_PAGE_URL']):?> category__item_current<?php endif;?>">

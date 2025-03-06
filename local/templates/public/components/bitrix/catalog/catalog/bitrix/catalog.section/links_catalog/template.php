@@ -17,7 +17,6 @@ $this->setFrameMode(true);
 <section class="products products_catalog">
     <div class="products__list">
         <?php foreach ($arResult["ITEMS"] as $cell => $arElement): ?>
-
             <?php
             $this->AddEditAction($arElement['ID'], $arElement['EDIT_LINK'], CIBlock::GetArrayByID($arParams["IBLOCK_ID"], "ELEMENT_EDIT"));
             $this->AddDeleteAction($arElement['ID'], $arElement['DELETE_LINK'], CIBlock::GetArrayByID($arParams["IBLOCK_ID"], "ELEMENT_DELETE"), array("CONFIRM" => GetMessage('CT_BCT_ELEMENT_DELETE_CONFIRM')));
@@ -50,7 +49,7 @@ $this->setFrameMode(true);
                 <?php endif; ?>
                 <div class="product__inner">
                     <p class="product__title"><?= $arElement['NAME'] ?></p>
-                    <p class="product__price">000 ₽</p>
+                    <p class="product__price"><?=round($arElement['PRICE']['PRICE'])?> ₽</p>
                 </div>
             </a>
         <?php endforeach; ?>

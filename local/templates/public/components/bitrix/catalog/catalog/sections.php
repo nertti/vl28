@@ -21,7 +21,7 @@ $APPLICATION->IncludeComponent("bitrix:catalog.section.list", "tree", array(
     "COUNT_ELEMENTS" => "Y",
     "TOP_DEPTH" => "2",
     "SECTION_URL" => $arParams["SECTION_URL"],
-    "CACHE_TYPE" => $arParams["CACHE_TYPE"],
+    "CACHE_TYPE" => 'N',
     "CACHE_TIME" => $arParams["CACHE_TIME"],
     "DISPLAY_PANEL" => "N",
     "ADD_SECTIONS_CHAIN" => $arParams['ADD_SECTIONS_CHAIN'],
@@ -44,7 +44,7 @@ $APPLICATION->IncludeComponent("bitrix:catalog.section", "links_catalog", array(
 
 
 
-$APPLICATION->IncludeComponent("bitrix:catalog.filter", "", array(
+$APPLICATION->IncludeComponent("bitrix:catalog.smart.filter", "", array(
     "IBLOCK_TYPE" => $arParams["IBLOCK_TYPE"],
     "IBLOCK_ID" => $arParams["IBLOCK_ID"],
     "SECTION_ID" => '',
