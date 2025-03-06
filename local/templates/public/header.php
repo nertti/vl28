@@ -6,8 +6,19 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
 use Bitrix\Main\Page\Asset;
 
 /** @var \CMain $APPLICATION */
+/** @var \CMain $USER */
+
 $isMainPage = $APPLICATION->GetCurPage(false) === '/';
 $isAboutPage = $APPLICATION->GetCurPage(false) === '/about/';
+$isProfilePages = strpos($APPLICATION->GetCurPage(false), '/profile/') !== false;
+
+if ($isProfilePages){
+    if (!$USER->IsAuthorized()) {
+    header('Location: /login/');
+    exit();
+}
+}
+
 ?>
 <!doctype html>
 <html lang="ru">
@@ -41,14 +52,14 @@ $isAboutPage = $APPLICATION->GetCurPage(false) === '/about/';
         <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/logo.svg" alt="VL28" class="logo__img">
     </a>
     <div class="header__right">
-        <a href="#" class="header__link">
+        <a href="/profile/favorite/" class="header__link">
             <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/favorite.svg" alt="favorite icon"
                  class="header__link-icon svg">
         </a>
-        <a href="#" class="header__link">
+        <a href="/profile/" class="header__link">
             <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/user.svg" alt="user icon" class="header__link-icon svg">
         </a>
-        <a href="#" class="header__link">
+        <a href="/cart/" class="header__link">
             <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/cart.svg" alt="cart icon"
                  class="header__link-icon header__link-icon_cart svg">
         </a>
@@ -493,7 +504,9 @@ $isAboutPage = $APPLICATION->GetCurPage(false) === '/about/';
                     ),
                     false
                 ); ?>
+                <?php if ($isAboutPage):?>
                 <p class="h2"><?php $APPLICATION->ShowTitle(); ?></p>
+                <?php endif;?>
             </div>
         <?php endif; ?>
     <?php endif; ?>
