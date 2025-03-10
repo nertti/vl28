@@ -11,6 +11,7 @@
 /** @var string $componentPath */
 /** @var CBitrixComponent $component */
 $this->setFrameMode(true);
+
 ?>
 <?php if (!empty($arResult["ITEMS"])): ?>
     <section class="client top0">
@@ -20,7 +21,7 @@ $this->setFrameMode(true);
                     <?php $count = 0; ?>
                     <?php foreach ($arResult["ITEMS"] as $arItem): ?>
                         <?php $count++; ?>
-                        <div class="client__nav-item h2 <?php if ($count === 1): ?>active<?php endif; ?>"><?= $arItem['NAME'] ?></div>
+                        <div class="client__nav-item h2 <?php if ($_GET['code'] == $arItem['CODE']): ?>active<?php endif; ?>"><?= $arItem['NAME'] ?></div>
                     <?php endforeach; ?>
                 </div>
                 <div class="client__tabs">
@@ -32,11 +33,10 @@ $this->setFrameMode(true);
                         ?>
                         <?php $count++; ?>
                         <div id="<?= $this->GetEditAreaId($arItem['ID']); ?>"
-                             class="client__tab <?php if ($count === 1): ?>active<?php endif; ?>">
+                             class="client__tab <?php if ($_GET['code'] == $arItem['CODE']): ?>active<?php endif; ?>">
                             <?= $arItem["DETAIL_TEXT"]; ?>
                         </div>
                     <?php endforeach; ?>
-
                 </div>
             </div>
         </div>
