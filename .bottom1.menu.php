@@ -9,14 +9,14 @@ $aMenuLinks = Array(
 	),
 	Array(
 		"Оплата и доставка", 
-		"/customers/",
+		"/customers/?code=delivery", 
 		Array(), 
 		Array(), 
 		"" 
 	),
 	Array(
 		"Условия возврата", 
-		"/customers/",
+		"/customers/?code=return", 
 		Array(), 
 		Array(), 
 		"" 

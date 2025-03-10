@@ -1,32 +1,32 @@
-<?php
-
-$aMenuLinks = array(
-    array(
-        "Документация",
-        "#",
-        array(),
-        array(),
-        ""
-    ),
-    array(
-        "Договор оферты",
-        "#",
-        array(),
-        array(),
-        ""
-    ),
-    array(
-        "Политика конфиденциальности",
-        "#",
-        array(),
-        array(),
-        ""
-    ),
-    array(
-        "Реквизиты",
-        "#",
-        array(),
-        array(),
-        ""
-    )
+<?
+$aMenuLinks = Array(
+	Array(
+		"Документация", 
+		"#", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Договор оферты", 
+		"/oferta/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Политика конфиденциальности", 
+		"/personal/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Реквизиты", 
+		"#", 
+		Array(), 
+		Array(), 
+		"" 
+	)
 );
+?>

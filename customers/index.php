@@ -19,7 +19,7 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 		"CACHE_FILTER" => "N",
 		"CACHE_GROUPS" => "Y",
 		"CACHE_TIME" => "360000",
-		"CACHE_TYPE" => "A",
+		"CACHE_TYPE" => "N",
 		"CHECK_DATES" => "Y",
 		"COMPOSITE_FRAME_MODE" => "A",
 		"COMPOSITE_FRAME_TYPE" => "AUTO",
@@ -31,7 +31,7 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 		"DISPLAY_PREVIEW_TEXT" => "N",
 		"DISPLAY_TOP_PAGER" => "N",
 		"FIELD_CODE" => array(
-			0 => "",
+			0 => "CODE",
 			1 => "",
 		),
 		"FILTER_NAME" => "",
@@ -56,7 +56,6 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 		"PROPERTY_CODE" => array(
 			0 => "",
 			1 => "",
-			2 => "",
 		),
 		"SEARCH_PAGE" => "/search/",
 		"SET_BROWSER_TITLE" => "N",

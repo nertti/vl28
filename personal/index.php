@@ -5,6 +5,7 @@
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 $APPLICATION->SetTitle("Политика в отношении обработки персональных данных");
 ?>
+
     <div class="default__inner default ">
         <p class="default__subtitle">1. Общие положения</p>
         <p class="gray">

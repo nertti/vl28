@@ -4,8 +4,7 @@
 
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
 $APPLICATION->SetTitle("Связаться с нами");
-?>
-    <div class="container">
+?>    <div class="container">
         <nav class="footer__nav contacts__nav">
             <ul class="footer__list">
                 <li class="footer__item">
