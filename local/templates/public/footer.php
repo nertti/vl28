@@ -116,7 +116,10 @@ Asset::getInstance()->addJs(SITE_TEMPLATE_PATH.'/assets/js/hystmodal.min.js');
 Asset::getInstance()->addJs(SITE_TEMPLATE_PATH.'/assets/js/swiper-bundle.min.js');
 Asset::getInstance()->addJs(SITE_TEMPLATE_PATH.'/assets/js/mask.js');
 Asset::getInstance()->addJs(SITE_TEMPLATE_PATH.'/assets/js/main.min.js');
+
+Asset::getInstance()->addJs(SITE_TEMPLATE_PATH.'/include/footer/script.js');
 ?>
+<script src="/include/footer/script.js"></script>
 <button class="hystmodal__shadow"></button>
 </body>
 </html>
