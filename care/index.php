@@ -4,8 +4,7 @@
 
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 $APPLICATION->SetTitle("Уход за изделиями");
-?>
-    <div class="default__inner default">
+?><div class="default__inner default container ">
         <p class="default__subtitle">Информация об уходе для вещей из футера</p>
         <p class="gray">
             Футер — это хлопчатобумажный трикотаж. Эта ткань хорошо пропускает воздух, прекрасно впитывает влагу и сохраняет тепло. Материал прочный, не вытягивается, не формирует катышки на поверхности и не образует затяжки. Несмотря на высокие эксплуатационные параметры, в уходе за футером придерживайтесь правил:
@@ -89,4 +88,4 @@ $APPLICATION->SetTitle("Уход за изделиями");
             </strong>
         </p>
     </div>
-<?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
+<br><?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
