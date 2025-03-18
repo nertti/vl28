@@ -221,7 +221,7 @@ if ($isProfilePages){
         </div>
     </div>
 </div>
-<main>
+<main <?php if (checkCatalogPath($APPLICATION->GetCurPageParam())):?>class="product-page"<?php endif;?>>
     <?php if ($isMainPage): ?>
         <?php $APPLICATION->IncludeComponent("bitrix:news.list", "main_top_banners", array(
             "ACTIVE_DATE_FORMAT" => "d.m.Y",    // Формат показа даты
@@ -611,7 +611,7 @@ if ($isProfilePages){
               </div>
             </section>
         <?php endif;?>
-        <?php if(!defined('ERROR_404')):?>
+        <?php if(!defined('ERROR_404') && !checkCatalogPath($APPLICATION->GetCurPageParam())):?>
             <div class="container top40">
                 <?php $APPLICATION->IncludeComponent(
                     "bitrix:breadcrumb",
