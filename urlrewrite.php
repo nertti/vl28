@@ -48,7 +48,7 @@ $arUrlRewrite=array (
     'PATH' => '/bitrix/services/stssync/calendar/index.php',
     'SORT' => 100,
   ),
-  10 => 
+  12 => 
   array (
     'CONDITION' => '#^/catalog/#',
     'RULE' => '',

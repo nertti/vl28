@@ -207,12 +207,35 @@ if (!empty($arParams['LABEL_PROP_POSITION']))
 <?php
 //pr($arResult);
 ?>
+
+<?php
+global $APPLICATION;
+
+if(!$USER->IsAuthorized())
+{
+    $arFavorites = unserialize($APPLICATION->get_cookie("favorites"));
+    //pr($arFavorites);
+}
+else {
+    $idUser = $USER->GetID();
+    $rsUser = CUser::GetByID($idUser);
+    $arUser = $rsUser->Fetch();
+    $arFavorites = $arUser['UF_FAVORITES'];  // Достаём избранное пользователя
+
+}
+$active = false;
+foreach ($arFavorites as $favorite){
+    if ($favorite == $arResult['ID']){
+        $active = true;
+    }
+}
+?>
 <?php /** Начало карточки товара*/?>
     <section class="tovar">
         <div class="tovar__left">
             <div class="tovar__left-inner">
                 <a href="/catalog/<?=$arResult['SECTION_CODE']?>" class="tovar__back">Назад</a>
-                <a href="#" class="favorite-btn"></a>
+                <span class="favorite-btn favor <?php if ($active):?>active<?php endif;?>" data-item="<?=$arResult['ID']?>"></span>
             </div>
             <div class="swiper product-swiper">
                 <div class="swiper-wrapper">
@@ -239,7 +262,7 @@ if (!empty($arParams['LABEL_PROP_POSITION']))
             ); ?>
             <div class="tovar__head">
                 <h1 class="h2"><?=$arResult['NAME']?></h1>
-                <a href="#" class="favorite-btn"></a>
+                <span class="favorite-btn favor <?php if ($active):?>active<?php endif;?>" data-item="<?=$arResult['ID']?>"></span>
             </div>
             <p class="tovar__price"><?=$arResult['JS_OFFERS'][0]['ITEM_PRICES'][0]['PRINT_PRICE'] ?></p>
             <form action="#" class="tovar__form">

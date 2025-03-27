@@ -26,7 +26,7 @@ $this->setFrameMode(true);
 ?>
 
 <div class="account__favorite">
-
+<?php if (!empty($arResult["ITEMS"])):?>
     <?php foreach ($arResult["ITEMS"] as $cell => $arElement): ?>
         <?php
         $this->AddEditAction($arElement['ID'], $arElement['EDIT_LINK'], CIBlock::GetArrayByID($arParams["IBLOCK_ID"], "ELEMENT_EDIT"));
@@ -45,4 +45,7 @@ $this->setFrameMode(true);
             </a>
         </div>
     <?php endforeach; ?>
+    <?php else:?>
+        <p>В Вашем избранном пусто</p>
+    <?php endif;?>
 </div>

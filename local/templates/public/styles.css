@@ -10,3 +10,10 @@
 .bottom40{
     padding-bottom: 40px;
 }
+.favor.active{
+    cursor: pointer;
+    background-image: url(assets/img/favorite-active.svg);
+}
+.favor{
+    cursor: pointer;
+}

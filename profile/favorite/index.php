@@ -22,8 +22,11 @@ if (!$USER->IsAuthorized()) // Для неавторизованного
     $favorites = $arUser['UF_FAVORITES'];
 
 }
-
-$GLOBALS['arrFilter'] = array("ID" => $favorites);
+if (!empty($favorites)){
+    $GLOBALS['arrFilter'] = array("ID" => $favorites);
+} else{
+    $GLOBALS['arrFilter'] = array("ID" => 0);
+}
 ?>
 
     <div class="container">
@@ -38,16 +41,18 @@ $GLOBALS['arrFilter'] = array("ID" => $favorites);
                     array(
                         "ALLOW_MULTI_SELECT" => "N",
                         "CHILD_MENU_TYPE" => "left",
-                        "COMPONENT_TEMPLATE" => "bottom",
+                        "COMPONENT_TEMPLATE" => "profile",
                         "DELAY" => "N",
                         "MAX_LEVEL" => "1",
-                        "MENU_CACHE_GET_VARS" => "",
+                        "MENU_CACHE_GET_VARS" => array(
+                        ),
                         "MENU_CACHE_TIME" => "3600",
-                        "MENU_CACHE_TYPE" => "Y",
+                        "MENU_CACHE_TYPE" => "N",
                         "MENU_CACHE_USE_GROUPS" => "Y",
                         "ROOT_MENU_TYPE" => "left",
                         "USE_EXT" => "N"
-                    )
+                    ),
+                    false
                 ); ?>
             </div>
             <div class="account__right">

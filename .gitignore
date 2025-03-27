@@ -57,3 +57,4 @@ bitrix/php_interface/dbconn.php
 upload/
 bitrix/templates/landing24/
 bitrix/templates/learning/
+/local/php_interface/include/sms_auth.php

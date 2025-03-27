@@ -32,6 +32,7 @@ function addFavorite(id, action) {
                 favorElement.classList.remove('active');
                 updateWishCount(false);
             }
+            location.reload(); // Перезагружаем страницу
         })
         .catch(error => console.error('Ошибка:', error));
 }
