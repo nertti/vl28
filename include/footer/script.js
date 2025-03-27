@@ -33,6 +33,7 @@ function addFavorite(id, action) {
                 updateWishCount(false);
             }
             location.reload(); // Перезагружаем страницу
+
         })
         .catch(error => console.error('Ошибка:', error));
 }

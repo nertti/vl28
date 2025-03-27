@@ -13,11 +13,14 @@ $context = $application->getContext();
 /* Избранное */
 
 global $APPLICATION;
+$result = null;
 if ($_POST['id']) {
     if (!$USER->IsAuthorized()) // Для неавторизованного
     {
         $arElements = unserialize($APPLICATION->get_cookie('favorites'));
-
+        if (empty($arElements)){
+            $arElements = array();
+        }
         if (!in_array($_POST['id'], $arElements)) {
             $arElements[] = $_POST['id'];
             $result = 1; // Датчик. Добавляем
@@ -30,7 +33,8 @@ if ($_POST['id']) {
         $cookie->setDomain($context->getServer()->getHttpHost());
         $cookie->setHttpOnly(false);
         $context->getResponse()->addCookie($cookie);
-        $context->getResponse()->flush("");
+        $context->getResponse()->flush();
+        //$context->getResponse()->send(); // Или просто вернуть $response
     } else { // Для авторизованного
         $idUser = $USER->GetID();
         $rsUser = CUser::GetByID($idUser);
@@ -48,6 +52,7 @@ if ($_POST['id']) {
         $USER->Update($idUser, array("UF_FAVORITES" => $arElements)); // Добавляем элемент в избранное
     }
 }
+
 /* Избранное */
 echo json_encode($result);
 die();
