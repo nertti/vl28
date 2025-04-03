@@ -7,7 +7,7 @@
 class SMSRU {
 
 	private $ApiKey;
-	private $protocol = 'https';
+	private $protocol = 'http';
 	private $domain = 'sms.ru';
 	private $count_repeat = 5; //количество попыток достучаться до сервера если он не доступен
 
