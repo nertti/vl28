@@ -246,19 +246,61 @@ foreach ($arFavorites as $favorite) {
                 <?php if (isset($arResult['SKU_PROPS']['SIZE'])): ?>
 
                     <div class="tovar__size">
-                        <p class="tovar__size-title">Выберите размер:</p>
                         <div class="tovar__sizes">
-                            <?php
-                            foreach ($arResult['SKU_PROPS']['SIZE']['VALUES'] as &$value) {
-                                $value['NAME'] = htmlspecialcharsbx($value['NAME']);
-                                ?>
-                                <label class="tovar__size-item">
-                                    <input type="radio" value="<?= $value['NAME'] ?>" name="size">
-                                    <span><?= $value['NAME'] ?></span>
-                                </label>
+                            <div class="product-item-detail-info-section">
                                 <?php
-                            }
-                            ?>
+                                if ($haveOffers && !empty($arResult['OFFERS_PROP'])) {
+                                    ?>
+                                    <div id="<?= $itemIds['TREE_ID'] ?>">
+                                        <?php
+                                        foreach ($arResult['SKU_PROPS'] as $skuProperty) {
+                                            if (!isset($arResult['OFFERS_PROP'][$skuProperty['CODE']]))
+                                                continue;
+
+                                            $propertyId = $skuProperty['ID'];
+                                            $skuProps[] = array(
+                                                'ID' => $propertyId,
+                                                'SHOW_MODE' => $skuProperty['SHOW_MODE'],
+                                                'VALUES' => $skuProperty['VALUES'],
+                                                'VALUES_COUNT' => $skuProperty['VALUES_COUNT']
+                                            );
+                                            ?>
+                                            <div class="product-item-detail-info-container"
+                                                 data-entity="sku-line-block">
+                                                <div class="title tovar__size-title"><?= htmlspecialcharsEx($skuProperty['NAME']) ?></div>
+                                                <div class="product-item-scu-container">
+                                                    <div class="product-item-scu-block">
+                                                        <div class="product-item-scu-list">
+                                                            <ul class="product-item-scu-item-list">
+                                                                <?php
+                                                                foreach ($skuProperty['VALUES'] as &$value) {
+                                                                    $value['NAME'] = htmlspecialcharsbx($value['NAME']);
+                                                                    ?>
+                                                                    <li class="product-item-scu-item-text-container"
+                                                                        title="<?= $value['NAME'] ?>"
+                                                                        data-treevalue="<?= $propertyId ?>_<?= $value['ID'] ?>"
+                                                                        data-onevalue="<?= $value['ID'] ?>">
+                                                                        <div class="product-item-scu-item-text-block">
+                                                                            <div class="product-item-scu-item-text"><?= $value['NAME'] ?></div>
+                                                                        </div>
+                                                                    </li>
+                                                                    <?php
+                                                                }
+                                                                ?>
+                                                            </ul>
+                                                            <div style="clear: both;"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <?php
+                                        }
+                                        ?>
+                                    </div>
+                                    <?php
+                                }
+                                ?>
+                            </div>
                         </div>
                         <a href="#" data-hystmodal="#sizeModal" class="tovar__size-btn">Определить размер</a>
                     </div>
@@ -278,7 +320,8 @@ foreach ($arFavorites as $favorite) {
 
 
     <div class="bx-catalog-element bx-<?= $arParams['TEMPLATE_THEME'] ?>" id="<?= $itemIds['ID'] ?>"
-         itemscope itemtype="http://schema.org/Product">
+         itemscope itemtype="http://schema.org/Product"
+    style="display: none">
         <div class="container-fluid">
 
             <div class="row">
@@ -876,7 +919,12 @@ foreach ($arFavorites as $favorite) {
         }
         ?>
     </div>
+
+
+
+
 <?php
+
 if ($haveOffers) {
     $offerIds = array();
     $offerCodes = array();
@@ -1160,6 +1208,7 @@ if ($haveOffers) {
     );
     unset($emptyProductProperties);
 }
+
 ?>
     <script>
         BX.message({
