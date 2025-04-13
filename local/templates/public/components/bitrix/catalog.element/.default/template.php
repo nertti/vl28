@@ -311,9 +311,9 @@ foreach ($arFavorites as $favorite) {
                     <span>Добавить в корзину</span>
                 </a>
             </form>
-            <a href="#" class="tovar__link">Описание</a>
+            <a href="#" class="tovar__link" data-hystmodal="#descriptionModal">Описание</a>
             <a href="#" class="tovar__link" data-hystmodal="#howModal">Состав и уход</a>
-            <a href="#" class="tovar__link">Доставка и возват</a>
+            <a href="http://vl26908655.nichost.ru/customers/?code=delivery" class="tovar__link">Доставка и возврат</a>
         </div>
     </section>
 <?php /** Конец карточки товара*/ ?>
@@ -919,7 +919,114 @@ foreach ($arFavorites as $favorite) {
         }
         ?>
     </div>
-
+    <div class="hystmodal" id="sizeModal" aria-hidden="true">
+        <div class="hystmodal__wrap">
+            <div class="hystmodal__window" role="dialog" aria-modal="true">
+                <button data-hystclose="" class="hystmodal__close"></button>
+                <div class="sizes">
+                    <div class="sizes__title">
+                        <p class="h2">Футболки</p>
+                    </div>
+                    <table class="sizes__table">
+                        <tbody>
+                        <tr>
+                            <th>Размеры</th>
+                            <th>M</th>
+                            <th>L</th>
+                            <th>XL</th>
+                        </tr>
+                        <tr>
+                            <td>Длина изделия</td>
+                            <td>68 см</td>
+                            <td>70 см</td>
+                            <td>71 см</td>
+                        </tr>
+                        <tr>
+                            <td>Ширина изделия</td>
+                            <td>56 см</td>
+                            <td>58 см</td>
+                            <td>60 см</td>
+                        </tr>
+                        <tr>
+                            <td>Длина плеча</td>
+                            <td>15.5 см</td>
+                            <td>16 см</td>
+                            <td>16.5 см</td>
+                        </tr>
+                        <tr>
+                            <td>Длина рукава</td>
+                            <td>26 см</td>
+                            <td>26 см</td>
+                            <td>26 см</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="hystmodal" id="howModal" aria-hidden="true">
+        <div class="hystmodal__wrap">
+            <div class="hystmodal__window" role="dialog" aria-modal="true">
+                <button data-hystclose="" class="hystmodal__close"></button>
+                <div class="how">
+                    <p class="h2">Информация об уходе для термобелья</p>
+                    <p class="gray">При уходе за термобельем придерживайтесь этих правил:</p>
+                    <ol class="gray">
+                        <li>
+                            В целях гигиены, мы рекомендуем постирать новую вещь перед ноской, так как термобелье используется в качестве первого слоя к телу.
+                        </li>
+                        <li>
+                            Перед стиркой застегните молнию и выверните вещь наизнанку.
+                        </li>
+                        <li>
+                            Стирка при температуре не выше 30 градусов на деликатном режиме, отжим самый минимальный, без скручивания. Лучше поставить функцию «без отжима».
+                        </li>
+                        <li>
+                            Мы рекомендуем использовать стиральные средства для деликатных тканей. Лучше всего подойдут жидкие гели, так как стиральные порошки могут попасть в структуру плетения и плохо выстираться, что скажется на эффективности термобелья.
+                        </li>
+                        <li>
+                            Сушить термобелье&nbsp;необходимо в хорошо проветриваемом помещении, вдали от солнечных лучей и отопительных приборов.&nbsp;
+                        </li>
+                        <li>
+                            Сушка в стиральной машине запрещена
+                        </li>
+                        <li>
+                            Утюжить и отпаривать термобелье не требуется. Любое температурное воздействие болье 30 градусов С, для термобелья- запрещено.
+                        </li>
+                        <li>
+                            Храните термобелье&nbsp;в сложенном виде, чтобы избежать деформации.
+                        </li>
+                    </ol>
+                    <p>
+            <span class="gray">
+              При бережном уходе ваши любимые вещи прослужат не один сезон.
+            </span>
+                        Мы рекомендуем относиться аккуратно с липучками и другими элементами экипировки, которые могут оставлять зацепки на термобелье.
+                    </p>
+                    <div class="how__icons">
+                        <img src="<?=SITE_TEMPLATE_PATH?>/assets/img/how1.svg" alt="icon">
+                        <img src="<?=SITE_TEMPLATE_PATH?>/assets/img/how2.svg" alt="icon">
+                        <img src="<?=SITE_TEMPLATE_PATH?>/assets/img/how3.svg" alt="icon">
+                        <img src="<?=SITE_TEMPLATE_PATH?>/assets/img/how4.svg" alt="icon">
+                        <img src="<?=SITE_TEMPLATE_PATH?>/assets/img/how5.svg" alt="icon">
+                        <img src="<?=SITE_TEMPLATE_PATH?>/assets/img/how6.svg" alt="icon">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="hystmodal" id="descriptionModal" aria-hidden="true">
+        <div class="hystmodal__wrap">
+            <div class="hystmodal__window" role="dialog" aria-modal="true">
+                <button data-hystclose="" class="hystmodal__close"></button>
+                <div class="gray">
+                    <p class="h2">Информация о товаре</p>
+                    <?= $arResult['DETAIL_TEXT']?>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
 
