@@ -13,5 +13,5 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["phone"])) {
     $code = rand(100000, 999999); // Генерация кода
     $_SESSION["SMS_OTP"] = $code; // Сохраняем код в сессии
     $smsSent = sendSms($phone, "Ваш код: $code");
-    echo json_encode(["success" => $smsSent]);
+    echo json_encode(["success" => $smsSent, "code" => $code]);
 }

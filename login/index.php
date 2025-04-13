@@ -22,17 +22,18 @@ $APPLICATION->SetTitle("Вход или регистрация");
 
             <!-- Форма ввода кода (скрыта до отправки SMS) -->
             <form action="#" class="registration__form" id="code-form" style="display: none;">
+                <input type="hidden" class="form-input phone-input" id="phone-number-send" placeholder="+7">
                 <input type="text" class="registration__code" id="sms-code" placeholder="Код из СМС">
                 <input type="submit" class="registration__btn" value="Подтвердить">
             </form>
 
             <!-- Таймер повторной отправки -->
-            <p class="registration__desc" id="resend-timer" style="display: none;">
+            <p class="registration__desc top40" id="resend-timer" style="display: none;">
                 Повторная отправка через <span id="timer">59</span> сек
             </p>
 
             <!-- Кнопка повторной отправки (появляется после таймера) -->
-            <button class="registration__btn" id="resend-btn" style="display: none;">Отправить код снова</button>
+            <button class="registration__btn registration__form" id="resend-btn" style="display: none;">Отправить код снова</button>
         </div>
     </section>
 
@@ -53,6 +54,8 @@ $APPLICATION->SetTitle("Вход или регистрация");
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
+                            document.getElementById("phone-number-send").value = phone;
+
                             document.getElementById("user-phone").textContent = phone;
                             document.getElementById("sms-message").style.display = "block";
                             document.getElementById("code-form").style.display = "block";
@@ -69,11 +72,13 @@ $APPLICATION->SetTitle("Вход или регистрация");
             document.getElementById("code-form").addEventListener("submit", function (event) {
                 event.preventDefault();
                 let code = document.getElementById("sms-code").value;
+                let phone = document.getElementById("phone-number-send").value;
 
                 fetch("/ajax/verify_sms.php", {
                     method: "POST",
                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                    body: "code=" + encodeURIComponent(code)
+                    body: "code=" + encodeURIComponent(code) +
+                        "&phone=" + encodeURIComponent(phone)
                 })
                     .then(response => response.json())
                     .then(data => {
