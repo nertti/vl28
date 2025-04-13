@@ -293,120 +293,167 @@ if ($isProfilePages){
         ), false); ?>
         <section class="products">
             <p class="h2">Новые поступления</p>
-            <div class="products__list products__list_home">
-                <a href="#" class="product">
-                    <div class="product__swiper swiper swiper-initialized swiper-horizontal swiper-backface-hidden"
-                         id="product1">
-                        <div class="swiper-wrapper" id="swiper-wrapper-a03ca10111a1108a3" aria-live="polite">
-                            <div class="swiper-slide swiper-slide-active" style="width: 634px;" role="group"
-                                 aria-label="1 / 2" data-swiper-slide-index="0">
-                                <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/export/product1.webp"
-                                     alt="T-SHIRT DENSE BLACK 100" class="product__img">
-                            </div>
-                            <div class="swiper-slide swiper-slide-next" style="width: 634px;" role="group"
-                                 aria-label="2 / 2" data-swiper-slide-index="1">
-                                <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/export/product1.webp"
-                                     alt="T-SHIRT DENSE BLACK 100" class="product__img">
-                            </div>
-                        </div>
-                        <div class="swiper-button-prev" tabindex="0" role="button" aria-label="Previous slide"
-                             aria-controls="swiper-wrapper-a03ca10111a1108a3">
-                            <svg class="arrow">
-                                <use xlink:href="<?= SITE_TEMPLATE_PATH ?>/assets/img/arrows.svg#arrow-left"></use>
-                            </svg>
-                        </div>
-                        <div class="swiper-button-next" tabindex="0" role="button" aria-label="Next slide"
-                             aria-controls="swiper-wrapper-a03ca10111a1108a3">
-                            <svg class="arrow">
-                                <use xlink:href="<?= SITE_TEMPLATE_PATH ?>/assets/img/arrows.svg#arrow-right"></use>
-                            </svg>
-                        </div>
-                        <div class="swiper-scrollbar swiper-scrollbar-horizontal">
-                            <div class="swiper-scrollbar-drag"
-                                 style="transform: translate3d(0px, 0px, 0px); width: 0px;"></div>
-                        </div>
-                        <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span></div>
-                    <div class="product__inner">
-                        <p class="product__title">T-SHIRT DENSE BLACK 100</p>
-                        <p class="product__price">8 900 ₽</p>
-                    </div>
-                </a>
-                <a href="#" class="product">
-                    <div class="product__swiper swiper swiper-initialized swiper-horizontal swiper-backface-hidden"
-                         id="product2">
-                        <div class="swiper-wrapper" id="swiper-wrapper-58b105766a77a4457" aria-live="polite">
-                            <div class="swiper-slide swiper-slide-active" style="width: 634px;" role="group"
-                                 aria-label="1 / 2" data-swiper-slide-index="0">
-                                <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/export/product2.webp"
-                                     alt="T-SHIRT DENSE BLACK 100" class="product__img">
-                            </div>
-                            <div class="swiper-slide swiper-slide-next" style="width: 634px;" role="group"
-                                 aria-label="2 / 2" data-swiper-slide-index="1">
-                                <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/export/product2.webp"
-                                     alt="T-SHIRT DENSE BLACK 100" class="product__img">
-                            </div>
-                        </div>
-                        <div class="swiper-button-prev" tabindex="0" role="button" aria-label="Previous slide"
-                             aria-controls="swiper-wrapper-58b105766a77a4457">
-                            <svg class="arrow">
-                                <use xlink:href="<?= SITE_TEMPLATE_PATH ?>/assets/img/arrows.svg#arrow-left"></use>
-                            </svg>
-                        </div>
-                        <div class="swiper-button-next" tabindex="0" role="button" aria-label="Next slide"
-                             aria-controls="swiper-wrapper-58b105766a77a4457">
-                            <svg class="arrow">
-                                <use xlink:href="<?= SITE_TEMPLATE_PATH ?>/assets/img/arrows.svg#arrow-right"></use>
-                            </svg>
-                        </div>
-                        <div class="swiper-scrollbar swiper-scrollbar-horizontal">
-                            <div class="swiper-scrollbar-drag"
-                                 style="transform: translate3d(0px, 0px, 0px); width: 0px;"></div>
-                        </div>
-                        <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span></div>
-                    <div class="product__inner">
-                        <p class="product__title">T-SHIRT DENSE WHITE</p>
-                        <p class="product__price">8 900 ₽</p>
-                    </div>
-                </a>
-                <a href="#" class="product">
-                    <div class="product__swiper swiper swiper-initialized swiper-horizontal swiper-backface-hidden"
-                         id="product3">
-                        <div class="swiper-wrapper" id="swiper-wrapper-b8e61fd49678fb54" aria-live="polite">
-                            <div class="swiper-slide swiper-slide-active" style="width: 634px;" role="group"
-                                 aria-label="1 / 2" data-swiper-slide-index="0">
-                                <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/export/product3.webp"
-                                     alt="T-SHIRT DENSE BLACK 100" class="product__img">
-                            </div>
-                            <div class="swiper-slide swiper-slide-next" style="width: 634px;" role="group"
-                                 aria-label="2 / 2" data-swiper-slide-index="1">
-                                <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/export/product3.webp"
-                                     alt="T-SHIRT DENSE BLACK 100" class="product__img">
-                            </div>
-                        </div>
-                        <div class="swiper-button-prev" tabindex="0" role="button" aria-label="Previous slide"
-                             aria-controls="swiper-wrapper-b8e61fd49678fb54">
-                            <svg class="arrow">
-                                <use xlink:href="<?= SITE_TEMPLATE_PATH ?>/assets/img/arrows.svg#arrow-left"></use>
-                            </svg>
-                        </div>
-                        <div class="swiper-button-next" tabindex="0" role="button" aria-label="Next slide"
-                             aria-controls="swiper-wrapper-b8e61fd49678fb54">
-                            <svg class="arrow">
-                                <use xlink:href="<?= SITE_TEMPLATE_PATH ?>/assets/img/arrows.svg#arrow-right"></use>
-                            </svg>
-                        </div>
-                        <div class="swiper-scrollbar swiper-scrollbar-horizontal">
-                            <div class="swiper-scrollbar-drag"
-                                 style="transform: translate3d(0px, 0px, 0px); width: 0px;"></div>
-                        </div>
-                        <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span></div>
-                    <div class="product__inner">
-                        <p class="product__title">ZIP-HOODIE</p>
-                        <p class="product__price">8 900 ₽</p>
-                    </div>
-                </a>
-            </div>
-            <a href="#" class="products__link link">Перейти в каталог</a>
+            <?php $APPLICATION->IncludeComponent(
+	"bitrix:catalog.section",
+	"main",
+	array(
+		"ACTION_VARIABLE" => "action",
+		"ADD_PICT_PROP" => "IMAGES",
+		"ADD_PROPERTIES_TO_BASKET" => "Y",
+		"ADD_SECTIONS_CHAIN" => "N",
+		"ADD_TO_BASKET_ACTION" => "ADD",
+		"AJAX_MODE" => "N",
+		"AJAX_OPTION_ADDITIONAL" => "",
+		"AJAX_OPTION_HISTORY" => "N",
+		"AJAX_OPTION_JUMP" => "N",
+		"AJAX_OPTION_STYLE" => "Y",
+		"BACKGROUND_IMAGE" => "UF_BACKGROUND_IMAGE",
+		"BASKET_URL" => "/personal/basket.php",
+		"BRAND_PROPERTY" => "COLLECTION",
+		"BROWSER_TITLE" => "-",
+		"CACHE_FILTER" => "N",
+		"CACHE_GROUPS" => "Y",
+		"CACHE_TIME" => "36000000",
+		"CACHE_TYPE" => "A",
+		"COMPATIBLE_MODE" => "Y",
+		"CONVERT_CURRENCY" => "Y",
+		"CURRENCY_ID" => "RUB",
+		"CUSTOM_FILTER" => "{\"CLASS_ID\":\"CondGroup\",\"DATA\":{\"All\":\"AND\",\"True\":\"True\"},\"CHILDREN\":[]}",
+		"DATA_LAYER_NAME" => "dataLayer",
+		"DETAIL_URL" => "/catalog/#SECTION_CODE#/#ELEMENT_CODE#/",
+		"DISABLE_INIT_JS_IN_COMPONENT" => "N",
+		"DISCOUNT_PERCENT_POSITION" => "bottom-right",
+		"DISPLAY_BOTTOM_PAGER" => "Y",
+		"DISPLAY_TOP_PAGER" => "N",
+		"ELEMENT_SORT_FIELD" => "sort",
+		"ELEMENT_SORT_FIELD2" => "id",
+		"ELEMENT_SORT_ORDER" => "asc",
+		"ELEMENT_SORT_ORDER2" => "desc",
+		"ENLARGE_PRODUCT" => "PROP",
+		"ENLARGE_PROP" => "COLLECTION",
+		"FILTER_NAME" => "arrFilter",
+		"HIDE_NOT_AVAILABLE" => "N",
+		"HIDE_NOT_AVAILABLE_OFFERS" => "N",
+		"IBLOCK_ID" => "2",
+		"IBLOCK_TYPE" => "rest_entity",
+		"INCLUDE_SUBSECTIONS" => "Y",
+		"LABEL_PROP" => array(
+		),
+		"LABEL_PROP_MOBILE" => "",
+		"LABEL_PROP_POSITION" => "top-left",
+		"LAZY_LOAD" => "Y",
+		"LINE_ELEMENT_COUNT" => "3",
+		"LOAD_ON_SCROLL" => "N",
+		"MESSAGE_404" => "",
+		"MESS_BTN_ADD_TO_BASKET" => "В корзину",
+		"MESS_BTN_BUY" => "Купить",
+		"MESS_BTN_DETAIL" => "Подробнее",
+		"MESS_BTN_LAZY_LOAD" => "Показать ещё",
+		"MESS_BTN_SUBSCRIBE" => "Подписаться",
+		"MESS_NOT_AVAILABLE" => "Нет в наличии",
+		"META_DESCRIPTION" => "-",
+		"META_KEYWORDS" => "-",
+		"OFFERS_CART_PROPERTIES" => array(
+			0 => "ARTNUMBER",
+			1 => "COLOR_REF",
+			2 => "SIZES_SHOES",
+			3 => "SIZES_CLOTHES",
+		),
+		"OFFERS_FIELD_CODE" => array(
+			0 => "",
+			1 => "",
+		),
+		"OFFERS_LIMIT" => "5",
+		"OFFERS_PROPERTY_CODE" => array(
+			0 => "COLOR_REF",
+			1 => "SIZES_SHOES",
+			2 => "SIZES_CLOTHES",
+			3 => "",
+		),
+		"OFFERS_SORT_FIELD" => "sort",
+		"OFFERS_SORT_FIELD2" => "id",
+		"OFFERS_SORT_ORDER" => "asc",
+		"OFFERS_SORT_ORDER2" => "desc",
+		"OFFER_ADD_PICT_PROP" => "",
+		"OFFER_TREE_PROPS" => array(
+			0 => "COLOR_REF",
+			1 => "SIZES_SHOES",
+			2 => "SIZES_CLOTHES",
+		),
+		"PAGER_BASE_LINK_ENABLE" => "N",
+		"PAGER_DESC_NUMBERING" => "N",
+		"PAGER_DESC_NUMBERING_CACHE_TIME" => "36000",
+		"PAGER_SHOW_ALL" => "N",
+		"PAGER_SHOW_ALWAYS" => "N",
+		"PAGER_TEMPLATE" => ".default",
+		"PAGER_TITLE" => "Товары",
+		"PAGE_ELEMENT_COUNT" => "6",
+		"PARTIAL_PRODUCT_PROPERTIES" => "N",
+		"PRICE_CODE" => array(
+			0 => "BASE",
+		),
+		"PRICE_VAT_INCLUDE" => "Y",
+		"PRODUCT_BLOCKS_ORDER" => "price,props,sku,quantityLimit,quantity,buttons,compare",
+		"PRODUCT_DISPLAY_MODE" => "Y",
+		"PRODUCT_ID_VARIABLE" => "id",
+		"PRODUCT_PROPERTIES" => array(
+			0 => "NEWPRODUCT",
+			1 => "MATERIAL",
+		),
+		"PRODUCT_PROPS_VARIABLE" => "prop",
+		"PRODUCT_QUANTITY_VARIABLE" => "",
+		"PRODUCT_ROW_VARIANTS" => "[{'VARIANT':'2','BIG_DATA':false}]",
+		"PRODUCT_SUBSCRIPTION" => "Y",
+		"PROPERTY_CODE" => array(
+			0 => "NEWPRODUCT",
+			1 => "",
+		),
+		"PROPERTY_CODE_MOBILE" => array(
+			0 => "IMAGES",
+		),
+		"RCM_PROD_ID" => $_REQUEST["PRODUCT_ID"],
+		"RCM_TYPE" => "personal",
+		"SECTION_CODE" => $_REQUEST["SECTION_CODE"],
+		"SECTION_ID" => "",
+		"SECTION_ID_VARIABLE" => "SECTION_ID",
+		"SECTION_URL" => "",
+		"SECTION_USER_FIELDS" => array(
+			0 => "",
+			1 => "",
+		),
+		"SEF_MODE" => "Y",
+		"SET_BROWSER_TITLE" => "Y",
+		"SET_LAST_MODIFIED" => "N",
+		"SET_META_DESCRIPTION" => "Y",
+		"SET_META_KEYWORDS" => "Y",
+		"SET_STATUS_404" => "N",
+		"SET_TITLE" => "Y",
+		"SHOW_404" => "N",
+		"SHOW_ALL_WO_SECTION" => "Y",
+		"SHOW_CLOSE_POPUP" => "N",
+		"SHOW_DISCOUNT_PERCENT" => "N",
+		"SHOW_FROM_SECTION" => "N",
+		"SHOW_MAX_QUANTITY" => "N",
+		"SHOW_OLD_PRICE" => "N",
+		"SHOW_PRICE_COUNT" => "1",
+		"SHOW_SLIDER" => "Y",
+		"SLIDER_INTERVAL" => "3000",
+		"SLIDER_PROGRESS" => "N",
+		"TEMPLATE_THEME" => "blue",
+		"USE_ENHANCED_ECOMMERCE" => "Y",
+		"USE_MAIN_ELEMENT_SECTION" => "N",
+		"USE_PRICE_COUNT" => "N",
+		"USE_PRODUCT_QUANTITY" => "N",
+		"COMPONENT_TEMPLATE" => "main",
+		"MESS_NOT_AVAILABLE_SERVICE" => "Недоступно",
+		"SEF_RULE" => "#SECTION_CODE#",
+		"SECTION_CODE_PATH" => "",
+		"DISPLAY_COMPARE" => "N"
+	),
+	false
+);?>
+
+            <a href="/catalog/" class="products__link link">Перейти в каталог</a>
         </section>
         <section class="content">
             <?php $APPLICATION->IncludeComponent(

@@ -16,21 +16,25 @@ $arUser = $rsUser->Fetch();
         <div class="account__wrap">
             <div class="account__left">
                 <p class="h2"><?php $APPLICATION->ShowTitle(); ?></p>
-                <?php $APPLICATION->IncludeComponent("bitrix:menu", "profile", Array(
-                    "ALLOW_MULTI_SELECT" => "N",	// Разрешить несколько активных пунктов одновременно
-                    "CHILD_MENU_TYPE" => "left",	// Тип меню для остальных уровней
-                    "COMPONENT_TEMPLATE" => "bottom",
-                    "DELAY" => "N",	// Откладывать выполнение шаблона меню
-                    "MAX_LEVEL" => "1",	// Уровень вложенности меню
-                    "MENU_CACHE_GET_VARS" => "",	// Значимые переменные запроса
-                    "MENU_CACHE_TIME" => "3600",	// Время кеширования (сек.)
-                    "MENU_CACHE_TYPE" => "Y",	// Тип кеширования
-                    "MENU_CACHE_USE_GROUPS" => "Y",	// Учитывать права доступа
-                    "ROOT_MENU_TYPE" => "left",	// Тип меню для первого уровня
-                    "USE_EXT" => "N",	// Подключать файлы с именами вида .тип_меню.menu_ext.php
-                ),
-                    false
-                ); ?>
+                <?php $APPLICATION->IncludeComponent(
+	"bitrix:menu", 
+	"profile", 
+	array(
+		"ALLOW_MULTI_SELECT" => "N",
+		"CHILD_MENU_TYPE" => "left",
+		"COMPONENT_TEMPLATE" => "profile",
+		"DELAY" => "N",
+		"MAX_LEVEL" => "1",
+		"MENU_CACHE_GET_VARS" => array(
+		),
+		"MENU_CACHE_TIME" => "3600",
+		"MENU_CACHE_TYPE" => "N",
+		"MENU_CACHE_USE_GROUPS" => "Y",
+		"ROOT_MENU_TYPE" => "left",
+		"USE_EXT" => "N"
+	),
+	false
+); ?>
             </div>
             <div class="account__right">
                 <div class="account__default">

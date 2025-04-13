@@ -13,7 +13,7 @@ $context = $application->getContext();
 /* Избранное */
 
 global $APPLICATION;
-$result = null;
+$result = 0;
 if ($_POST['id']) {
     if (!$USER->IsAuthorized()) // Для неавторизованного
     {

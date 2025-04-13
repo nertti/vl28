@@ -48,20 +48,20 @@ $arUrlRewrite=array (
     'PATH' => '/bitrix/services/stssync/calendar/index.php',
     'SORT' => 100,
   ),
+  14 => 
+  array (
+    'CONDITION' => '#^([^/]+?)\\??(.*)#',
+    'RULE' => 'SECTION_CODE=$1&$2',
+    'ID' => 'bitrix:catalog.section',
+    'PATH' => '/test.php',
+    'SORT' => 100,
+  ),
   12 => 
   array (
     'CONDITION' => '#^/catalog/#',
     'RULE' => '',
     'ID' => 'bitrix:catalog',
     'PATH' => '/catalog/index.php',
-    'SORT' => 100,
-  ),
-  11 => 
-  array (
-    'CONDITION' => '#^\\??(.*)#',
-    'RULE' => '&$1',
-    'ID' => 'bitrix:catalog.section',
-    'PATH' => '/profile/favorite/index.php',
     'SORT' => 100,
   ),
   5 => 
@@ -78,6 +78,14 @@ $arUrlRewrite=array (
     'RULE' => '',
     'ID' => 'bitrix:news',
     'PATH' => '/news/index.php',
+    'SORT' => 100,
+  ),
+  13 => 
+  array (
+    'CONDITION' => '#^#',
+    'RULE' => '',
+    'ID' => 'bitrix:catalog.section',
+    'PATH' => '/profile/favorite/index.php',
     'SORT' => 100,
   ),
 );
