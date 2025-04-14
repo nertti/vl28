@@ -6,6 +6,12 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
 use Bitrix\Main\Page\Asset;
 
 /** @var \CMain $APPLICATION */
+/** @var \CUser $USER */
+
+if ($USER->IsAuthorized()) {
+    header('Location: /cabinet/');
+    exit();
+}
 ?>
 <!doctype html>
 <html lang="ru">
@@ -39,14 +45,14 @@ use Bitrix\Main\Page\Asset;
         <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/logo.svg" alt="VL28" class="logo__img">
     </a>
     <div class="header__right">
-        <a href="#" class="header__link">
+        <a href="#" class="header__link" style="display: none">
             <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/favorite.svg" alt="favorite icon"
                  class="header__link-icon svg">
         </a>
-        <a href="#" class="header__link">
+        <a href="#" class="header__link" style="display: none">
             <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/user.svg" alt="user icon" class="header__link-icon svg">
         </a>
-        <a href="#" class="header__link">
+        <a href="#" class="header__link" style="display: none">
             <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/cart.svg" alt="cart icon"
                  class="header__link-icon header__link-icon_cart svg">
         </a>

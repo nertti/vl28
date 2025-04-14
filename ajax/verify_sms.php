@@ -14,16 +14,24 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["code"])) {
 
     if ($code == $_SESSION["SMS_OTP"]) {
         unset($_SESSION["SMS_OTP"]); // Удаляем код после успешного ввода
-        $arResult = $USER->Register($phone, "", "", $phone, $phone, $phone."@vl28.ru");
-        if ($arResult['TYPE'] == 'OK'){
-            $user = new CUser;
-            $fields = Array(
-                "PERSONAL_PHONE" => $phone,
-            );
-            $user->Update($arResult['ID'], $fields);
-            echo json_encode(["success" => true]);
+        $rsUsers = CUser::GetList(array(), 'sort', array('PERSONAL_PHONE' => $_POST["phone"]));
+        if ($rsUsers->SelectedRowsCount() <= 0) {
+            $arResult = $USER->Register($phone, "", "", $phone, $phone, $phone . "@vl28.ru");
+            if ($arResult['TYPE'] == 'OK') {
+                $user = new CUser;
+                $fields = array(
+                    "PERSONAL_PHONE" => $phone,
+                );
+                $user->Update($arResult['ID'], $fields);
+                echo json_encode(["success" => true]);
+            } else {
+                echo json_encode(["success" => false, "error" => $arResult]);
+            }
         } else {
-            echo json_encode(["success" => false, "error" => $arResult]);
+            $rsUser = CUser::GetByLogin($phone);
+            $arUser = $rsUser->Fetch();
+            $USER->Authorize($arUser['ID']); // авторизуем
+            echo json_encode(["success" => true, 'id' => $arUser['ID']]);
         }
     } else {
         echo json_encode(["success" => false, "error" => "Неверный код"]);
