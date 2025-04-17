@@ -2,16 +2,22 @@
 
 /** @var \CMain $APPLICATION */
 
-require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
+require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
 $APPLICATION->SetTitle("Корзина");
 ?>
 
-<?php $APPLICATION->IncludeComponent("bitrix:sale.basket.basket", "cart", Array(
-	"ACTION_VARIABLE" => "action",	// Название переменной действия
-		"ADDITIONAL_PICT_PROP_2" => "-",	// Дополнительная картинка [Каталог]
-		"ADDITIONAL_PICT_PROP_5" => "-",	// Дополнительная картинка [Торговые предложения]
-		"AUTO_CALCULATION" => "Y",	// Автопересчет корзины
-		"BASKET_IMAGES_SCALING" => "adaptive",	// Режим отображения изображений товаров
+    <section class="cart first-section">
+        <div class="container">
+            <p class="h2">Корзина</p>
+            <?php $APPLICATION->IncludeComponent(
+	"bitrix:sale.basket.basket", 
+	"cart", 
+	array(
+		"ACTION_VARIABLE" => "action",
+		"ADDITIONAL_PICT_PROP_2" => "-",
+		"ADDITIONAL_PICT_PROP_5" => "-",
+		"AUTO_CALCULATION" => "N",
+		"BASKET_IMAGES_SCALING" => "adaptive",
 		"COLUMNS_LIST" => array(
 			0 => "NAME",
 			1 => "DISCOUNT",
@@ -22,7 +28,7 @@ $APPLICATION->SetTitle("Корзина");
 			6 => "PRICE",
 			7 => "QUANTITY",
 		),
-		"COLUMNS_LIST_EXT" => array(	// Выводимые колонки
+		"COLUMNS_LIST_EXT" => array(
 			0 => "PREVIEW_PICTURE",
 			1 => "DISCOUNT",
 			2 => "DELETE",
@@ -30,7 +36,7 @@ $APPLICATION->SetTitle("Корзина");
 			4 => "TYPE",
 			5 => "SUM",
 		),
-		"COLUMNS_LIST_MOBILE" => array(	// Колонки, отображаемые на мобильных устройствах
+		"COLUMNS_LIST_MOBILE" => array(
 			0 => "PREVIEW_PICTURE",
 			1 => "DISCOUNT",
 			2 => "DELETE",
@@ -38,62 +44,65 @@ $APPLICATION->SetTitle("Корзина");
 			4 => "TYPE",
 			5 => "SUM",
 		),
-		"COMPATIBLE_MODE" => "Y",	// Включить режим совместимости
-		"CORRECT_RATIO" => "Y",	// Автоматически рассчитывать количество товара кратное коэффициенту
-		"DEFERRED_REFRESH" => "N",	// Использовать механизм отложенной актуализации данных товаров с провайдером
-		"DISCOUNT_PERCENT_POSITION" => "bottom-right",	// Расположение процента скидки
-		"DISPLAY_MODE" => "compact",	// Режим отображения корзины
-		"EMPTY_BASKET_HINT_PATH" => "/",	// Путь к странице для продолжения покупок
-		"GIFTS_BLOCK_TITLE" => "Выберите один из подарков",	// Текст заголовка "Подарки"
-		"GIFTS_CONVERT_CURRENCY" => "Y",	// Показывать цены в одной валюте
-		"GIFTS_HIDE_BLOCK_TITLE" => "N",	// Скрыть заголовок "Подарки"
-		"GIFTS_HIDE_NOT_AVAILABLE" => "N",	// Не отображать товары, которых нет на складах
-		"GIFTS_MESS_BTN_BUY" => "Выбрать",	// Текст кнопки "Выбрать"
-		"GIFTS_MESS_BTN_DETAIL" => "Подробнее",	// Текст кнопки "Подробнее"
-		"GIFTS_PAGE_ELEMENT_COUNT" => "4",	// Количество элементов в строке
-		"GIFTS_PLACE" => "BOTTOM",	// Вывод блока "Подарки"
-		"GIFTS_PRODUCT_PROPS_VARIABLE" => "prop",	// Название переменной, в которой передаются характеристики товара
-		"GIFTS_PRODUCT_QUANTITY_VARIABLE" => "",	// Название переменной, в которой передается количество товара
-		"GIFTS_SHOW_DISCOUNT_PERCENT" => "Y",	// Показывать процент скидки
+		"COMPATIBLE_MODE" => "Y",
+		"CORRECT_RATIO" => "Y",
+		"DEFERRED_REFRESH" => "N",
+		"DISCOUNT_PERCENT_POSITION" => "bottom-right",
+		"DISPLAY_MODE" => "compact",
+		"EMPTY_BASKET_HINT_PATH" => "/",
+		"GIFTS_BLOCK_TITLE" => "Выберите один из подарков",
+		"GIFTS_CONVERT_CURRENCY" => "N",
+		"GIFTS_HIDE_BLOCK_TITLE" => "N",
+		"GIFTS_HIDE_NOT_AVAILABLE" => "N",
+		"GIFTS_MESS_BTN_BUY" => "Выбрать",
+		"GIFTS_MESS_BTN_DETAIL" => "Подробнее",
+		"GIFTS_PAGE_ELEMENT_COUNT" => "4",
+		"GIFTS_PLACE" => "BOTTOM",
+		"GIFTS_PRODUCT_PROPS_VARIABLE" => "prop",
+		"GIFTS_PRODUCT_QUANTITY_VARIABLE" => "",
+		"GIFTS_SHOW_DISCOUNT_PERCENT" => "N",
 		"GIFTS_SHOW_IMAGE" => "Y",
 		"GIFTS_SHOW_NAME" => "Y",
-		"GIFTS_SHOW_OLD_PRICE" => "Y",	// Показывать старую цену
-		"GIFTS_TEXT_LABEL_GIFT" => "Подарок",	// Текст метки "Подарка"
-		"HIDE_COUPON" => "N",	// Спрятать поле ввода купона
-		"LABEL_PROP" => array(	// Свойства меток товара
+		"GIFTS_SHOW_OLD_PRICE" => "N",
+		"GIFTS_TEXT_LABEL_GIFT" => "Подарок",
+		"HIDE_COUPON" => "Y",
+		"LABEL_PROP" => array(
 			0 => "COLLECTION",
 			1 => "MATERIAL",
 			2 => "SIZE",
 		),
-		"LABEL_PROP_MOBILE" => array(	// Свойства меток товара, отображаемые на мобильных устройствах
+		"LABEL_PROP_MOBILE" => array(
 			0 => "COLLECTION",
 			1 => "MATERIAL",
 			2 => "SIZE",
 		),
-		"LABEL_PROP_POSITION" => "top-left",	// Расположение меток товара
+		"LABEL_PROP_POSITION" => "top-left",
 		"OFFERS_PROPS" => array(
 			0 => "SIZES_SHOES",
 			1 => "SIZES_CLOTHES",
 		),
-		"PATH_TO_ORDER" => "/cart/order/",	// Страница оформления заказа
-		"PRICE_DISPLAY_MODE" => "Y",	// Отображать цену в отдельной колонке
-		"PRICE_VAT_SHOW_VALUE" => "N",	// Отображать значение НДС
-		"PRODUCT_BLOCKS_ORDER" => "props,sku,columns",	// Порядок отображения блоков товара
-		"QUANTITY_FLOAT" => "N",	// Использовать дробное значение количества
-		"SET_TITLE" => "Y",	// Устанавливать заголовок страницы
-		"SHOW_DISCOUNT_PERCENT" => "Y",	// Показывать процент скидки рядом с изображением
-		"SHOW_FILTER" => "N",	// Отображать фильтр товаров
-		"SHOW_RESTORE" => "N",	// Разрешить восстановление удалённых товаров
-		"TEMPLATE_THEME" => "",	// Цветовая тема
-		"TOTAL_BLOCK_DISPLAY" => array(	// Отображение блока с общей информацией по корзине
+		"PATH_TO_ORDER" => "/cart/order/",
+		"PRICE_DISPLAY_MODE" => "Y",
+		"PRICE_VAT_SHOW_VALUE" => "N",
+		"PRODUCT_BLOCKS_ORDER" => "props,sku,columns",
+		"QUANTITY_FLOAT" => "N",
+		"SET_TITLE" => "Y",
+		"SHOW_DISCOUNT_PERCENT" => "Y",
+		"SHOW_FILTER" => "N",
+		"SHOW_RESTORE" => "N",
+		"TEMPLATE_THEME" => "",
+		"TOTAL_BLOCK_DISPLAY" => array(
 			0 => "bottom",
 		),
-		"USE_DYNAMIC_SCROLL" => "Y",	// Использовать динамическую подгрузку товаров
-		"USE_ENHANCED_ECOMMERCE" => "N",	// Отправлять данные электронной торговли в Google и Яндекс
-		"USE_GIFTS" => "Y",	// Показывать блок "Подарки"
-		"USE_PREPAYMENT" => "N",	// Использовать предавторизацию для оформления заказа (PayPal Express Checkout)
-		"USE_PRICE_ANIMATION" => "Y",	// Использовать анимацию цен
-		"COMPONENT_TEMPLATE" => ".default"
+		"USE_DYNAMIC_SCROLL" => "Y",
+		"USE_ENHANCED_ECOMMERCE" => "N",
+		"USE_GIFTS" => "Y",
+		"USE_PREPAYMENT" => "N",
+		"USE_PRICE_ANIMATION" => "Y",
+		"COMPONENT_TEMPLATE" => "cart"
 	),
 	false
-);?><?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
+); ?>
+        </div>
+    </section>
+<?php require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/footer.php"); ?>

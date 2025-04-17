@@ -10,6 +10,7 @@ use Bitrix\Main\Page\Asset;
 
 $isMainPage = $APPLICATION->GetCurPage(false) === '/';
 $isAboutPage = $APPLICATION->GetCurPage(false) === '/about/';
+$isCartPage = $APPLICATION->GetCurPage(false) === '/cart/';
 $isProfilePages = strpos($APPLICATION->GetCurPage(false), '/profile/') !== false;
 
 function checkCatalogPath($url) {
@@ -658,7 +659,7 @@ if ($isProfilePages){
               </div>
             </section>
         <?php endif;?>
-        <?php if(!defined('ERROR_404') && !checkCatalogPath($APPLICATION->GetCurPageParam())):?>
+        <?php if(!defined('ERROR_404') && !checkCatalogPath($APPLICATION->GetCurPageParam()) && !$isCartPage):?>
             <div class="container top40">
                 <?php $APPLICATION->IncludeComponent(
                     "bitrix:breadcrumb",

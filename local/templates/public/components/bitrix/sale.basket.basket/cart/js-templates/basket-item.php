@@ -41,6 +41,7 @@ if (!empty($arParams['LABEL_PROP_POSITION']))
 	}
 }
 ?>
+<!--
 <script id="basket-item-template" type="text/html">
 	<tr class="basket-items-list-item-container{{#SHOW_RESTORE}} basket-items-list-item-container-expend{{/SHOW_RESTORE}}"
 		id="basket-item-{{ID}}" data-entity="basket-item" data-id="{{ID}}">
@@ -451,4 +452,41 @@ if (!empty($arParams['LABEL_PROP_POSITION']))
 			?>
 		{{/SHOW_RESTORE}}
 	</tr>
+</script>
+-->
+<script id="basket-item-template" type="text/html">
+    {{^SHOW_RESTORE}}
+    <div class="cart__item" id="basket-item-{{ID}}" data-entity="basket-item" data-id="{{ID}}">
+        <div class="cart__left">
+            <img src="{{{IMAGE_URL}}}{{^IMAGE_URL}}assets/img/export/no_photo.png{{/IMAGE_URL}}" alt="{{NAME}}">
+        </div>
+        <div class="cart__right">
+            <p class="cart__title" data-entity="basket-item-name">{{NAME}}</p>
+
+            <div class="cart__param">
+                {{#SKU_BLOCK_LIST}}
+                {{^IS_IMAGE}}
+                {{#SKU_VALUES_LIST}}
+                {{#SELECTED}}
+                <p class="cart__value">{{NAME}}</p>
+                {{/SELECTED}}
+                {{/SKU_VALUES_LIST}}
+                {{/IS_IMAGE}}
+                {{/SKU_BLOCK_LIST}}
+
+                <p class="cart__value">{{QUANTITY}} шт</p>
+
+<!--                <div class="cart__color">-->
+<!--                    <span style="background: {{#SKU_BLOCK_LIST}}{{#IS_IMAGE}}{{#SKU_VALUES_LIST}}{{#SELECTED}}{{PICT}}{{/SELECTED}}{{/SKU_VALUES_LIST}}{{/IS_IMAGE}}{{/SKU_BLOCK_LIST}};"></span>-->
+<!--                </div>-->
+            </div>
+
+            <p class="cart__price">{{{PRICE_FORMATED}}}</p>
+
+            <a href="javascript:void(0)" class="cart__favorite" data-entity="basket-item-delay">{{^DELAYED}}Добавить в избранное{{/DELAYED}}{{#DELAYED}}В избранном{{/DELAYED}}</a>
+        </div>
+
+        <a href="javascript:void(0)" class="cart__remove" data-entity="basket-item-delete"></a>
+    </div>
+    {{/SHOW_RESTORE}}
 </script>

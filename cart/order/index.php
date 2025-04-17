@@ -7,39 +7,36 @@ $APPLICATION->SetTitle("Корзина");
 ?>
 
 <?php
-$APPLICATION->IncludeComponent(
-	"bitrix:sale.order.ajax", 
-	".default", 
-	array(
-		"ADDITIONAL_PICT_PROP_8" => "-",
-		"ALLOW_AUTO_REGISTER" => "N",
-		"ALLOW_NEW_PROFILE" => "Y",
-		"ALLOW_USER_PROFILES" => "Y",
-		"BASKET_IMAGES_SCALING" => "standard",
-		"BASKET_POSITION" => "after",
-		"COMPATIBLE_MODE" => "Y",
-		"DELIVERIES_PER_PAGE" => "8",
-		"DELIVERY_FADE_EXTRA_SERVICES" => "Y",
-		"DELIVERY_NO_AJAX" => "Y",
-		"DELIVERY_NO_SESSION" => "Y",
-		"DELIVERY_TO_PAYSYSTEM" => "d2p",
-		"DISABLE_BASKET_REDIRECT" => "N",
-		"MESS_DELIVERY_CALC_ERROR_TEXT" => "Вы можете продолжить оформление заказа, а чуть позже менеджер магазина  свяжется с вами и уточнит информацию по доставке.",
-		"MESS_DELIVERY_CALC_ERROR_TITLE" => "Не удалось рассчитать стоимость доставки.",
-		"MESS_FAIL_PRELOAD_TEXT" => "Вы заказывали в нашем интернет-магазине, поэтому мы заполнили все данные автоматически. Обратите внимание на развернутый блок с информацией о заказе. Здесь вы можете внести необходимые изменения или оставить как есть и нажать кнопку \"#ORDER_BUTTON#\".",
-		"MESS_SUCCESS_PRELOAD_TEXT" => "Вы заказывали в нашем интернет-магазине, поэтому мы заполнили все данные автоматически. Если все заполнено верно, нажмите кнопку \"#ORDER_BUTTON#\".",
-		"ONLY_FULL_PAY_FROM_ACCOUNT" => "N",
-		"PATH_TO_AUTH" => "/auth/",
-		"PATH_TO_BASKET" => "basket.php",
-		"PATH_TO_PAYMENT" => "payment.php",
-		"PATH_TO_PERSONAL" => "index.php",
-		"PAY_FROM_ACCOUNT" => "Y",
-		"PAY_SYSTEMS_PER_PAGE" => "8",
-		"PICKUPS_PER_PAGE" => "5",
-		"PRODUCT_COLUMNS_HIDDEN" => array(
+$APPLICATION->IncludeComponent("bitrix:sale.order.ajax", "order", Array(
+	"ADDITIONAL_PICT_PROP_8" => "-",
+		"ALLOW_AUTO_REGISTER" => "N",	// Оформлять заказ с автоматической регистрацией пользователя
+		"ALLOW_NEW_PROFILE" => "Y",	// Разрешить множество профилей покупателей
+		"ALLOW_USER_PROFILES" => "Y",	// Разрешить использование профилей покупателей
+		"BASKET_IMAGES_SCALING" => "standard",	// Режим отображения изображений товаров
+		"BASKET_POSITION" => "after",	// Расположение списка товаров
+		"COMPATIBLE_MODE" => "Y",	// Режим совместимости для предыдущего шаблона
+		"DELIVERIES_PER_PAGE" => "8",	// Количество доставок на странице
+		"DELIVERY_FADE_EXTRA_SERVICES" => "Y",	// Дополнительные услуги, которые будут показаны в пройденном (свернутом) блоке
+		"DELIVERY_NO_AJAX" => "Y",	// Когда рассчитывать доставки с внешними системами расчета
+		"DELIVERY_NO_SESSION" => "Y",	// Проверять сессию при оформлении заказа
+		"DELIVERY_TO_PAYSYSTEM" => "d2p",	// Последовательность оформления
+		"DISABLE_BASKET_REDIRECT" => "N",	// Оставаться на странице оформления заказа, если список товаров пуст
+		"MESS_DELIVERY_CALC_ERROR_TEXT" => "Вы можете продолжить оформление заказа, а чуть позже менеджер магазина  свяжется с вами и уточнит информацию по доставке.",	// Текст ошибки расчета доставки
+		"MESS_DELIVERY_CALC_ERROR_TITLE" => "Не удалось рассчитать стоимость доставки.",	// Заголовок ошибки расчета доставки
+		"MESS_FAIL_PRELOAD_TEXT" => "Вы заказывали в нашем интернет-магазине, поэтому мы заполнили все данные автоматически. Обратите внимание на развернутый блок с информацией о заказе. Здесь вы можете внести необходимые изменения или оставить как есть и нажать кнопку \"#ORDER_BUTTON#\".",	// Текст уведомления о неудачной загрузке данных заказа
+		"MESS_SUCCESS_PRELOAD_TEXT" => "Вы заказывали в нашем интернет-магазине, поэтому мы заполнили все данные автоматически. Если все заполнено верно, нажмите кнопку \"#ORDER_BUTTON#\".",	// Текст уведомления о корректной загрузке данных заказа
+		"ONLY_FULL_PAY_FROM_ACCOUNT" => "N",	// Разрешить оплату с внутреннего счета только в полном объеме
+		"PATH_TO_AUTH" => "/auth/",	// Путь к странице авторизации
+		"PATH_TO_BASKET" => "basket.php",	// Путь к странице корзины
+		"PATH_TO_PAYMENT" => "payment.php",	// Страница подключения платежной системы
+		"PATH_TO_PERSONAL" => "index.php",	// Путь к странице персонального раздела
+		"PAY_FROM_ACCOUNT" => "Y",	// Разрешить оплату с внутреннего счета
+		"PAY_SYSTEMS_PER_PAGE" => "8",	// Количество платежных систем на странице
+		"PICKUPS_PER_PAGE" => "5",	// Количество пунктов самовывоза на странице
+		"PRODUCT_COLUMNS_HIDDEN" => array(	// Свойства товаров отображаемые в свернутом виде в списке товаров
 			0 => "PROPERTY_MATERIAL",
 		),
-		"PRODUCT_COLUMNS_VISIBLE" => array(
+		"PRODUCT_COLUMNS_VISIBLE" => array(	// Выбранные колонки таблицы списка товаров
 			0 => "PREVIEW_PICTURE",
 			1 => "PROPS",
 		),
@@ -47,52 +44,52 @@ $APPLICATION->IncludeComponent(
 			0 => "17",
 			1 => "19",
 		),
-		"SEND_NEW_USER_NOTIFY" => "Y",
-		"SERVICES_IMAGES_SCALING" => "standard",
-		"SET_TITLE" => "Y",
-		"SHOW_BASKET_HEADERS" => "N",
-		"SHOW_COUPONS" => "Y",
-		"SHOW_COUPONS_BASKET" => "Y",
-		"SHOW_COUPONS_DELIVERY" => "Y",
-		"SHOW_COUPONS_PAY_SYSTEM" => "Y",
-		"SHOW_DELIVERY_INFO_NAME" => "Y",
-		"SHOW_DELIVERY_LIST_NAMES" => "Y",
-		"SHOW_DELIVERY_PARENT_NAMES" => "Y",
-		"SHOW_MAP_IN_PROPS" => "N",
-		"SHOW_NEAREST_PICKUP" => "N",
-		"SHOW_NOT_CALCULATED_DELIVERIES" => "L",
-		"SHOW_ORDER_BUTTON" => "always",
-		"SHOW_PAY_SYSTEM_INFO_NAME" => "Y",
-		"SHOW_PAY_SYSTEM_LIST_NAMES" => "Y",
-		"SHOW_STORES_IMAGES" => "Y",
-		"SHOW_TOTAL_ORDER_BUTTON" => "Y",
-		"SHOW_VAT_PRICE" => "Y",
-		"SKIP_USELESS_BLOCK" => "Y",
-		"TEMPLATE_LOCATION" => "popup",
-		"TEMPLATE_THEME" => "blue",
-		"USE_CUSTOM_ADDITIONAL_MESSAGES" => "N",
-		"USE_CUSTOM_ERROR_MESSAGES" => "Y",
-		"USE_CUSTOM_MAIN_MESSAGES" => "N",
-		"USE_PREPAYMENT" => "N",
-		"USE_YM_GOALS" => "N",
-		"USER_CONSENT" => "Y",
-		"USER_CONSENT_ID" => "0",
-		"USER_CONSENT_IS_CHECKED" => "Y",
-		"USER_CONSENT_IS_LOADED" => "N",
+		"SEND_NEW_USER_NOTIFY" => "Y",	// Отправлять пользователю письмо, что он зарегистрирован на сайте
+		"SERVICES_IMAGES_SCALING" => "standard",	// Режим отображения вспомагательных изображений
+		"SET_TITLE" => "Y",	// Устанавливать заголовок страницы
+		"SHOW_BASKET_HEADERS" => "N",	// Показывать заголовки колонок списка товаров
+		"SHOW_COUPONS" => "Y",	// Отображать поля ввода купонов
+		"SHOW_COUPONS_BASKET" => "Y",	// Показывать поле ввода купонов в блоке списка товаров
+		"SHOW_COUPONS_DELIVERY" => "Y",	// Показывать поле ввода купонов в блоке доставки
+		"SHOW_COUPONS_PAY_SYSTEM" => "Y",	// Показывать поле ввода купонов в блоке оплаты
+		"SHOW_DELIVERY_INFO_NAME" => "Y",	// Отображать название в блоке информации по доставке
+		"SHOW_DELIVERY_LIST_NAMES" => "Y",	// Отображать названия в списке доставок
+		"SHOW_DELIVERY_PARENT_NAMES" => "Y",	// Показывать название родительской доставки
+		"SHOW_MAP_IN_PROPS" => "N",	// Показывать карту в блоке свойств заказа
+		"SHOW_NEAREST_PICKUP" => "N",	// Показывать ближайшие пункты самовывоза
+		"SHOW_NOT_CALCULATED_DELIVERIES" => "L",	// Отображение доставок с ошибками расчета
+		"SHOW_ORDER_BUTTON" => "always",	// Отображать кнопку оформления заказа (для неавторизованных пользователей)
+		"SHOW_PAY_SYSTEM_INFO_NAME" => "Y",	// Отображать название в блоке информации по платежной системе
+		"SHOW_PAY_SYSTEM_LIST_NAMES" => "Y",	// Отображать названия в списке платежных систем
+		"SHOW_STORES_IMAGES" => "Y",	// Показывать изображения складов в окне выбора пункта выдачи
+		"SHOW_TOTAL_ORDER_BUTTON" => "Y",	// Отображать дополнительную кнопку оформления заказа
+		"SHOW_VAT_PRICE" => "Y",	// Отображать значение НДС
+		"SKIP_USELESS_BLOCK" => "Y",	// Пропускать шаги, в которых один элемент для выбора
+		"TEMPLATE_LOCATION" => "popup",	// Визуальный вид контрола выбора местоположений
+		"TEMPLATE_THEME" => "blue",	// Цветовая тема
+		"USE_CUSTOM_ADDITIONAL_MESSAGES" => "N",	// Заменить стандартные фразы на свои
+		"USE_CUSTOM_ERROR_MESSAGES" => "Y",	// Заменить стандартные фразы на свои
+		"USE_CUSTOM_MAIN_MESSAGES" => "N",	// Заменить стандартные фразы на свои
+		"USE_PREPAYMENT" => "N",	// Использовать предавторизацию для оформления заказа (PayPal Express Checkout)
+		"USE_YM_GOALS" => "N",	// Использовать цели счетчика Яндекс.Метрики
+		"USER_CONSENT" => "Y",	// Запрашивать согласие
+		"USER_CONSENT_ID" => "0",	// Соглашение
+		"USER_CONSENT_IS_CHECKED" => "Y",	// Галка по умолчанию проставлена
+		"USER_CONSENT_IS_LOADED" => "N",	// Загружать текст сразу
 		"COMPONENT_TEMPLATE" => ".default",
-		"ALLOW_APPEND_ORDER" => "Y",
-		"SPOT_LOCATION_BY_GEOIP" => "Y",
-		"USE_PRELOAD" => "Y",
-		"SHOW_PICKUP_MAP" => "Y",
-		"PICKUP_MAP_TYPE" => "yandex",
-		"ACTION_VARIABLE" => "soa-action",
-		"EMPTY_BASKET_HINT_PATH" => "/",
-		"USE_PHONE_NORMALIZATION" => "Y",
-		"ADDITIONAL_PICT_PROP_2" => "-",
-		"ADDITIONAL_PICT_PROP_5" => "-",
-		"HIDE_ORDER_DESCRIPTION" => "N",
-		"USE_ENHANCED_ECOMMERCE" => "N",
-		"MESS_PAY_SYSTEM_PAYABLE_ERROR" => "Вы сможете оплатить заказ после того, как менеджер проверит наличие полного комплекта товаров на складе. Сразу после проверки вы получите письмо с инструкциями по оплате. Оплатить заказ можно будет в персональном разделе сайта."
+		"ALLOW_APPEND_ORDER" => "Y",	// Разрешить оформлять заказ на существующего пользователя
+		"SPOT_LOCATION_BY_GEOIP" => "Y",	// Определять местоположение покупателя по IP-адресу
+		"USE_PRELOAD" => "Y",	// Автозаполнение оплаты и доставки по предыдущему заказу
+		"SHOW_PICKUP_MAP" => "Y",	// Показывать карту для доставок с самовывозом
+		"PICKUP_MAP_TYPE" => "yandex",	// Тип используемых карт
+		"ACTION_VARIABLE" => "soa-action",	// Название переменной, в которой передается действие
+		"EMPTY_BASKET_HINT_PATH" => "/",	// Путь к странице для продолжения покупок
+		"USE_PHONE_NORMALIZATION" => "Y",	// Использовать нормализацию номера телефона
+		"ADDITIONAL_PICT_PROP_2" => "-",	// Дополнительная картинка [Каталог]
+		"ADDITIONAL_PICT_PROP_5" => "-",	// Дополнительная картинка [Торговые предложения]
+		"HIDE_ORDER_DESCRIPTION" => "N",	// Скрыть поле комментариев к заказу
+		"USE_ENHANCED_ECOMMERCE" => "N",	// Отправлять данные электронной торговли в Google и Яндекс
+		"MESS_PAY_SYSTEM_PAYABLE_ERROR" => "Вы сможете оплатить заказ после того, как менеджер проверит наличие полного комплекта товаров на складе. Сразу после проверки вы получите письмо с инструкциями по оплате. Оплатить заказ можно будет в персональном разделе сайта.",	// Текст уведомления при статусе заказа, недоступном для оплаты
 	),
 	false
 );?>
