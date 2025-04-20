@@ -2,11 +2,40 @@
 
 /** @var \CMain $APPLICATION */
 
-require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
-$APPLICATION->SetTitle("Корзина");
+require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
+$APPLICATION->SetTitle("Оформление заказа");
+
+Bitrix\Main\Loader::includeModule("Sale");
+Bitrix\Main\Loader::includeModule("Catalog");
+
+function getProductInfo($productId)
+{
+    $result = \CIBlockElement::GetList(
+        array(),
+        array(
+            "ID" => $productId,
+            "=ACTIVE" => "Y"
+        ),
+        false,
+        false,
+        array("*")
+    );
+
+    if ($item = $result->Fetch()) {
+        return $item;
+    }
+    return false;
+}
+function getElementProperties($iblockId,$elementId)
+{
+    $db_props = CIBlockElement::GetProperty($iblockId, $elementId, "sort", "asc", array("CODE" => "SIZE"));
+    if ($ar_props = $db_props->Fetch()) {
+        return $ar_props['VALUE_ENUM'];
+    }
+}
 ?>
 
-<?php
+<?php /*
 $APPLICATION->IncludeComponent("bitrix:sale.order.ajax", "order", Array(
 	"ADDITIONAL_PICT_PROP_8" => "-",
 		"ALLOW_AUTO_REGISTER" => "N",	// Оформлять заказ с автоматической регистрацией пользователя
@@ -92,6 +121,240 @@ $APPLICATION->IncludeComponent("bitrix:sale.order.ajax", "order", Array(
 		"MESS_PAY_SYSTEM_PAYABLE_ERROR" => "Вы сможете оплатить заказ после того, как менеджер проверит наличие полного комплекта товаров на складе. Сразу после проверки вы получите письмо с инструкциями по оплате. Оплатить заказ можно будет в персональном разделе сайта.",	// Текст уведомления при статусе заказа, недоступном для оплаты
 	),
 	false
-);?>
+);
+ */
+?>
 
-<?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
+<?php
+$basket = Bitrix\Sale\Basket::loadItemsForFUser(
+    Bitrix\Sale\Fuser::getId(),
+        Bitrix\Main\Context::getCurrent()->getSite()
+);
+$basketItems = $basket->getBasketItems(); // массив объектов Sale\BasketItem
+foreach ($basket as $basketItem) {
+    echo $basketItem->getField('NAME') . $basketItem->getField('PRODUCT_ID') . ' - ' . $basketItem->getQuantity() . '<br />';
+}
+
+?>
+<section class="checkout first-section">
+    <div class="container">
+        <p class="h2">Оформление заказа</p>
+        <div class="checkout__inner">
+            <div class="checkout__cart">
+                <?php foreach ($basket as $basketItem):?>
+                <div class="checkout__cart-item">
+                    <?php
+                    $product = getProductInfo($basketItem->getField('PRODUCT_ID'));
+                    $propertySize = getElementProperties($product['IBLOCK_ID'] ,$product['ID']);
+                    //pr($product);
+                    ?>
+                    <img src="<?=CFile::getPath($product['PREVIEW_PICTURE'])?>" alt="<?=$product['NAME']?>">
+                    <p class="checkout__cart-title"><?=$product['NAME']?></p>
+                    <div class="checkout__cart-color" style="display:none;">
+                        <span style="background: #000;"></span>
+                    </div>
+                    <p class="checkout__cart-value"><?=$propertySize?></p>
+                    <div class="checkout__cart-quantity">
+                        <div class="plus"></div>
+                        <input type="number" min="1" max="30" class="checkout__cart-input" value="<?=$basketItem->getQuantity()?>">
+                        <div class="minus"></div>
+                    </div>
+                    <p class="checkout__cart-price"><?=$basketItem->getPrice()?> ₽</p>
+                    <a href="#" class="checkout__cart-remove"></a>
+                </div>
+                <?php endforeach;?>
+            </div>
+
+            <form action="#" class="checkout__form">
+                <div class="checkout__form-left">
+                    <div class="checkout__label">
+                        <p class="checkout__name">E-mail</p>
+                        <div class="checkout__inputs">
+                            <input type="text" class="form-input checkout__input" placeholder="banshin@yandex.ru">
+                            <label class="checkout__checkbox">
+                                <input type="checkbox" name="news">
+                                <div class="checkmark"></div>
+                                <span>
+                      Хочу получать новости и узнавать о специальных предложениях в числе первых
+                    </span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="checkout__label">
+                        <p class="checkout__name">Имя</p>
+                        <div class="checkout__inputs">
+                            <input type="text" name="name" class="form-input checkout__input" placeholder="Имя">
+                        </div>
+                    </div>
+                    <div class="checkout__label">
+                        <p class="checkout__name">Фамилия</p>
+                        <div class="checkout__inputs">
+                            <input type="text" name="subname" class="form-input checkout__input" placeholder="Баньшин">
+                        </div>
+                    </div>
+                    <div class="checkout__label">
+                        <p class="checkout__name">Телефон</p>
+                        <div class="checkout__inputs">
+                            <input type="text" name="phone" class="form-input phone-input checkout__input"
+                                   placeholder="+7 986 703 11 65">
+                        </div>
+                    </div>
+                    <div class="checkout__label">
+                        <p class="checkout__name">Населённый пункт</p>
+                        <div class="checkout__inputs">
+                            <input type="text" name="city" class="form-input checkout__input" placeholder="Мурманск">
+                        </div>
+                    </div>
+                    <div class="checkout__label checkout__label_radios">
+                        <p class="checkout__name">Способ доставки</p>
+                        <div class="checkout__inputs">
+                            <label class="checkout__radio">
+                                <input type="radio" name="delivery" value="СДЭК курьером в руки" checked="">
+                                <div class="checkmark"></div>
+                                <span>
+                      СДЭК курьером в руки
+                      <span>от 5 дней, от 924 ₽</span>
+                    </span>
+                            </label>
+                            <label class="checkout__radio">
+                                <input type="radio" name="delivery" value="СДЭК самовывоз с пункта выдачи">
+                                <div class="checkmark"></div>
+                                <span>
+                      СДЭК самовывоз с пункта выдачи
+                    </span>
+                            </label>
+                            <label class="checkout__radio">
+                                <input type="radio" name="delivery" value="СДЭК-экспресс самовывоз с пункта выдачи">
+                                <div class="checkmark"></div>
+                                <span>
+                      СДЭК-экспресс самовывоз с пункта выдачи
+                    </span>
+                            </label>
+                            <label class="checkout__radio">
+                                <input type="radio" name="delivery" value="СДЭК-экспресс курьером в руки">
+                                <div class="checkmark"></div>
+                                <span>
+                      СДЭК-экспресс курьером в руки
+                    </span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="checkout__label">
+                        <p class="checkout__name">Улица</p>
+                        <div class="checkout__inputs">
+                            <input type="text" name="street" class="form-input checkout__input"
+                                   placeholder="пр-кт Ленинградский">
+                            <div class="checkout__inputs-inner">
+                                <div class="checkout__inputs-item">
+                                    <p class="checkout__name">Дом</p>
+                                    <input type="text" name="dom" class="form-input checkout__input" placeholder="14 Б">
+                                </div>
+                                <div class="checkout__inputs-item">
+                                    <p class="checkout__name">Квартира / офис</p>
+                                    <input type="text" name="kvartira" class="form-input checkout__input"
+                                           placeholder="79">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="checkout__label checkout__label_radios">
+                        <p class="checkout__name">Способ оплаты</p>
+                        <div class="checkout__inputs">
+                            <label class="checkout__radio">
+                                <input type="radio" name="payment" value="Оплата картой онлайн" checked="">
+                                <div class="checkmark"></div>
+                                <span>
+                      Оплата картой онлайн
+                    </span>
+                            </label>
+                            <label class="checkout__radio">
+                                <input type="radio" name="payment" value="Картой при получении (для Москвы)">
+                                <div class="checkmark"></div>
+                                <span>
+                      Картой при получении (для Москвы)
+                    </span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="checkout__label">
+                        <p class="checkout__name">Комментарий</p>
+                        <div class="checkout__inputs">
+                            <textarea name="comment" class="form-input checkout__textarea"
+                                      placeholder="Домофон не работает"></textarea>
+                        </div>
+                    </div>
+                    <div class="checkout__label">
+                        <p class="checkout__name">Промокод</p>
+                        <div class="checkout__inputs">
+                            <input type="text" name="promo" class="form-input checkout__input">
+                        </div>
+                    </div>
+                </div>
+                <div class="checkout__form-right">
+                    <div class="checkout__links">
+                        <a href="#" class="checkout__back">Назад</a>
+                        <a href="#" class="checkout__login">Войти в личный кабинет</a>
+                    </div>
+                    <div class="checkout__param">
+                        <div class="checkout__param-item">
+                            <p>Доставка:</p>
+                            <p>0 ₽</p>
+                        </div>
+                        <div class="checkout__param-item">
+                            <p>Скидка по промокоду:</p>
+                            <p>0 ₽</p>
+                        </div>
+
+                        <!-- Если юзер тратит баллы -->
+                        <div class="checkout__param-item checkout__param-item_sale">
+                            <p>Скидка по программе лояльности</p>
+                            <p>-698 ₽</p>
+                        </div>
+
+                        <!-- Если юзер авторизован -->
+                        <div class="checkout__param-item">
+                            <p>Баллов начислится:</p>
+                            <p>+167 баллов </p>
+                        </div>
+
+                        <div class="checkout__param-item">
+                            <p>Итого:</p>
+                            <strong>5 990 ₽</strong>
+                        </div>
+                    </div>
+
+                    <!-- Если юзер авторизован -->
+                    <div class="promo">
+
+                        <!-- Если юзер тратит баллы -->
+                        <div class="checkout__param-item checkout__param-item_sale">
+                            <p>Программа лояльности</p>
+                            <p>-698 ₽</p>
+                        </div>
+
+                        <div class="promo__activate">
+                            <p>Программа лояльности: <strong>698 баллов</strong></p>
+                            <div class="promo__btn">
+                                <div class="promo__btn-circle"></div>
+                            </div>
+                        </div>
+
+                        <div class="promo__show" style="display: none;">
+                            <div class="promo__form">
+                                <input type="number" class="promo__input" value="698">
+                                <input type="submit" class="border-btn" value="Применить">
+                            </div>
+                        </div>
+                    </div>
+
+                    <input type="submit" class="black-btn" value="Оплатить заказ">
+                    <p class="checkout__small">
+                        Нажимая на&nbsp;кнопку «оплатить заказ», я&nbsp;принимаю условия&nbsp;<a href="#">публичной
+                            оферты</a>&nbsp;и&nbsp;<a href="#">политики конфиденциальности</a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+<?php require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/footer.php"); ?>
