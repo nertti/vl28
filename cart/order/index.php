@@ -126,13 +126,13 @@ $APPLICATION->IncludeComponent("bitrix:sale.order.ajax", "order", Array(
 ?>
 
 <?php
-$basket = Bitrix\Sale\Basket::loadItemsForFUser(
-    Bitrix\Sale\Fuser::getId(),
-        Bitrix\Main\Context::getCurrent()->getSite()
-);
+$fUserId = Bitrix\Sale\Fuser::getId();
+$siteId = Bitrix\Main\Context::getCurrent()->getSite();
+$basket = Bitrix\Sale\Basket::loadItemsForFUser($fUserId, $siteId);
+
 $basketItems = $basket->getBasketItems(); // массив объектов Sale\BasketItem
 foreach ($basket as $basketItem) {
-    echo $basketItem->getField('NAME') . $basketItem->getField('PRODUCT_ID') . ' - ' . $basketItem->getQuantity() . '<br />';
+    //echo $basketItem->getField('NAME') . $basketItem->getField('PRODUCT_ID') . ' - ' . $basketItem->getQuantity() . '<br />';
 }
 
 ?>
@@ -142,11 +142,11 @@ foreach ($basket as $basketItem) {
         <div class="checkout__inner">
             <div class="checkout__cart">
                 <?php foreach ($basket as $basketItem):?>
-                <div class="checkout__cart-item">
+                <div class="checkout__cart-item" id="<?=$basketItem->getField('ID')?>">
                     <?php
                     $product = getProductInfo($basketItem->getField('PRODUCT_ID'));
                     $propertySize = getElementProperties($product['IBLOCK_ID'] ,$product['ID']);
-                    //pr($product);
+                    //pr($product, true);
                     ?>
                     <img src="<?=CFile::getPath($product['PREVIEW_PICTURE'])?>" alt="<?=$product['NAME']?>">
                     <p class="checkout__cart-title"><?=$product['NAME']?></p>
@@ -156,11 +156,11 @@ foreach ($basket as $basketItem) {
                     <p class="checkout__cart-value"><?=$propertySize?></p>
                     <div class="checkout__cart-quantity">
                         <div class="plus"></div>
-                        <input type="number" min="1" max="30" class="checkout__cart-input" value="<?=$basketItem->getQuantity()?>">
+                        <input type="number" min="1" max="30" class="checkout__cart-input countProduct" value="<?=$basketItem->getQuantity()?>">
                         <div class="minus"></div>
                     </div>
-                    <p class="checkout__cart-price"><?=$basketItem->getPrice()?> ₽</p>
-                    <a href="#" class="checkout__cart-remove"></a>
+                    <p class="checkout__cart-price"><?=$basketItem->getFinalPrice()?> ₽</p>
+                    <span class="checkout__cart-remove pointer"></span>
                 </div>
                 <?php endforeach;?>
             </div>
@@ -357,4 +357,81 @@ foreach ($basket as $basketItem) {
         </div>
     </div>
 </section>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const countAria = document.querySelectorAll('.checkout__cart-quantity');
+        countAria.forEach(element => {
+            element.addEventListener('click', handleCountEdit);
+        });
+        const deleteBtn = document.querySelectorAll('.checkout__cart-remove');
+        deleteBtn.forEach(element => {
+            element.addEventListener('click', handleDelete);
+        });
+
+        function handleCountEdit(event) {
+            setTimeout(() => {
+                const wrapperProduct = event.target.closest('.checkout__cart-item');
+                const countProduct = wrapperProduct.querySelector('.countProduct').value;
+                const siteId = '<?=$siteId?>';
+                const fUserId ='<?=$fUserId?>';
+                fetch('/ajax/orderProduct.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: wrapperProduct.id,    // ID товара в корзине
+                        count: countProduct,  // новое количество товара
+                        siteId: siteId,
+                        fUserId: fUserId,
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'error') {
+
+                        } else {
+                            if (data.price !== '') {
+                                wrapperProduct.querySelector('.checkout__cart-price').textContent = data.price + ' ₽';
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Ошибка при авторизации:', error);
+                    });
+            }, 1);
+        }
+
+        function handleDelete(event) {
+            setTimeout(() => {
+                const wrapperProduct = event.target.closest('.checkout__cart-item');
+                const siteId = '<?=$siteId?>';
+                const fUserId ='<?=$fUserId?>';
+                fetch('/ajax/orderProductDelete.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: wrapperProduct.id,    // ID товара в корзине
+                        siteId: siteId,
+                        fUserId: fUserId,
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'error') {
+
+                        } else {
+                            wrapperProduct.style.display = 'none';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Ошибка при авторизации:', error);
+                    });
+            }, 1);
+        }
+    });
+</script>
+
 <?php require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/footer.php"); ?>

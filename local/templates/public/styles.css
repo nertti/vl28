@@ -14,6 +14,6 @@
     cursor: pointer;
     background-image: url(assets/img/favorite-active.svg);
 }
-.favor{
+.favor, .pointer{
     cursor: pointer;
 }
