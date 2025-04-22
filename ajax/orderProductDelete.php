@@ -35,6 +35,7 @@ try {
         'status' => 'success',
         'message' => 'Товар удалён',
         'id' => $id,
+        'totalPrice' => $basket->getPrice(),
     ];
 
 } catch (Exception $e) {

@@ -40,6 +40,7 @@ try {
         'id' => $id,
         'count' => $count,
         'price' => $finalPrice,
+        'totalPrice' => $basket->getPrice(),
     ];
 
 } catch (Exception $e) {

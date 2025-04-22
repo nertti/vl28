@@ -1,6 +1,7 @@
 <?php
 
 /** @var \CMain $APPLICATION */
+/** @var \CMain $USER */
 
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
 $APPLICATION->SetTitle("Оформление заказа");
@@ -26,13 +27,15 @@ function getProductInfo($productId)
     }
     return false;
 }
-function getElementProperties($iblockId,$elementId)
+
+function getElementProperties($iblockId, $elementId)
 {
     $db_props = CIBlockElement::GetProperty($iblockId, $elementId, "sort", "asc", array("CODE" => "SIZE"));
     if ($ar_props = $db_props->Fetch()) {
         return $ar_props['VALUE_ENUM'];
     }
 }
+
 ?>
 
 <?php /*
@@ -141,31 +144,34 @@ foreach ($basket as $basketItem) {
         <p class="h2">Оформление заказа</p>
         <div class="checkout__inner">
             <div class="checkout__cart">
-                <?php foreach ($basket as $basketItem):?>
-                <div class="checkout__cart-item" id="<?=$basketItem->getField('ID')?>">
-                    <?php
-                    $product = getProductInfo($basketItem->getField('PRODUCT_ID'));
-                    $propertySize = getElementProperties($product['IBLOCK_ID'] ,$product['ID']);
-                    //pr($product, true);
-                    ?>
-                    <img src="<?=CFile::getPath($product['PREVIEW_PICTURE'])?>" alt="<?=$product['NAME']?>">
-                    <p class="checkout__cart-title"><?=$product['NAME']?></p>
-                    <div class="checkout__cart-color" style="display:none;">
-                        <span style="background: #000;"></span>
+                <?php foreach ($basket as $basketItem): ?>
+                    <div class="checkout__cart-item" id="<?= $basketItem->getField('ID') ?>">
+                        <?php
+                        $product = getProductInfo($basketItem->getField('PRODUCT_ID'));
+                        $propertySize = getElementProperties($product['IBLOCK_ID'], $product['ID']);
+                        //pr($product, true);
+                        ?>
+                        <img src="<?= CFile::getPath($product['PREVIEW_PICTURE']) ?>" alt="<?= $product['NAME'] ?>">
+                        <p class="checkout__cart-title"><?= $product['NAME'] ?></p>
+                        <div class="checkout__cart-color" style="display:none;">
+                            <span style="background: #000;"></span>
+                        </div>
+                        <p class="checkout__cart-value"><?= $propertySize ?></p>
+                        <div class="checkout__cart-quantity">
+                            <div class="plus"></div>
+                            <input type="number" min="1" max="30" class="checkout__cart-input countProduct"
+                                   value="<?= $basketItem->getQuantity() ?>">
+                            <div class="minus"></div>
+                        </div>
+                        <p class="checkout__cart-price"><?= $basketItem->getFinalPrice() ?> ₽</p>
+                        <span class="checkout__cart-remove pointer"></span>
                     </div>
-                    <p class="checkout__cart-value"><?=$propertySize?></p>
-                    <div class="checkout__cart-quantity">
-                        <div class="plus"></div>
-                        <input type="number" min="1" max="30" class="checkout__cart-input countProduct" value="<?=$basketItem->getQuantity()?>">
-                        <div class="minus"></div>
-                    </div>
-                    <p class="checkout__cart-price"><?=$basketItem->getFinalPrice()?> ₽</p>
-                    <span class="checkout__cart-remove pointer"></span>
-                </div>
-                <?php endforeach;?>
+                <?php endforeach; ?>
             </div>
 
-            <form action="#" class="checkout__form">
+            <form id="form" action="/ajax/createOrder.php" class="checkout__form">
+                <input type="hidden" name="siteId" value="<?=$siteId?>">
+                <input type="hidden" name="fUserId" value="<?=$fUserId?>">
                 <div class="checkout__form-left">
                     <div class="checkout__label">
                         <p class="checkout__name">E-mail</p>
@@ -202,44 +208,44 @@ foreach ($basket as $basketItem) {
                     <div class="checkout__label">
                         <p class="checkout__name">Населённый пункт</p>
                         <div class="checkout__inputs">
-                            <input type="text" name="city" class="form-input checkout__input" placeholder="Мурманск">
+                            <input id="city" type="text" name="city" class="form-input checkout__input" placeholder="Мурманск">
                         </div>
                     </div>
                     <div class="checkout__label checkout__label_radios">
                         <p class="checkout__name">Способ доставки</p>
                         <div class="checkout__inputs">
-                            <label class="checkout__radio">
-                                <input type="radio" name="delivery" value="СДЭК курьером в руки" checked="">
+                            <label class="checkout__radio export">
+                                <input type="radio" name="delivery" value="1" checked="">
                                 <div class="checkmark"></div>
                                 <span>
                       СДЭК курьером в руки
                       <span>от 5 дней, от 924 ₽</span>
                     </span>
                             </label>
-                            <label class="checkout__radio">
-                                <input type="radio" name="delivery" value="СДЭК самовывоз с пункта выдачи">
+                            <label class="checkout__radio export">
+                                <input type="radio" name="delivery" value="2">
                                 <div class="checkmark"></div>
                                 <span>
                       СДЭК самовывоз с пункта выдачи
                     </span>
                             </label>
-                            <label class="checkout__radio">
-                                <input type="radio" name="delivery" value="СДЭК-экспресс самовывоз с пункта выдачи">
-                                <div class="checkmark"></div>
-                                <span>
-                      СДЭК-экспресс самовывоз с пункта выдачи
-                    </span>
-                            </label>
-                            <label class="checkout__radio">
-                                <input type="radio" name="delivery" value="СДЭК-экспресс курьером в руки">
+                            <label class="checkout__radio export">
+                                <input type="radio" name="delivery" value="3">
                                 <div class="checkmark"></div>
                                 <span>
                       СДЭК-экспресс курьером в руки
                     </span>
                             </label>
+                            <label class="checkout__radio export">
+                                <input type="radio" name="delivery" value="4">
+                                <div class="checkmark"></div>
+                                <span>
+                      СДЭК-экспресс самовывоз с пункта выдачи
+                    </span>
+                            </label>
                         </div>
                     </div>
-                    <div class="checkout__label">
+                    <div class="checkout__label address" style="display: none">
                         <p class="checkout__name">Улица</p>
                         <div class="checkout__inputs">
                             <input type="text" name="street" class="form-input checkout__input"
@@ -267,7 +273,7 @@ foreach ($basket as $basketItem) {
                       Оплата картой онлайн
                     </span>
                             </label>
-                            <label class="checkout__radio">
+                            <label class="checkout__radio" id="moskva" style="display: none">
                                 <input type="radio" name="payment" value="Картой при получении (для Москвы)">
                                 <div class="checkmark"></div>
                                 <span>
@@ -291,10 +297,12 @@ foreach ($basket as $basketItem) {
                     </div>
                 </div>
                 <div class="checkout__form-right">
-                    <div class="checkout__links">
-                        <a href="#" class="checkout__back">Назад</a>
-                        <a href="#" class="checkout__login">Войти в личный кабинет</a>
-                    </div>
+                    <?php if (!$USER->isAuthorized()): ?>
+                        <div class="checkout__links">
+                            <a href="/cart/" class="checkout__back">Назад</a>
+                            <a href="/login/" class="checkout__login">Войти в личный кабинет</a>
+                        </div>
+                    <?php endif; ?>
                     <div class="checkout__param">
                         <div class="checkout__param-item">
                             <p>Доставка:</p>
@@ -317,9 +325,9 @@ foreach ($basket as $basketItem) {
                             <p>+167 баллов </p>
                         </div>
 
-                        <div class="checkout__param-item">
+                        <div class="checkout__param-item totalPrice">
                             <p>Итого:</p>
-                            <strong>5 990 ₽</strong>
+                            <strong><?=$basket->getPrice();?> ₽</strong>
                         </div>
                     </div>
 
@@ -347,13 +355,50 @@ foreach ($basket as $basketItem) {
                         </div>
                     </div>
 
-                    <input type="submit" class="black-btn" value="Оплатить заказ">
+                    <button id="saveBtn" type="submit" class="black-btn">Оплатить заказ</button>
                     <p class="checkout__small">
                         Нажимая на&nbsp;кнопку «оплатить заказ», я&nbsp;принимаю условия&nbsp;<a href="#">публичной
                             оферты</a>&nbsp;и&nbsp;<a href="#">политики конфиденциальности</a>
                     </p>
                 </div>
             </form>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const form = document.querySelector('#form');
+                    const saveBtn = document.querySelector('#saveBtn');
+                    // Если форма найдена, добавляем слушатель события submit
+                    if (form) {
+                        form.addEventListener('submit', handleFormSubmit);
+                    } else {
+                        console.warn('Форма не найдена на странице');
+                    }
+
+                    function handleFormSubmit(event) {
+                        event.preventDefault();
+                        saveBtn.innerHTML = `
+                  <span class='spinner-grow spinner-grow-sm' aria-hidden='true'></span>
+                  <span role='status'>Переходим на оплату...</span>
+                `;
+                        const formData = new FormData(form);
+                        fetch(form.action, {
+                            method: 'POST',
+                            body: formData
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                saveBtn.innerHTML = `Оплатить`;
+                                if (data.status === 'error') {
+                                    console.log('1');
+                                } else {
+
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Ошибка при отправке формы:', error);
+                            });
+                    }
+                });
+            </script>
         </div>
     </div>
 </section>
@@ -368,12 +413,13 @@ foreach ($basket as $basketItem) {
             element.addEventListener('click', handleDelete);
         });
 
+        // Изменение количества товаров в корзине
         function handleCountEdit(event) {
             setTimeout(() => {
                 const wrapperProduct = event.target.closest('.checkout__cart-item');
                 const countProduct = wrapperProduct.querySelector('.countProduct').value;
                 const siteId = '<?=$siteId?>';
-                const fUserId ='<?=$fUserId?>';
+                const fUserId = '<?=$fUserId?>';
                 fetch('/ajax/orderProduct.php', {
                     method: 'POST',
                     headers: {
@@ -394,6 +440,9 @@ foreach ($basket as $basketItem) {
                             if (data.price !== '') {
                                 wrapperProduct.querySelector('.checkout__cart-price').textContent = data.price + ' ₽';
                             }
+                            if (data.totalPrice !== '') {
+                                document.querySelector('.totalPrice strong').textContent = data.totalPrice + ' ₽';
+                            }
                         }
                     })
                     .catch(error => {
@@ -402,11 +451,12 @@ foreach ($basket as $basketItem) {
             }, 1);
         }
 
+        // Удаление товаров в корзине
         function handleDelete(event) {
             setTimeout(() => {
                 const wrapperProduct = event.target.closest('.checkout__cart-item');
                 const siteId = '<?=$siteId?>';
-                const fUserId ='<?=$fUserId?>';
+                const fUserId = '<?=$fUserId?>';
                 fetch('/ajax/orderProductDelete.php', {
                     method: 'POST',
                     headers: {
@@ -424,6 +474,9 @@ foreach ($basket as $basketItem) {
 
                         } else {
                             wrapperProduct.style.display = 'none';
+                            if (data.totalPrice !== '') {
+                                document.querySelector('.totalPrice strong').textContent = data.totalPrice + ' ₽';
+                            }
                         }
                     })
                     .catch(error => {
@@ -433,5 +486,34 @@ foreach ($basket as $basketItem) {
         }
     });
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // в зависимости от города скрываем способ оплаты
+        const inputCity = document.querySelector('#city');
+        inputCity.addEventListener('input', function (e) {
+            if (inputCity.value.toLowerCase() === 'москва'){
+                document.querySelector('#moskva').style.display = 'flex';
+            }
+        })
+        // в зависимости от выбранной доставки выводим блоки (Адрес или выбор ПВЗ города)
+        const selectExport = document.querySelectorAll('input[name="delivery"]');
+        const streetBlock = document.querySelector('.address');
+        function updateBlockVisibility() {
+            const checkedValues = Array.from(selectExport)
+                .filter(cb => cb.checked)
+                .map(cb => cb.value);
 
+            const shouldBeVisible =
+                checkedValues.includes('1') ||
+                checkedValues.includes('3')
+
+            streetBlock.style.display = shouldBeVisible ? 'flex' : 'none';
+        }
+        selectExport.forEach(checkbox => {
+            checkbox.addEventListener('change', updateBlockVisibility);
+        });
+
+        // Промокод...
+    });
+</script>
 <?php require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/footer.php"); ?>
