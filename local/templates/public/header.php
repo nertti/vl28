@@ -28,11 +28,10 @@ function checkCatalogPath($url) {
 
 if ($isProfilePages){
     if (!$USER->IsAuthorized()) {
-    header('Location: /login/');
-    exit();
+        header('Location: /login/');
+        exit();
+    }
 }
-}
-
 ?>
 <!doctype html>
 <html lang="ru">
@@ -180,9 +179,37 @@ if ($isProfilePages){
         <a href="/profile/" class="header__link">
             <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/user.svg" alt="user icon" class="header__link-icon svg">
         </a>
-        <a href="/cart/" class="header__link">
+        <a href="/cart/" class="header__link header__cart">
             <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/cart.svg" alt="cart icon"
                  class="header__link-icon header__link-icon_cart svg">
+                 <?php $APPLICATION->IncludeComponent("bitrix:sale.basket.basket.line", "basket", Array(
+                    "HIDE_ON_BASKET_PAGES" => "N",	// Не показывать на страницах корзины и оформления заказа
+                        "PATH_TO_BASKET" => "/cart/",	// Страница корзины
+                        "PATH_TO_ORDER" => "/cart/order/",	// Страница оформления заказа
+                        "PATH_TO_PERSONAL" => SITE_DIR."personal/",	// Страница персонального раздела
+                        "PATH_TO_PROFILE" => SITE_DIR."personal/",	// Страница профиля
+                        "PATH_TO_REGISTER" => SITE_DIR."login/",	// Страница регистрации
+                        "POSITION_FIXED" => "N",	// Отображать корзину поверх шаблона
+                        "POSITION_HORIZONTAL" => "right",
+                        "POSITION_VERTICAL" => "top",
+                        "SHOW_AUTHOR" => "N",	// Добавить возможность авторизации
+                        "SHOW_DELAY" => "N",
+                        "SHOW_EMPTY_VALUES" => "N",	// Выводить нулевые значения в пустой корзине
+                        "SHOW_IMAGE" => "Y",
+                        "SHOW_NOTAVAIL" => "N",
+                        "SHOW_NUM_PRODUCTS" => "Y",	// Показывать количество товаров
+                        "SHOW_PERSONAL_LINK" => "N",	// Отображать персональный раздел
+                        "SHOW_PRICE" => "Y",
+                        "SHOW_PRODUCTS" => "N",	// Показывать список товаров
+                        "SHOW_SUMMARY" => "Y",
+                        "SHOW_TOTAL_PRICE" => "N",	// Показывать общую сумму по товарам
+                        "COMPONENT_TEMPLATE" => "bootstrap_v4",
+                        "PATH_TO_AUTHORIZE" => "",	// Страница авторизации
+                        "SHOW_REGISTRATION" => "N",	// Добавить возможность регистрации
+                        "MAX_IMAGE_SIZE" => "70",	// Максимальный размер картинки товара
+                    ),
+                    false
+                );?>
         </a>
     </div>
 </header>

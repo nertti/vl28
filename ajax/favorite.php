@@ -1,7 +1,6 @@
 <?php
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php");
 /** @var CUser $USER */
-
 $GLOBALS['APPLICATION']->RestartBuffer();
 
 use Bitrix\Main\Application;
@@ -29,11 +28,12 @@ if ($_POST['id']) {
             unset($arElements[$key]);
             $result = 2; // Датчик. Удаляем
         }
-        $cookie = new Cookie("favorites", serialize($arElements), time() + 60 * 60 * 24 * 60);
-        $cookie->setDomain($context->getServer()->getHttpHost());
-        $cookie->setHttpOnly(false);
-        $context->getResponse()->addCookie($cookie);
-        $context->getResponse()->flush();
+        setcookie("BITRIX_SM_favorites", serialize($arElements), time() + 60 * 60 * 24 * 60, "/", "vl26908655.nichost.ru");
+//        $cookie = new Cookie("favorites", serialize($arElements), time() + 60 * 60 * 24 * 60);
+//        $cookie->setDomain($context->getServer()->getHttpHost());
+//        $cookie->setHttpOnly(false);
+//        $context->getResponse()->addCookie($cookie);
+//        $context->getResponse()->flush();
         //$context->getResponse()->send(); // Или просто вернуть $response
     } else { // Для авторизованного
         $idUser = $USER->GetID();

@@ -17,3 +17,6 @@
 .favor, .pointer{
     cursor: pointer;
 }
+.product__inner{
+    padding-top: 30px;
+}
