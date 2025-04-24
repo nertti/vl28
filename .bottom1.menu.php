@@ -24,9 +24,9 @@ $aMenuLinks = Array(
 	Array(
 		"Программа лояльности", 
 		"#", 
-		Array(), 
-		Array(), 
-		"" 
+		Array(),
+        Array("data-hystmodal"=>"loyalModal"),
+        ""
 	),
 	Array(
 		"Уход за изделиями", 

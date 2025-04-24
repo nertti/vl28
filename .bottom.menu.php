@@ -1,4 +1,4 @@
-<?
+<?php
 $aMenuLinks = Array(
 	Array(
 		"Каталог", 
@@ -9,14 +9,14 @@ $aMenuLinks = Array(
 	),
 	Array(
 		"Повседневная одежда", 
-		"#", 
+		"/catalog/?collection=everyday", 
 		Array(), 
 		Array(), 
 		"" 
 	),
 	Array(
 		"Мотоэкипировка", 
-		"#", 
+		"/catalog/?collection=moto", 
 		Array(), 
 		Array(), 
 		"" 

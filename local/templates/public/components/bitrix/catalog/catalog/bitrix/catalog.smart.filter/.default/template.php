@@ -33,7 +33,7 @@ $this->setFrameMode(true);
                                         <?php if ($arItem['DISPLAY_TYPE'] == 'F' && $arItem['CODE'] !== 'COLOR'): ?>
                                             <label class="filter__item">
                                                 <input type="checkbox" name="<?= $value['URL_ID'] ?>"
-                                                       <?php if ($value['CHECKED'] == 'Y'): ?>checked<?php endif; ?>>
+                                                       <?php if ($value['CHECKED'] == 'Y' || $_REQUEST['collection'] == $value['URL_ID']): ?>checked<?php endif; ?>>
                                                 <span><?= $value['VALUE'] ?></span>
                                             </label>
                                         <?php elseif ($arItem['DISPLAY_TYPE'] == 'H' || $arItem['CODE'] == 'COLOR'): ?>
@@ -74,9 +74,7 @@ $this->setFrameMode(true);
         } else {
             console.warn('Форма не найдена на странице');
         }
-
-        function handleFormSubmit(event) {
-            event.preventDefault();
+        function sendForm() {
             submit_btn.innerHTML = `
                   <span class='spinner-grow spinner-grow-sm' aria-hidden='true'></span>
                   <span role='status'>Фильтруем...</span>
@@ -101,6 +99,16 @@ $this->setFrameMode(true);
                 .catch(error => {
                     console.error('Ошибка при авторизации:', error);
                 });
+        }
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            sendForm();
+        }
+
+
+        const params = new URLSearchParams(window.location.search);
+        if (params.has('collection')) {
+            sendForm();
         }
     });
 </script>

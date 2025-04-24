@@ -1,24 +1,24 @@
 <?php
 $aMenuLinks = array(
-    array(
-        "Новые поступления",
-        "#",
-        array(),
-        array(),
+    Array(
+        "Каталог",
+        "/catalog/",
+        Array(),
+        Array(),
         ""
     ),
-    array(
+    Array(
         "Повседневная одежда",
-        "#",
-        array(),
-        array(),
+        "/catalog/?collection=everyday",
+        Array(),
+        Array(),
         ""
     ),
-    array(
+    Array(
         "Мотоэкипировка",
-        "#",
-        array(),
-        array(),
+        "/catalog/?collection=moto",
+        Array(),
+        Array(),
         ""
     )
 );

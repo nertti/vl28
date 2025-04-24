@@ -9,7 +9,7 @@ $aMenuLinks = Array(
 	),
 	Array(
 		"+7 999 662 28 35", 
-		"tel:+79996622835", 
+		"tel:+79996622835",
 		Array(), 
 		Array(), 
 		"" 
