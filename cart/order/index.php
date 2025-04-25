@@ -2,13 +2,28 @@
 
 /** @var \CMain $APPLICATION */
 /** @var \CMain $USER */
+/** @global  $userBonus */
 
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
 $APPLICATION->SetTitle("Оформление заказа");
 
+
 Bitrix\Main\Loader::includeModule("Sale");
 Bitrix\Main\Loader::includeModule("Catalog");
 
+require_once($_SERVER["DOCUMENT_ROOT"] . "/include/order/bonus.php");
+
+function calculateMaxPointsToSpend($total, $bonus) {
+    // Проверяем корректность входных данных
+    if ($total <= 0 || $bonus < 0) {
+        return 0;
+    }
+
+    // Вычисляем максимальную сумму в баллах
+    $maxPoints = min($total, $bonus);
+
+    return $maxPoints;
+}
 function getProductInfo($productId)
 {
     $result = \CIBlockElement::GetList(
@@ -169,7 +184,7 @@ foreach ($basket as $basketItem) {
                 <?php endforeach; ?>
             </div>
 
-            <form id="form" action="/ajax/createOrder.php" class="checkout__form">
+            <div id="form" action="/ajax/createOrder.php" class="checkout__form">
                 <input type="hidden" name="siteId" value="<?=$siteId?>">
                 <input type="hidden" name="fUserId" value="<?=$fUserId?>">
                 <div class="checkout__form-left">
@@ -330,7 +345,7 @@ foreach ($basket as $basketItem) {
                             <strong><?=$basket->getPrice();?> ₽</strong>
                         </div>
                     </div>
-
+                    <?php if ($USER->isAuthorized()): ?>
                     <!-- Если юзер авторизован -->
                     <div class="promo">
 
@@ -341,7 +356,7 @@ foreach ($basket as $basketItem) {
                         </div>
 
                         <div class="promo__activate">
-                            <p>Программа лояльности: <strong>698 баллов</strong></p>
+                            <p>Программа лояльности: <strong><?=$userBonus?> баллов</strong></p>
                             <div class="promo__btn">
                                 <div class="promo__btn-circle"></div>
                             </div>
@@ -349,12 +364,12 @@ foreach ($basket as $basketItem) {
 
                         <div class="promo__show" style="display: none;">
                             <div class="promo__form">
-                                <input type="number" class="promo__input" value="698">
+                                <input type="number" class="promo__input" value="<?=calculateMaxPointsToSpend($basket->getPrice(), $userBonus)?>">
                                 <input type="submit" class="border-btn" value="Применить">
                             </div>
                         </div>
                     </div>
-
+                    <?php endif; ?>
                     <button id="saveBtn" type="submit" class="black-btn">Оплатить заказ</button>
                     <p class="checkout__small">
                         Нажимая на&nbsp;кнопку «оплатить заказ», я&nbsp;принимаю условия&nbsp;<a href="#">публичной
@@ -404,6 +419,16 @@ foreach ($basket as $basketItem) {
 </section>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        function calculateMaxPointsToSpend(total, bonus) {
+            // Проверяем корректность входных данных
+            if (total <= 0 || bonus < 0) {
+                return 0;
+            }
+
+            // Возвращаем минимальное из двух значений
+            return Math.min(total, bonus);
+        }
+
         const countAria = document.querySelectorAll('.checkout__cart-quantity');
         countAria.forEach(element => {
             element.addEventListener('click', handleCountEdit);
@@ -437,6 +462,9 @@ foreach ($basket as $basketItem) {
                         if (data.status === 'error') {
 
                         } else {
+                            const total = data.price;
+                            const bonus = <?=$userBonus?>;
+                            document.querySelector('.promo__input').value = calculateMaxPointsToSpend(total, bonus);
                             if (data.price !== '') {
                                 wrapperProduct.querySelector('.checkout__cart-price').textContent = data.price + ' ₽';
                             }
@@ -473,6 +501,10 @@ foreach ($basket as $basketItem) {
                         if (data.status === 'error') {
 
                         } else {
+                            const total = data.price;
+                            const bonus = <?=$userBonus?>;
+                            document.querySelector('.promo__input').value = calculateMaxPointsToSpend(total, bonus);
+
                             wrapperProduct.style.display = 'none';
                             if (data.totalPrice !== '') {
                                 document.querySelector('.totalPrice strong').textContent = data.totalPrice + ' ₽';
