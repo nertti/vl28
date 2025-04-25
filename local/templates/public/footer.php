@@ -100,7 +100,7 @@ use Bitrix\Main\Page\Asset;
         <?php //todo: Продумать форму или не нужно? ?>
         <div class="subs">
             <p class="subs__text">Будьте в курсе всех новинок и специальных предложений</p>
-            <a href="#" class="subs__btn main-btn">Подписаться</a>
+            <a href="#" class="subs__btn main-btn" data-hystmodal="#subModal">Подписаться</a>
         </div>
     </div>
     <div class="footer__bottom">
@@ -258,6 +258,98 @@ use Bitrix\Main\Page\Asset;
                 </div>
                 <p class="loyal__small">* - На один заказ за 7 дней до и 7 дней после дня рождения </p>
                 <a href="#" class="loyal__link">Регламент использования</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="hystmodal" id="subModal" aria-hidden="true">
+    <div class="hystmodal__wrap">
+        <div class="hystmodal__window hystmodal__window_subscribe" role="dialog" aria-modal="true">
+            <button data-hystclose="" class="hystmodal__close"></button>
+            <div class="subscribe">
+                <p class="h2">Подписка на новости</p>
+                <form id="subscription" action="/ajax/subscription.php" class="subscribe__form">
+                    <div class="subscribe__form-inner">
+                        <p class="subscribe__form-label">E-mail</p>
+                        <div class="subscribe__form-col">
+                            <div class="input-wrap">
+                                <p class="error-text" style="display: none">* Некорректный адрес электронной почты</p>
+                                <input type="text" class="form-input" name="EMAIL" placeholder="banshin@yandex.ru">
+                            </div>
+                            <span>
+                  Нажимая кнопку «подписаться», вы даёте согласие на рекламную рассылку и обработку персональных данных в соответствии с&nbsp;правилами
+                </span>
+                        </div>
+                    </div>
+                    <input type="submit" class="main-btn" value="Подписаться на наши новости">
+                </form>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const subscriptionForm = document.querySelector('form[id="subscription"]');
+                        // Если форма найдена, добавляем слушатель события submit
+                        if (subscriptionForm) {
+                            subscriptionForm.addEventListener('submit', handleFormSubmit);
+                        } else {
+                            console.warn('Форма не найдена на странице');
+                        }
+
+                        function handleFormSubmit(event) {
+                            event.preventDefault();
+                            // Собираем данные формы
+                            const formData = new FormData(subscriptionForm);
+                            // Отправляем AJAX-запрос
+                            fetch(subscriptionForm.action, {
+                                method: 'POST',
+                                body: formData
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    let errorSubError = document.querySelector('.subscribe .error-text');
+                                    let errorSubInput = document.querySelector('.subscribe .form-input');
+                                    if (data.status === 'error') {
+                                        // Сначала убираем все предыдущие ошибки
+                                        errorSubInput.classList.remove('error');
+                                        errorSubError.style.display = 'none';
+
+                                        // Проверяем обе ошибки и показываем первую найденную
+                                        if (data.message.EMAIL || data.message.SUB) {
+                                            errorSubInput.classList.add('error');
+                                            errorSubError.style.display = 'block';
+                                            errorSubError.innerHTML = data.message.EMAIL || data.message.SUB;
+                                        }
+                                    } else {
+                                        const subModal = document.querySelector('#subModal');
+                                        const thanksModal = document.querySelector('#thanksModal');
+
+                                        if (subModal) {
+                                            subModal.querySelector('.hystmodal__close').click();
+                                        } else {
+                                            console.error('Модальное окно subModal не найдено');
+                                        }
+                                        if (thanksModal) {
+                                            subModal.querySelector('#openThanksModal').click();
+                                        } else {
+                                            console.error('Модальное окно thanksModal не найдено');
+                                        }
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Ошибка при отправке формы:', error);
+                                });
+                        }
+                    });
+                </script>
+            </div>
+        </div>
+    </div>
+    <span style="display: none" data-hystmodal="#thanksModal" id="openThanksModal"></span>
+</div>
+<div class="hystmodal" id="thanksModal" aria-hidden="true">
+    <div class="hystmodal__wrap">
+        <div class="hystmodal__window hystmodal__window_subscribe" role="dialog" aria-modal="true">
+            <button data-hystclose="" class="hystmodal__close"></button>
+            <div class="thanks">
+                <p class="h2">Данные успешно отправлены. Спасибо за подписку!</p>
             </div>
         </div>
     </div>
