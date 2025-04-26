@@ -13,7 +13,8 @@ Bitrix\Main\Loader::includeModule("Catalog");
 
 require_once($_SERVER["DOCUMENT_ROOT"] . "/include/order/bonus.php");
 
-function calculateMaxPointsToSpend($total, $bonus) {
+function calculateMaxPointsToSpend($total, $bonus)
+{
     // Проверяем корректность входных данных
     if ($total <= 0 || $bonus < 0) {
         return 0;
@@ -24,6 +25,7 @@ function calculateMaxPointsToSpend($total, $bonus) {
 
     return $maxPoints;
 }
+
 function getProductInfo($productId)
 {
     $result = \CIBlockElement::GetList(
@@ -148,6 +150,10 @@ $fUserId = Bitrix\Sale\Fuser::getId();
 $siteId = Bitrix\Main\Context::getCurrent()->getSite();
 $basket = Bitrix\Sale\Basket::loadItemsForFUser($fUserId, $siteId);
 
+if (empty($basket->getQuantityList())) {
+    header('Location: /catalog/');
+}
+
 $basketItems = $basket->getBasketItems(); // массив объектов Sale\BasketItem
 foreach ($basket as $basketItem) {
     //echo $basketItem->getField('NAME') . $basketItem->getField('PRODUCT_ID') . ' - ' . $basketItem->getQuantity() . '<br />';
@@ -185,8 +191,8 @@ foreach ($basket as $basketItem) {
             </div>
 
             <div id="form" action="/ajax/createOrder.php" class="checkout__form">
-                <input type="hidden" name="siteId" value="<?=$siteId?>">
-                <input type="hidden" name="fUserId" value="<?=$fUserId?>">
+                <input type="hidden" name="siteId" value="<?= $siteId ?>">
+                <input type="hidden" name="fUserId" value="<?= $fUserId ?>">
                 <div class="checkout__form-left">
                     <div class="checkout__label">
                         <p class="checkout__name">E-mail</p>
@@ -223,7 +229,8 @@ foreach ($basket as $basketItem) {
                     <div class="checkout__label">
                         <p class="checkout__name">Населённый пункт</p>
                         <div class="checkout__inputs">
-                            <input id="city" type="text" name="city" class="form-input checkout__input" placeholder="Мурманск">
+                            <input id="city" type="text" name="city" class="form-input checkout__input"
+                                   placeholder="Мурманск">
                         </div>
                     </div>
                     <div class="checkout__label checkout__label_radios">
@@ -328,47 +335,52 @@ foreach ($basket as $basketItem) {
                             <p>0 ₽</p>
                         </div>
 
-                        <!-- Если юзер тратит баллы -->
-                        <div class="checkout__param-item checkout__param-item_sale">
-                            <p>Скидка по программе лояльности</p>
-                            <p>-698 ₽</p>
-                        </div>
+                        <!-- Если юзер имеет скидку -->
+                        <?php if ($saleCard): ?>
+                            <div class="checkout__param-item checkout__param-item_sale">
+                                <p>Скидка по программе лояльности</p>
+                                <p>-0 ₽</p>
+                            </div>
+                        <?php endif; ?>
 
                         <!-- Если юзер авторизован -->
-                        <div class="checkout__param-item">
-                            <p>Баллов начислится:</p>
-                            <p>+167 баллов </p>
-                        </div>
-
+                        <?php if ($USER->isAuthorized()): ?>
+                            <div class="checkout__param-item">
+                                <p>Баллов начислится:</p>
+                                <p class="bonusPoints"></p>
+                                <input class="bonusPointsValue" type="hidden" name="bonusPoints" value="">
+                            </div>
+                        <?php endif; ?>
                         <div class="checkout__param-item totalPrice">
                             <p>Итого:</p>
-                            <strong><?=$basket->getPrice();?> ₽</strong>
+                            <strong><?= $basket->getPrice(); ?> ₽</strong>
                         </div>
                     </div>
                     <?php if ($USER->isAuthorized()): ?>
-                    <!-- Если юзер авторизован -->
-                    <div class="promo">
+                        <!-- Если юзер авторизован -->
+                        <div class="promo">
+                            <!-- Если юзер тратит баллы -->
+                            <?php if ($saleBonus): ?>
+                                <div class="checkout__param-item checkout__param-item_sale">
+                                    <p>Программа лояльности</p>
+                                    <p>-0 ₽</p>
+                                </div>
+                            <?php endif; ?>
+                            <div class="promo__activate">
+                                <p>Программа лояльности: <strong><?= $userBonus ?> баллов</strong></p>
+                                <div class="promo__btn">
+                                    <div class="promo__btn-circle"></div>
+                                </div>
+                            </div>
 
-                        <!-- Если юзер тратит баллы -->
-                        <div class="checkout__param-item checkout__param-item_sale">
-                            <p>Программа лояльности</p>
-                            <p>-698 ₽</p>
-                        </div>
-
-                        <div class="promo__activate">
-                            <p>Программа лояльности: <strong><?=$userBonus?> баллов</strong></p>
-                            <div class="promo__btn">
-                                <div class="promo__btn-circle"></div>
+                            <div class="promo__show" style="display: none;">
+                                <div class="promo__form">
+                                    <input type="number" class="promo__input"
+                                           value="<?= calculateMaxPointsToSpend($basket->getPrice(), $userBonus) ?>">
+                                    <input type="submit" class="border-btn" value="Применить">
+                                </div>
                             </div>
                         </div>
-
-                        <div class="promo__show" style="display: none;">
-                            <div class="promo__form">
-                                <input type="number" class="promo__input" value="<?=calculateMaxPointsToSpend($basket->getPrice(), $userBonus)?>">
-                                <input type="submit" class="border-btn" value="Применить">
-                            </div>
-                        </div>
-                    </div>
                     <?php endif; ?>
                     <button id="saveBtn" type="submit" class="black-btn">Оплатить заказ</button>
                     <p class="checkout__small">
@@ -376,46 +388,46 @@ foreach ($basket as $basketItem) {
                             оферты</a>&nbsp;и&nbsp;<a href="#">политики конфиденциальности</a>
                     </p>
                 </div>
-            </form>
-            <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    const form = document.querySelector('#form');
-                    const saveBtn = document.querySelector('#saveBtn');
-                    // Если форма найдена, добавляем слушатель события submit
-                    if (form) {
-                        form.addEventListener('submit', handleFormSubmit);
-                    } else {
-                        console.warn('Форма не найдена на странице');
-                    }
+                </form>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const form = document.querySelector('#form');
+                        const saveBtn = document.querySelector('#saveBtn');
+                        // Если форма найдена, добавляем слушатель события submit
+                        if (form) {
+                            form.addEventListener('submit', handleFormSubmit);
+                        } else {
+                            console.warn('Форма не найдена на странице');
+                        }
 
-                    function handleFormSubmit(event) {
-                        event.preventDefault();
-                        saveBtn.innerHTML = `
+                        function handleFormSubmit(event) {
+                            event.preventDefault();
+                            saveBtn.innerHTML = `
                   <span class='spinner-grow spinner-grow-sm' aria-hidden='true'></span>
                   <span role='status'>Переходим на оплату...</span>
                 `;
-                        const formData = new FormData(form);
-                        fetch(form.action, {
-                            method: 'POST',
-                            body: formData
-                        })
-                            .then(response => response.json())
-                            .then(data => {
-                                saveBtn.innerHTML = `Оплатить`;
-                                if (data.status === 'error') {
-                                    console.log('1');
-                                } else {
-
-                                }
+                            const formData = new FormData(form);
+                            fetch(form.action, {
+                                method: 'POST',
+                                body: formData
                             })
-                            .catch(error => {
-                                console.error('Ошибка при отправке формы:', error);
-                            });
-                    }
-                });
-            </script>
+                                .then(response => response.json())
+                                .then(data => {
+                                    saveBtn.innerHTML = `Оплатить`;
+                                    if (data.status === 'error') {
+                                        console.log('1');
+                                    } else {
+
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Ошибка при отправке формы:', error);
+                                });
+                        }
+                    });
+                </script>
+            </div>
         </div>
-    </div>
 </section>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -428,6 +440,20 @@ foreach ($basket as $basketItem) {
             // Возвращаем минимальное из двух значений
             return Math.min(total, bonus);
         }
+
+        function calculateBonusPoints(total) {
+            // Проверяем корректность входных данных
+            if (total <= 0) {
+                return 0;
+            }
+
+            // Вычисляем 5% от суммы заказа
+            return Math.round(total * 0.05);
+        }
+
+        let totalPrice = <?=$basket->getPrice();?>;
+        document.querySelector('.bonusPoints').textContent = '+' + calculateBonusPoints(totalPrice) + ' баллов';
+        document.querySelector('.bonusPointsValue').value = calculateBonusPoints(totalPrice);
 
         const countAria = document.querySelectorAll('.checkout__cart-quantity');
         countAria.forEach(element => {
@@ -462,9 +488,11 @@ foreach ($basket as $basketItem) {
                         if (data.status === 'error') {
 
                         } else {
-                            const total = data.price;
+                            const total = data.totalPrice;
                             const bonus = <?=$userBonus?>;
                             document.querySelector('.promo__input').value = calculateMaxPointsToSpend(total, bonus);
+                            document.querySelector('.bonusPoints').textContent = '+' + calculateBonusPoints(total) + ' баллов';
+                            document.querySelector('.bonusPointsValue').value = calculateBonusPoints(total);
                             if (data.price !== '') {
                                 wrapperProduct.querySelector('.checkout__cart-price').textContent = data.price + ' ₽';
                             }
@@ -501,9 +529,11 @@ foreach ($basket as $basketItem) {
                         if (data.status === 'error') {
 
                         } else {
-                            const total = data.price;
+                            const total = data.totalPrice;
                             const bonus = <?=$userBonus?>;
                             document.querySelector('.promo__input').value = calculateMaxPointsToSpend(total, bonus);
+                            document.querySelector('.bonusPoints').textContent = '+' + calculateBonusPoints(total) + ' баллов';
+                            document.querySelector('.bonusPointsValue').value = calculateBonusPoints(total);
 
                             wrapperProduct.style.display = 'none';
                             if (data.totalPrice !== '') {
@@ -523,13 +553,14 @@ foreach ($basket as $basketItem) {
         // в зависимости от города скрываем способ оплаты
         const inputCity = document.querySelector('#city');
         inputCity.addEventListener('input', function (e) {
-            if (inputCity.value.toLowerCase() === 'москва'){
+            if (inputCity.value.toLowerCase() === 'москва') {
                 document.querySelector('#moskva').style.display = 'flex';
             }
         })
         // в зависимости от выбранной доставки выводим блоки (Адрес или выбор ПВЗ города)
         const selectExport = document.querySelectorAll('input[name="delivery"]');
         const streetBlock = document.querySelector('.address');
+
         function updateBlockVisibility() {
             const checkedValues = Array.from(selectExport)
                 .filter(cb => cb.checked)
@@ -541,6 +572,7 @@ foreach ($basket as $basketItem) {
 
             streetBlock.style.display = shouldBeVisible ? 'flex' : 'none';
         }
+
         selectExport.forEach(checkbox => {
             checkbox.addEventListener('change', updateBlockVisibility);
         });

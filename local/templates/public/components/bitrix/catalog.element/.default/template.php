@@ -243,67 +243,84 @@ foreach ($arFavorites as $favorite) {
             </div>
             <p class="tovar__price"><?= $arResult['JS_OFFERS'][0]['ITEM_PRICES'][0]['PRINT_PRICE'] ?></p>
             <form action="#" class="tovar__form">
-                <?php if (isset($arResult['SKU_PROPS']['SIZE'])): ?>
+                <?php if (isset($arResult['SKU_PROPS'])): ?>
+                    <?php if ($haveOffers && !empty($arResult['OFFERS_PROP'])): ?>
+                        <?php foreach ($arResult['SKU_PROPS'] as $key => $skuProperty): ?>
+                            <?php
+                            if (!isset($arResult['OFFERS_PROP'][$skuProperty['CODE']]))
+                                continue;
 
-                    <div class="tovar__size">
-                        <div class="tovar__sizes">
-                            <div class="product-item-detail-info-section">
-                                <?php
-                                if ($haveOffers && !empty($arResult['OFFERS_PROP'])) {
-                                    ?>
-                                    <div id="<?= $itemIds['TREE_ID'] ?>">
-                                        <?php
-                                        foreach ($arResult['SKU_PROPS'] as $skuProperty) {
-                                            if (!isset($arResult['OFFERS_PROP'][$skuProperty['CODE']]))
-                                                continue;
+                            $propertyId = $skuProperty['ID'];
+                            $skuProps[] = array(
+                                'ID' => $propertyId,
+                                'SHOW_MODE' => $skuProperty['SHOW_MODE'],
+                                'VALUES' => $skuProperty['VALUES'],
+                                'VALUES_COUNT' => $skuProperty['VALUES_COUNT']
+                            );
+                            ?>
+                            <?php if ($key == 'COLOR' && false): ?>
+                                <?php pr($skuProperty);?>
+                                <div class="tovar__color">
+                                    <div class="tovar__color-text">
+                                        <p class="tovar__color-title">Цвет</p>
+                                        <p class="tovar__color-current">Графит</p>
+                                    </div>
+                                    <div class="tovar__colors">
+                                        <?php foreach ($skuProperty['VALUES'] as $value): ?>
+                                            <label class="tovar__color-item">
+                                                <input type="radio" value="Черный" name="color" checked="">
+                                                <span class="tovar__color-circle">
+                                                  <span style="background: #000;"></span>
+                                                </span>
+                                            </label>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+                            <?php if ($key == 'SIZE'): ?>
+                                <div class="tovar__size">
+                                    <div class="tovar__sizes">
+                                        <div class="product-item-detail-info-section">
+                                            <div id="<?= $itemIds['TREE_ID'] ?>">
 
-                                            $propertyId = $skuProperty['ID'];
-                                            $skuProps[] = array(
-                                                'ID' => $propertyId,
-                                                'SHOW_MODE' => $skuProperty['SHOW_MODE'],
-                                                'VALUES' => $skuProperty['VALUES'],
-                                                'VALUES_COUNT' => $skuProperty['VALUES_COUNT']
-                                            );
-                                            ?>
-                                            <div class="product-item-detail-info-container"
-                                                 data-entity="sku-line-block">
-                                                <div class="title tovar__size-title"><?= htmlspecialcharsEx($skuProperty['NAME']) ?></div>
-                                                <div class="product-item-scu-container">
-                                                    <div class="product-item-scu-block">
-                                                        <div class="product-item-scu-list">
-                                                            <ul class="product-item-scu-item-list">
-                                                                <?php
-                                                                foreach ($skuProperty['VALUES'] as &$value) {
-                                                                    $value['NAME'] = htmlspecialcharsbx($value['NAME']);
-                                                                    ?>
-                                                                    <li class="product-item-scu-item-text-container"
-                                                                        title="<?= $value['NAME'] ?>"
-                                                                        data-treevalue="<?= $propertyId ?>_<?= $value['ID'] ?>"
-                                                                        data-onevalue="<?= $value['ID'] ?>">
-                                                                        <div class="product-item-scu-item-text-block">
-                                                                            <div class="product-item-scu-item-text"><?= $value['NAME'] ?></div>
-                                                                        </div>
-                                                                    </li>
+                                                <div class="product-item-detail-info-container"
+                                                     data-entity="sku-line-block">
+                                                    <div class="title tovar__size-title"><?= htmlspecialcharsEx($skuProperty['NAME']) ?></div>
+                                                    <div class="product-item-scu-container">
+                                                        <div class="product-item-scu-block">
+                                                            <div class="product-item-scu-list">
+                                                                <ul class="product-item-scu-item-list">
                                                                     <?php
-                                                                }
-                                                                ?>
-                                                            </ul>
-                                                            <div style="clear: both;"></div>
+                                                                    foreach ($skuProperty['VALUES'] as &$value) {
+                                                                        $value['NAME'] = htmlspecialcharsbx($value['NAME']);
+                                                                        ?>
+                                                                        <li class="product-item-scu-item-text-container"
+                                                                            title="<?= $value['NAME'] ?>"
+                                                                            data-treevalue="<?= $propertyId ?>_<?= $value['ID'] ?>"
+                                                                            data-onevalue="<?= $value['ID'] ?>">
+                                                                            <div class="product-item-scu-item-text-block">
+                                                                                <div class="product-item-scu-item-text"><?= $value['NAME'] ?></div>
+                                                                            </div>
+                                                                        </li>
+                                                                        <?php
+                                                                    }
+                                                                    ?>
+                                                                </ul>
+                                                                <div style="clear: both;"></div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <?php
-                                        }
-                                        ?>
+                                        </div>
                                     </div>
-                                    <?php
-                                }
-                                ?>
-                            </div>
-                        </div>
-                        <a href="#" data-hystmodal="#sizeModal" class="tovar__size-btn">Определить размер</a>
-                    </div>
+                                    <a href="#" data-hystmodal="#sizeModal" class="tovar__size-btn">Определить
+                                        размер</a>
+                                </div>
+                            <?php endif; ?>
+
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 <?php endif; ?>
 
                 <a class="black-btn <?= $buyButtonClassName ?>" id="<?= $itemIds['BUY_LINK'] ?>"
@@ -318,172 +335,171 @@ foreach ($arFavorites as $favorite) {
     </section>
 <?php /** Конец карточки товара*/ ?>
     <section class="products products_others">
-    <div class="container">
-    <p class="h2">Вам может понравится</p>
-    </div>
-<?php $APPLICATION->IncludeComponent(
-    "bitrix:catalog.section",
-    "main",
-    array(
-        "ACTION_VARIABLE" => "action",
-        "ADD_PICT_PROP" => "IMAGES",
-        "ADD_PROPERTIES_TO_BASKET" => "Y",
-        "ADD_SECTIONS_CHAIN" => "N",
-        "ADD_TO_BASKET_ACTION" => "ADD",
-        "AJAX_MODE" => "N",
-        "AJAX_OPTION_ADDITIONAL" => "",
-        "AJAX_OPTION_HISTORY" => "N",
-        "AJAX_OPTION_JUMP" => "N",
-        "AJAX_OPTION_STYLE" => "Y",
-        "BACKGROUND_IMAGE" => "UF_BACKGROUND_IMAGE",
-        "BASKET_URL" => "/personal/basket.php",
-        "BRAND_PROPERTY" => "COLLECTION",
-        "BROWSER_TITLE" => "-",
-        "CACHE_FILTER" => "N",
-        "CACHE_GROUPS" => "Y",
-        "CACHE_TIME" => "36000000",
-        "CACHE_TYPE" => "A",
-        "COMPATIBLE_MODE" => "Y",
-        "CONVERT_CURRENCY" => "Y",
-        "CURRENCY_ID" => "RUB",
-        "CUSTOM_FILTER" => "{\"CLASS_ID\":\"CondGroup\",\"DATA\":{\"All\":\"AND\",\"True\":\"True\"},\"CHILDREN\":[]}",
-        "DATA_LAYER_NAME" => "dataLayer",
-        "DETAIL_URL" => "/catalog/#SECTION_CODE#/#ELEMENT_CODE#/",
-        "DISABLE_INIT_JS_IN_COMPONENT" => "N",
-        "DISCOUNT_PERCENT_POSITION" => "bottom-right",
-        "DISPLAY_BOTTOM_PAGER" => "Y",
-        "DISPLAY_TOP_PAGER" => "N",
-        "ELEMENT_SORT_FIELD" => "sort",
-        "ELEMENT_SORT_FIELD2" => "id",
-        "ELEMENT_SORT_ORDER" => "asc",
-        "ELEMENT_SORT_ORDER2" => "desc",
-        "ENLARGE_PRODUCT" => "PROP",
-        "ENLARGE_PROP" => "COLLECTION",
-        "FILTER_NAME" => "arrFilter",
-        "HIDE_NOT_AVAILABLE" => "N",
-        "HIDE_NOT_AVAILABLE_OFFERS" => "N",
-        "IBLOCK_ID" => "2",
-        "IBLOCK_TYPE" => "rest_entity",
-        "INCLUDE_SUBSECTIONS" => "Y",
-        "LABEL_PROP" => array(
-        ),
-        "LABEL_PROP_MOBILE" => "",
-        "LABEL_PROP_POSITION" => "top-left",
-        "LAZY_LOAD" => "Y",
-        "LINE_ELEMENT_COUNT" => "3",
-        "LOAD_ON_SCROLL" => "N",
-        "MESSAGE_404" => "",
-        "MESS_BTN_ADD_TO_BASKET" => "В корзину",
-        "MESS_BTN_BUY" => "Купить",
-        "MESS_BTN_DETAIL" => "Подробнее",
-        "MESS_BTN_LAZY_LOAD" => "Показать ещё",
-        "MESS_BTN_SUBSCRIBE" => "Подписаться",
-        "MESS_NOT_AVAILABLE" => "Нет в наличии",
-        "META_DESCRIPTION" => "-",
-        "META_KEYWORDS" => "-",
-        "OFFERS_CART_PROPERTIES" => array(
-            0 => "ARTNUMBER",
-            1 => "COLOR_REF",
-            2 => "SIZES_SHOES",
-            3 => "SIZES_CLOTHES",
-        ),
-        "OFFERS_FIELD_CODE" => array(
-            0 => "",
-            1 => "",
-        ),
-        "OFFERS_LIMIT" => "5",
-        "OFFERS_PROPERTY_CODE" => array(
-            0 => "COLOR_REF",
-            1 => "SIZES_SHOES",
-            2 => "SIZES_CLOTHES",
-            3 => "",
-        ),
-        "OFFERS_SORT_FIELD" => "sort",
-        "OFFERS_SORT_FIELD2" => "id",
-        "OFFERS_SORT_ORDER" => "asc",
-        "OFFERS_SORT_ORDER2" => "desc",
-        "OFFER_ADD_PICT_PROP" => "",
-        "OFFER_TREE_PROPS" => array(
-            0 => "COLOR_REF",
-            1 => "SIZES_SHOES",
-            2 => "SIZES_CLOTHES",
-        ),
-        "PAGER_BASE_LINK_ENABLE" => "N",
-        "PAGER_DESC_NUMBERING" => "N",
-        "PAGER_DESC_NUMBERING_CACHE_TIME" => "36000",
-        "PAGER_SHOW_ALL" => "N",
-        "PAGER_SHOW_ALWAYS" => "N",
-        "PAGER_TEMPLATE" => ".default",
-        "PAGER_TITLE" => "Товары",
-        "PAGE_ELEMENT_COUNT" => "6",
-        "PARTIAL_PRODUCT_PROPERTIES" => "N",
-        "PRICE_CODE" => array(
-            0 => "BASE",
-        ),
-        "PRICE_VAT_INCLUDE" => "Y",
-        "PRODUCT_BLOCKS_ORDER" => "price,props,sku,quantityLimit,quantity,buttons,compare",
-        "PRODUCT_DISPLAY_MODE" => "Y",
-        "PRODUCT_ID_VARIABLE" => "id",
-        "PRODUCT_PROPERTIES" => array(
-            0 => "NEWPRODUCT",
-            1 => "MATERIAL",
-        ),
-        "PRODUCT_PROPS_VARIABLE" => "prop",
-        "PRODUCT_QUANTITY_VARIABLE" => "",
-        "PRODUCT_ROW_VARIANTS" => "[{'VARIANT':'2','BIG_DATA':false}]",
-        "PRODUCT_SUBSCRIPTION" => "Y",
-        "PROPERTY_CODE" => array(
-            0 => "NEWPRODUCT",
-            1 => "",
-        ),
-        "PROPERTY_CODE_MOBILE" => array(
-            0 => "IMAGES",
-        ),
-        "RCM_PROD_ID" => $_REQUEST["PRODUCT_ID"],
-        "RCM_TYPE" => "personal",
-        "SECTION_CODE" => $_REQUEST["SECTION_CODE"],
-        "SECTION_ID" => "",
-        "SECTION_ID_VARIABLE" => "SECTION_ID",
-        "SECTION_URL" => "",
-        "SECTION_USER_FIELDS" => array(
-            0 => "",
-            1 => "",
-        ),
-        "SEF_MODE" => "Y",
-        "SET_BROWSER_TITLE" => "Y",
-        "SET_LAST_MODIFIED" => "N",
-        "SET_META_DESCRIPTION" => "Y",
-        "SET_META_KEYWORDS" => "Y",
-        "SET_STATUS_404" => "N",
-        "SET_TITLE" => "Y",
-        "SHOW_404" => "N",
-        "SHOW_ALL_WO_SECTION" => "Y",
-        "SHOW_CLOSE_POPUP" => "N",
-        "SHOW_DISCOUNT_PERCENT" => "N",
-        "SHOW_FROM_SECTION" => "N",
-        "SHOW_MAX_QUANTITY" => "N",
-        "SHOW_OLD_PRICE" => "N",
-        "SHOW_PRICE_COUNT" => "1",
-        "SHOW_SLIDER" => "Y",
-        "SLIDER_INTERVAL" => "3000",
-        "SLIDER_PROGRESS" => "N",
-        "TEMPLATE_THEME" => "blue",
-        "USE_ENHANCED_ECOMMERCE" => "Y",
-        "USE_MAIN_ELEMENT_SECTION" => "N",
-        "USE_PRICE_COUNT" => "N",
-        "USE_PRODUCT_QUANTITY" => "N",
-        "COMPONENT_TEMPLATE" => "main",
-        "MESS_NOT_AVAILABLE_SERVICE" => "Недоступно",
-        "SEF_RULE" => "#SECTION_CODE#",
-        "SECTION_CODE_PATH" => "",
-        "DISPLAY_COMPARE" => "N"
-    ),
-    false
-);?>
+        <div class="container">
+            <p class="h2">Вам может понравится</p>
+        </div>
+        <?php $APPLICATION->IncludeComponent(
+            "bitrix:catalog.section",
+            "main",
+            array(
+                "ACTION_VARIABLE" => "action",
+                "ADD_PICT_PROP" => "IMAGES",
+                "ADD_PROPERTIES_TO_BASKET" => "Y",
+                "ADD_SECTIONS_CHAIN" => "N",
+                "ADD_TO_BASKET_ACTION" => "ADD",
+                "AJAX_MODE" => "N",
+                "AJAX_OPTION_ADDITIONAL" => "",
+                "AJAX_OPTION_HISTORY" => "N",
+                "AJAX_OPTION_JUMP" => "N",
+                "AJAX_OPTION_STYLE" => "Y",
+                "BACKGROUND_IMAGE" => "UF_BACKGROUND_IMAGE",
+                "BASKET_URL" => "/personal/basket.php",
+                "BRAND_PROPERTY" => "COLLECTION",
+                "BROWSER_TITLE" => "-",
+                "CACHE_FILTER" => "N",
+                "CACHE_GROUPS" => "Y",
+                "CACHE_TIME" => "36000000",
+                "CACHE_TYPE" => "A",
+                "COMPATIBLE_MODE" => "Y",
+                "CONVERT_CURRENCY" => "Y",
+                "CURRENCY_ID" => "RUB",
+                "CUSTOM_FILTER" => "{\"CLASS_ID\":\"CondGroup\",\"DATA\":{\"All\":\"AND\",\"True\":\"True\"},\"CHILDREN\":[]}",
+                "DATA_LAYER_NAME" => "dataLayer",
+                "DETAIL_URL" => "/catalog/#SECTION_CODE#/#ELEMENT_CODE#/",
+                "DISABLE_INIT_JS_IN_COMPONENT" => "N",
+                "DISCOUNT_PERCENT_POSITION" => "bottom-right",
+                "DISPLAY_BOTTOM_PAGER" => "Y",
+                "DISPLAY_TOP_PAGER" => "N",
+                "ELEMENT_SORT_FIELD" => "sort",
+                "ELEMENT_SORT_FIELD2" => "id",
+                "ELEMENT_SORT_ORDER" => "asc",
+                "ELEMENT_SORT_ORDER2" => "desc",
+                "ENLARGE_PRODUCT" => "PROP",
+                "ENLARGE_PROP" => "COLLECTION",
+                "FILTER_NAME" => "arrFilter",
+                "HIDE_NOT_AVAILABLE" => "N",
+                "HIDE_NOT_AVAILABLE_OFFERS" => "N",
+                "IBLOCK_ID" => "2",
+                "IBLOCK_TYPE" => "rest_entity",
+                "INCLUDE_SUBSECTIONS" => "Y",
+                "LABEL_PROP" => array(),
+                "LABEL_PROP_MOBILE" => "",
+                "LABEL_PROP_POSITION" => "top-left",
+                "LAZY_LOAD" => "Y",
+                "LINE_ELEMENT_COUNT" => "3",
+                "LOAD_ON_SCROLL" => "N",
+                "MESSAGE_404" => "",
+                "MESS_BTN_ADD_TO_BASKET" => "В корзину",
+                "MESS_BTN_BUY" => "Купить",
+                "MESS_BTN_DETAIL" => "Подробнее",
+                "MESS_BTN_LAZY_LOAD" => "Показать ещё",
+                "MESS_BTN_SUBSCRIBE" => "Подписаться",
+                "MESS_NOT_AVAILABLE" => "Нет в наличии",
+                "META_DESCRIPTION" => "-",
+                "META_KEYWORDS" => "-",
+                "OFFERS_CART_PROPERTIES" => array(
+                    0 => "ARTNUMBER",
+                    1 => "COLOR_REF",
+                    2 => "SIZES_SHOES",
+                    3 => "SIZES_CLOTHES",
+                ),
+                "OFFERS_FIELD_CODE" => array(
+                    0 => "",
+                    1 => "",
+                ),
+                "OFFERS_LIMIT" => "5",
+                "OFFERS_PROPERTY_CODE" => array(
+                    0 => "COLOR_REF",
+                    1 => "SIZES_SHOES",
+                    2 => "SIZES_CLOTHES",
+                    3 => "",
+                ),
+                "OFFERS_SORT_FIELD" => "sort",
+                "OFFERS_SORT_FIELD2" => "id",
+                "OFFERS_SORT_ORDER" => "asc",
+                "OFFERS_SORT_ORDER2" => "desc",
+                "OFFER_ADD_PICT_PROP" => "",
+                "OFFER_TREE_PROPS" => array(
+                    0 => "COLOR_REF",
+                    1 => "SIZES_SHOES",
+                    2 => "SIZES_CLOTHES",
+                ),
+                "PAGER_BASE_LINK_ENABLE" => "N",
+                "PAGER_DESC_NUMBERING" => "N",
+                "PAGER_DESC_NUMBERING_CACHE_TIME" => "36000",
+                "PAGER_SHOW_ALL" => "N",
+                "PAGER_SHOW_ALWAYS" => "N",
+                "PAGER_TEMPLATE" => ".default",
+                "PAGER_TITLE" => "Товары",
+                "PAGE_ELEMENT_COUNT" => "6",
+                "PARTIAL_PRODUCT_PROPERTIES" => "N",
+                "PRICE_CODE" => array(
+                    0 => "BASE",
+                ),
+                "PRICE_VAT_INCLUDE" => "Y",
+                "PRODUCT_BLOCKS_ORDER" => "price,props,sku,quantityLimit,quantity,buttons,compare",
+                "PRODUCT_DISPLAY_MODE" => "Y",
+                "PRODUCT_ID_VARIABLE" => "id",
+                "PRODUCT_PROPERTIES" => array(
+                    0 => "NEWPRODUCT",
+                    1 => "MATERIAL",
+                ),
+                "PRODUCT_PROPS_VARIABLE" => "prop",
+                "PRODUCT_QUANTITY_VARIABLE" => "",
+                "PRODUCT_ROW_VARIANTS" => "[{'VARIANT':'2','BIG_DATA':false}]",
+                "PRODUCT_SUBSCRIPTION" => "Y",
+                "PROPERTY_CODE" => array(
+                    0 => "NEWPRODUCT",
+                    1 => "",
+                ),
+                "PROPERTY_CODE_MOBILE" => array(
+                    0 => "IMAGES",
+                ),
+                "RCM_PROD_ID" => $_REQUEST["PRODUCT_ID"],
+                "RCM_TYPE" => "personal",
+                "SECTION_CODE" => $_REQUEST["SECTION_CODE"],
+                "SECTION_ID" => "",
+                "SECTION_ID_VARIABLE" => "SECTION_ID",
+                "SECTION_URL" => "",
+                "SECTION_USER_FIELDS" => array(
+                    0 => "",
+                    1 => "",
+                ),
+                "SEF_MODE" => "Y",
+                "SET_BROWSER_TITLE" => "Y",
+                "SET_LAST_MODIFIED" => "N",
+                "SET_META_DESCRIPTION" => "Y",
+                "SET_META_KEYWORDS" => "Y",
+                "SET_STATUS_404" => "N",
+                "SET_TITLE" => "Y",
+                "SHOW_404" => "N",
+                "SHOW_ALL_WO_SECTION" => "Y",
+                "SHOW_CLOSE_POPUP" => "N",
+                "SHOW_DISCOUNT_PERCENT" => "N",
+                "SHOW_FROM_SECTION" => "N",
+                "SHOW_MAX_QUANTITY" => "N",
+                "SHOW_OLD_PRICE" => "N",
+                "SHOW_PRICE_COUNT" => "1",
+                "SHOW_SLIDER" => "Y",
+                "SLIDER_INTERVAL" => "3000",
+                "SLIDER_PROGRESS" => "N",
+                "TEMPLATE_THEME" => "blue",
+                "USE_ENHANCED_ECOMMERCE" => "Y",
+                "USE_MAIN_ELEMENT_SECTION" => "N",
+                "USE_PRICE_COUNT" => "N",
+                "USE_PRODUCT_QUANTITY" => "N",
+                "COMPONENT_TEMPLATE" => "main",
+                "MESS_NOT_AVAILABLE_SERVICE" => "Недоступно",
+                "SEF_RULE" => "#SECTION_CODE#",
+                "SECTION_CODE_PATH" => "",
+                "DISPLAY_COMPARE" => "N"
+            ),
+            false
+        ); ?>
     </section>
     <div class="bx-catalog-element bx-<?= $arParams['TEMPLATE_THEME'] ?>" id="<?= $itemIds['ID'] ?>"
          itemscope itemtype="http://schema.org/Product"
-    style="display: none">
+         style="display: none">
         <div class="container-fluid">
 
             <div class="row">
@@ -1136,25 +1152,31 @@ foreach ($arFavorites as $favorite) {
                     <p class="gray">При уходе за термобельем придерживайтесь этих правил:</p>
                     <ol class="gray">
                         <li>
-                            В целях гигиены, мы рекомендуем постирать новую вещь перед ноской, так как термобелье используется в качестве первого слоя к телу.
+                            В целях гигиены, мы рекомендуем постирать новую вещь перед ноской, так как термобелье
+                            используется в качестве первого слоя к телу.
                         </li>
                         <li>
                             Перед стиркой застегните молнию и выверните вещь наизнанку.
                         </li>
                         <li>
-                            Стирка при температуре не выше 30 градусов на деликатном режиме, отжим самый минимальный, без скручивания. Лучше поставить функцию «без отжима».
+                            Стирка при температуре не выше 30 градусов на деликатном режиме, отжим самый минимальный,
+                            без скручивания. Лучше поставить функцию «без отжима».
                         </li>
                         <li>
-                            Мы рекомендуем использовать стиральные средства для деликатных тканей. Лучше всего подойдут жидкие гели, так как стиральные порошки могут попасть в структуру плетения и плохо выстираться, что скажется на эффективности термобелья.
+                            Мы рекомендуем использовать стиральные средства для деликатных тканей. Лучше всего подойдут
+                            жидкие гели, так как стиральные порошки могут попасть в структуру плетения и плохо
+                            выстираться, что скажется на эффективности термобелья.
                         </li>
                         <li>
-                            Сушить термобелье&nbsp;необходимо в хорошо проветриваемом помещении, вдали от солнечных лучей и отопительных приборов.&nbsp;
+                            Сушить термобелье&nbsp;необходимо в хорошо проветриваемом помещении, вдали от солнечных
+                            лучей и отопительных приборов.&nbsp;
                         </li>
                         <li>
                             Сушка в стиральной машине запрещена
                         </li>
                         <li>
-                            Утюжить и отпаривать термобелье не требуется. Любое температурное воздействие болье 30 градусов С, для термобелья- запрещено.
+                            Утюжить и отпаривать термобелье не требуется. Любое температурное воздействие болье 30
+                            градусов С, для термобелья- запрещено.
                         </li>
                         <li>
                             Храните термобелье&nbsp;в сложенном виде, чтобы избежать деформации.
@@ -1164,15 +1186,16 @@ foreach ($arFavorites as $favorite) {
             <span class="gray">
               При бережном уходе ваши любимые вещи прослужат не один сезон.
             </span>
-                        Мы рекомендуем относиться аккуратно с липучками и другими элементами экипировки, которые могут оставлять зацепки на термобелье.
+                        Мы рекомендуем относиться аккуратно с липучками и другими элементами экипировки, которые могут
+                        оставлять зацепки на термобелье.
                     </p>
                     <div class="how__icons">
-                        <img src="<?=SITE_TEMPLATE_PATH?>/assets/img/how1.svg" alt="icon">
-                        <img src="<?=SITE_TEMPLATE_PATH?>/assets/img/how2.svg" alt="icon">
-                        <img src="<?=SITE_TEMPLATE_PATH?>/assets/img/how3.svg" alt="icon">
-                        <img src="<?=SITE_TEMPLATE_PATH?>/assets/img/how4.svg" alt="icon">
-                        <img src="<?=SITE_TEMPLATE_PATH?>/assets/img/how5.svg" alt="icon">
-                        <img src="<?=SITE_TEMPLATE_PATH?>/assets/img/how6.svg" alt="icon">
+                        <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/how1.svg" alt="icon">
+                        <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/how2.svg" alt="icon">
+                        <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/how3.svg" alt="icon">
+                        <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/how4.svg" alt="icon">
+                        <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/how5.svg" alt="icon">
+                        <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/how6.svg" alt="icon">
                     </div>
                 </div>
             </div>
@@ -1184,12 +1207,11 @@ foreach ($arFavorites as $favorite) {
                 <button data-hystclose="" class="hystmodal__close"></button>
                 <div class="gray">
                     <p class="h2">Информация о товаре</p>
-                    <?= $arResult['DETAIL_TEXT']?>
+                    <?= $arResult['DETAIL_TEXT'] ?>
                 </div>
             </div>
         </div>
     </div>
-
 
 
 <?php

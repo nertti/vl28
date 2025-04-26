@@ -72,8 +72,8 @@ $arParams['BRAND_PROPERTY'] = isset($arParams['BRAND_PROPERTY']) ? trim($arParam
 \CJSCore::Init(array('fx', 'popup', 'ajax'));
 Main\UI\Extension::load(['ui.mustache']);
 
-$this->addExternalCss('/bitrix/css/main/bootstrap.css');
-$this->addExternalCss($templateFolder.'/themes/'.$arParams['TEMPLATE_THEME'].'/style.css');
+//$this->addExternalCss('/bitrix/css/main/bootstrap.css');
+//$this->addExternalCss($templateFolder.'/themes/'.$arParams['TEMPLATE_THEME'].'/style.css');
 
 $this->addExternalJs($templateFolder.'/js/action-pool.js');
 $this->addExternalJs($templateFolder.'/js/filter.js');
