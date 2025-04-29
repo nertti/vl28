@@ -14,7 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["code"])) {
 
     if ($code == $_SESSION["SMS_OTP"]) {
         unset($_SESSION["SMS_OTP"]); // Удаляем код после успешного ввода
-        $rsUsers = CUser::GetList(array(), 'sort', array('PERSONAL_PHONE' => $_POST["phone"]));
+        $rsUsers = CUser::GetList(array(), 'sort', array('PERSONAL_PHONE' => $phone));
         if ($rsUsers->SelectedRowsCount() <= 0) {
             $arResult = $USER->Register($phone, "", "", $phone, $phone, $phone . "@vl28.ru");
             if ($arResult['TYPE'] == 'OK') {
@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["code"])) {
                 $user->Update($arResult['ID'], $fields);
                 echo json_encode(["success" => true]);
             } else {
-                echo json_encode(["success" => false, "error" => $arResult]);
+                echo json_encode(["success" => false, "error" => $arResult, 'test' => $rsUsers->SelectedRowsCount()]);
             }
         } else {
             $rsUser = CUser::GetByLogin($phone);
