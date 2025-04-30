@@ -190,14 +190,14 @@ foreach ($basket as $basketItem) {
                 <?php endforeach; ?>
             </div>
 
-            <div id="form" action="/ajax/createOrder.php" class="checkout__form">
+            <form id="form" action="/ajax/createOrder.php" class="checkout__form">
                 <input type="hidden" name="siteId" value="<?= $siteId ?>">
                 <input type="hidden" name="fUserId" value="<?= $fUserId ?>">
                 <div class="checkout__form-left">
                     <div class="checkout__label">
                         <p class="checkout__name">E-mail</p>
                         <div class="checkout__inputs">
-                            <input type="text" class="form-input checkout__input" placeholder="banshin@yandex.ru">
+                            <input type="text" class="form-input checkout__input" placeholder="E-mail">
                             <label class="checkout__checkbox">
                                 <input type="checkbox" name="news">
                                 <div class="checkmark"></div>
@@ -216,21 +216,21 @@ foreach ($basket as $basketItem) {
                     <div class="checkout__label">
                         <p class="checkout__name">Фамилия</p>
                         <div class="checkout__inputs">
-                            <input type="text" name="subname" class="form-input checkout__input" placeholder="Баньшин">
+                            <input type="text" name="subname" class="form-input checkout__input" placeholder="Фамилия">
                         </div>
                     </div>
                     <div class="checkout__label">
                         <p class="checkout__name">Телефон</p>
                         <div class="checkout__inputs">
                             <input type="text" name="phone" class="form-input phone-input checkout__input"
-                                   placeholder="+7 986 703 11 65">
+                                   placeholder="+7 (___) ___-__-__">
                         </div>
                     </div>
                     <div class="checkout__label">
                         <p class="checkout__name">Населённый пункт</p>
                         <div class="checkout__inputs">
                             <input id="city" type="text" name="city" class="form-input checkout__input"
-                                   placeholder="Мурманск">
+                                   placeholder="Населённый пункт">
                         </div>
                     </div>
                     <div class="checkout__label checkout__label_radios">
@@ -289,14 +289,14 @@ foreach ($basket as $basketItem) {
                         <p class="checkout__name">Способ оплаты</p>
                         <div class="checkout__inputs">
                             <label class="checkout__radio">
-                                <input type="radio" name="payment" value="Оплата картой онлайн" checked="">
+                                <input type="radio" name="payment" value="card" checked="">
                                 <div class="checkmark"></div>
                                 <span>
                       Оплата картой онлайн
                     </span>
                             </label>
                             <label class="checkout__radio" id="moskva" style="display: none">
-                                <input type="radio" name="payment" value="Картой при получении (для Москвы)">
+                                <input type="radio" name="payment" value="card_moskoy">
                                 <div class="checkmark"></div>
                                 <span>
                       Картой при получении (для Москвы)
@@ -344,53 +344,60 @@ foreach ($basket as $basketItem) {
                         <?php endif; ?>
 
                         <!-- Если юзер авторизован -->
-                        <?php if ($USER->isAuthorized()): ?>
-                            <div class="checkout__param-item">
-                                <p>Баллов начислится:</p>
-                                <p class="bonusPoints"></p>
-                                <input class="bonusPointsValue" type="hidden" name="bonusPoints" value="">
-                            </div>
-                        <?php endif; ?>
+                        <div class="checkout__param-item" <?php if (!$USER->isAuthorized()): ?> style="display: none" <?php endif; ?>>
+                            <p>Баллов начислится:</p>
+                            <p class="bonusPoints"></p>
+                            <input class="bonusPointsValue" type="hidden" name="bonusPoints" value="">
+                        </div>
                         <div class="checkout__param-item totalPrice">
                             <p>Итого:</p>
                             <strong><?= $basket->getPrice(); ?> ₽</strong>
                         </div>
                     </div>
-                    <?php if ($USER->isAuthorized()): ?>
-                        <!-- Если юзер авторизован -->
-                        <div class="promo">
-                            <!-- Если юзер тратит баллы -->
-                            <?php if ($saleBonus): ?>
-                                <div class="checkout__param-item checkout__param-item_sale">
-                                    <p>Программа лояльности</p>
-                                    <p>-0 ₽</p>
-                                </div>
-                            <?php endif; ?>
-                            <div class="promo__activate">
-                                <p>Программа лояльности: <strong><?= $userBonus ?> баллов</strong></p>
-                                <div class="promo__btn">
-                                    <div class="promo__btn-circle"></div>
-                                </div>
-                            </div>
 
-                            <div class="promo__show" style="display: none;">
-                                <div class="promo__form">
-                                    <input type="number" class="promo__input"
-                                           value="<?= calculateMaxPointsToSpend($basket->getPrice(), $userBonus) ?>">
-                                    <input type="submit" class="border-btn" value="Применить">
-                                </div>
+                    <!-- Если юзер авторизован -->
+                    <div class="promo" <?php if (!$USER->isAuthorized()): ?> style="display: none" <?php endif; ?>>
+                        <!-- Если юзер тратит баллы -->
+                        <?php if ($saleBonus): ?>
+                            <div class="checkout__param-item checkout__param-item_sale">
+                                <p>Программа лояльности</p>
+                                <p>-0 ₽</p>
+                            </div>
+                        <?php endif; ?>
+                        <div class="promo__activate">
+                            <p>Программа лояльности: <strong><?= $userBonus ?> баллов</strong></p>
+                            <div class="promo__btn" <?php if ($userBonus <= 0): ?> style="display: none" <?php endif; ?>>
+                                <div class="promo__btn-circle"></div>
                             </div>
                         </div>
-                    <?php endif; ?>
+
+                        <div class="promo__show" style="display: none;">
+                            <div class="promo__form">
+                                <input type="number" class="promo__input"
+                                       value="<?= calculateMaxPointsToSpend($basket->getPrice(), $userBonus) ?>">
+                                <input type="submit" class="border-btn" value="Применить">
+                            </div>
+                        </div>
+                    </div>
+
                     <button id="saveBtn" type="submit" class="black-btn">Оплатить заказ</button>
                     <p class="checkout__small">
                         Нажимая на&nbsp;кнопку «оплатить заказ», я&nbsp;принимаю условия&nbsp;<a href="#">публичной
                             оферты</a>&nbsp;и&nbsp;<a href="#">политики конфиденциальности</a>
                     </p>
                 </div>
-                </form>
                 <script>
                     document.addEventListener('DOMContentLoaded', function () {
+                        const myModalSuccess = new HystModal({
+                            linkAttributeName: 'data-hystmodal',
+                            afterClose: function(modal){
+                                window.location = '/'
+                            },
+                        });
+                        const myModalReject = new HystModal({
+                            linkAttributeName: 'data-hystmodal',
+                        });
+
                         const form = document.querySelector('#form');
                         const saveBtn = document.querySelector('#saveBtn');
                         // Если форма найдена, добавляем слушатель события submit
@@ -403,9 +410,9 @@ foreach ($basket as $basketItem) {
                         function handleFormSubmit(event) {
                             event.preventDefault();
                             saveBtn.innerHTML = `
-                  <span class='spinner-grow spinner-grow-sm' aria-hidden='true'></span>
-                  <span role='status'>Переходим на оплату...</span>
-                `;
+                              <span class='spinner-grow spinner-grow-sm' aria-hidden='true'></span>
+                              <span role='status'>Переходим на оплату...</span>
+                            `;
                             const formData = new FormData(form);
                             fetch(form.action, {
                                 method: 'POST',
@@ -417,7 +424,8 @@ foreach ($basket as $basketItem) {
                                     if (data.status === 'error') {
                                         console.log('1');
                                     } else {
-
+                                        document.querySelector('#alertModal .alertText .h2').textContent = data.message
+                                        myModalSuccess.open('#alertModal');
                                     }
                                 })
                                 .catch(error => {
@@ -426,7 +434,7 @@ foreach ($basket as $basketItem) {
                         }
                     });
                 </script>
-            </div>
+            </form>
         </div>
 </section>
 <script>
@@ -580,4 +588,14 @@ foreach ($basket as $basketItem) {
         // Промокод...
     });
 </script>
+<div class="hystmodal" id="alertModal" aria-hidden="true">
+    <div class="hystmodal__wrap">
+        <div class="hystmodal__window hystmodal__window_subscribe" role="dialog" aria-modal="true" style="  min-height: auto;">
+            <button data-hystclose="" class="hystmodal__close"></button>
+            <div class="alertText">
+                <p class="h2"></p>
+            </div>
+        </div>
+    </div>
+</div>
 <?php require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/footer.php"); ?>
