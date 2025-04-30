@@ -38,6 +38,8 @@ $APPLICATION->SetTitle("Вход или регистрация");
     </section>
 
     <script>
+        const myModal = new HystModal({linkAttributeName: 'data-hystmodal',});
+
         document.addEventListener("DOMContentLoaded", function () {
             let resendTimer;
 
@@ -63,7 +65,9 @@ $APPLICATION->SetTitle("Вход или регистрация");
 
                             startResendTimer();
                         } else {
-                            alert("Ошибка отправки SMS. Попробуйте снова.");
+                            document.querySelector('#alertModal .alertText .h2').textContent = "Ошибка отправки SMS. Попробуйте снова."
+                            myModal.open('#alertModal');
+                            //alert("Ошибка отправки SMS. Попробуйте снова.");
                         }
                     });
             });
@@ -83,10 +87,14 @@ $APPLICATION->SetTitle("Вход или регистрация");
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            alert("Авторизация успешна!");
+                            //alert("Авторизация успешна!");
+                            document.querySelector('#alertModal .alertText .h2').textContent = "Авторизация успешна!"
+                            myModal.open('#alertModal');
                             window.location.href = "/profile/"; // Перенаправление в личный кабинет
                         } else {
-                            alert("Неверный код. Попробуйте снова.");
+                            //alert("Неверный код. Попробуйте снова.");
+                            document.querySelector('#alertModal .alertText .h2').textContent = "Неверный код. Попробуйте снова."
+                            myModal.open('#alertModal');
                         }
                     });
             });
@@ -122,14 +130,27 @@ $APPLICATION->SetTitle("Вход или регистрация");
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            alert("Код повторно отправлен!");
+                            //alert("Код повторно отправлен!");
+                            document.querySelector('#alertModal .alertText .h2').textContent = "Код повторно отправлен!"
+                            myModal.open('#alertModal');
                             startResendTimer();
                         } else {
-                            alert("Ошибка повторной отправки.");
+                            //alert("Ошибка повторной отправки.");
+                            document.querySelector('#alertModal .alertText .h2').textContent = "Ошибка повторной отправки."
+                            myModal.open('#alertModal');
                         }
                     });
             });
         });
     </script>
-
+<div class="hystmodal" id="alertModal" aria-hidden="true">
+    <div class="hystmodal__wrap">
+        <div class="hystmodal__window hystmodal__window_subscribe" role="dialog" aria-modal="true" style="  min-height: auto;">
+            <button data-hystclose="" class="hystmodal__close"></button>
+            <div class="alertText">
+                <p class="h2">Данные успешно отправлены. Спасибо за подписку!</p>
+            </div>
+        </div>
+    </div>
+</div>
 <?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
