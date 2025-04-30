@@ -97,14 +97,13 @@ use Bitrix\Main\Page\Asset;
                 ); ?>
             </ul>
         </nav>
-        <?php //todo: Продумать форму или не нужно? ?>
         <div class="subs">
             <p class="subs__text">Будьте в курсе всех новинок и специальных предложений</p>
             <a href="#" class="subs__btn main-btn" data-hystmodal="#subModal">Подписаться</a>
         </div>
     </div>
     <div class="footer__bottom">
-        <a href="#" class="footer__logo logo">
+        <a href="/" class="footer__logo logo">
             <img src="<?=SITE_TEMPLATE_PATH?>/assets/img/logo.svg" alt="VL28" class="logo__img">
         </a>
         <span>© VL28, 2024. Все права защищены</span>

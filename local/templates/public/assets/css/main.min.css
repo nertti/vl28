@@ -2969,6 +2969,29 @@ section {
   height:15px;
   border:1px solid #bebebe
 }
+.checkout__checkbox .checkmark::after {
+  content: '';
+  position: absolute;
+  background-color: transparent;
+  border-left:
+          2px solid transparent;
+  border-left-color: transparent;
+  border-bottom:
+          2px solid transparent;
+  border-bottom-color: transparent;
+  transform-origin: center;
+  opacity: 0;
+  transition:
+          all 0.2s ease;
+  width: 11px;
+  height: 5px;
+  border-left-color: #000;
+  border-bottom-color: #000;
+  transform: rotate(-45deg);
+}
+.checkout__checkbox input:checked~.checkmark::after {
+  opacity:1
+}
 .checkout__checkbox span {
   width:calc(100% - 30px);
   font-size:12px;
