@@ -8,3 +8,9 @@
 .product-item-scu-item-text-container.selected{
 	font-weight: 500;
 }
+.swiper .swiper-slide{
+	height: auto;
+}
+.swiper-slide img{
+	object-fit: cover;
+}
