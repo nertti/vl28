@@ -3,10 +3,10 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.
 /** @global CMain $APPLICATION */
 
 global $USER;
-use Bitrix\Main\Loader;
-Loader::includeModule("logictim.balls");
-require_once $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/logictim.balls/classes/module_sale_16/cHelper.php";
-$userBonus = 0;
 
-$userBonus = cHelper::UserBallance($USER->GetID()); // возвращает бонусы у текущего пользователя
-//pr($userBonus, true);
+$userBonus = 0;
+$userId = $USER->GetID();
+$rsUser = CUser::GetByID($userId);
+$arUser = $rsUser->Fetch();
+$userBonus = $arUser['UF_BONUS'];
+//pr($arUser, true);

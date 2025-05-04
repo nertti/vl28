@@ -1,9 +1,12 @@
 <?php
 // Подключаем необходимые файлы
+/** @var \CMain $USER */
+
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
 Bitrix\Main\Loader::includeModule("Sale");
 Bitrix\Main\Loader::includeModule("Catalog");
 try {
+
     // Получаем данные из тела запроса
     $requestData = json_decode(file_get_contents('php://input'), true);
 
@@ -24,12 +27,33 @@ try {
     $siteId = $requestData['siteId'];
     $basket = Bitrix\Sale\Basket::loadItemsForFUser($fUserId, $siteId);
 
+
     foreach ($basket as $basketItem) {
         if ($basketItem->getField('ID') == $id){
             $basketItem->setField('QUANTITY', $count); // Изменение поля
             $basket->save();
 
             $finalPrice = $basketItem->getFinalPrice();
+        }
+    }
+
+    $fullPrice = $basket->getBasePrice();
+    $salePrice = 0;
+
+    if ($USER->isAuthorized()) {
+        $userId = $USER->GetID();
+        $rsUser = CUser::GetByID($userId);
+        $arUser = $rsUser->Fetch();
+
+        if ($arUser['UF_CARD'] == 10) {
+            $fullPrice = floor($fullPrice * 0.95);
+            $salePrice = floor($fullPrice * 0.05);
+        } elseif ($arUser['UF_CARD'] == 11) {
+            $fullPrice = floor($fullPrice * 0.90);
+            $salePrice = floor($fullPrice * 0.10);
+        } elseif ($arUser['UF_CARD'] == 12) {
+            $fullPrice = floor($fullPrice * 0.85);
+            $salePrice = floor($fullPrice * 0.15);
         }
     }
 
@@ -40,7 +64,8 @@ try {
         'id' => $id,
         'count' => $count,
         'price' => $finalPrice,
-        'totalPrice' => $basket->getPrice(),
+        'totalPrice' => $fullPrice,
+        'salePrice' => $salePrice,
     ];
 
 } catch (Exception $e) {

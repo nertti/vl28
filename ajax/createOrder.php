@@ -1,14 +1,13 @@
 <?php
-require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
+require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php");
 
-
-
-use Bitrix\Main\Context,
-    Bitrix\Currency\CurrencyManager,
-    Bitrix\Sale\Order,
-    Bitrix\Sale\Basket,
-    Bitrix\Sale\Delivery,
-    Bitrix\Sale\PaySystem;
+use Bitrix\Currency\CurrencyManager;
+use Bitrix\Main\Context;
+use Bitrix\Main\Loader;
+use Bitrix\Sale\Basket;
+use Bitrix\Sale\Delivery;
+use Bitrix\Sale\Order;
+use Bitrix\Sale\PaySystem;
 
 global $USER;
 
@@ -18,6 +17,44 @@ Bitrix\Main\Loader::includeModule("catalog");
 // Допустим некоторые поля приходит в запросе
 $request = Context::getCurrent()->getRequest();
 
+$pattern = '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/';
+
+// Проверяем заполненные значения
+$errors = [];
+if (empty($request['email'])) {
+    $errors['email'] = "Пожалуйста, введите свой email.";
+} elseif (!preg_match($pattern, $request['email'])) {
+    $errors['email'] = "Введите корректный электронный адрес";
+}
+if (empty($request['name'])) {
+    $errors['name'] = "Пожалуйста, введите своё имя.";
+}
+if (empty($request['surname'])) {
+    $errors['surname'] = "Пожалуйста, введите свою фамилию.";
+}
+if (empty($request['phone'])) {
+    $errors['phone'] = "Пожалуйста, введите свой телефон.";
+}
+if ($request['delivery'] == 1 || $request['delivery'] == 3) {
+    if (empty($request['city'])) {
+        $errors['city'] = "Пожалуйста, укажите населённый пункт.";
+    }
+    if (empty($request['street'])) {
+        $errors['street'] = "Пожалуйста, укажите улицу.";
+    }
+    if (empty($request['dom'])) {
+        $errors['dom'] = "Пожалуйста, укажите номер дома.";
+    }
+    if (empty($request['kvartira'])) {
+        $errors['kvartira'] = "Пожалуйста, укажите номер квартиры.";
+    }
+}
+// Если есть ошибки, возвращаем их в виде JSON
+if (!empty($errors)) {
+    header('Content-Type: application/json');
+    echo json_encode(['status' => 'error', 'message' => $errors]);
+    exit();
+}
 $phone = $request["phone"];
 $phoneCleaned = preg_replace("/[^0-9]/", "", $_POST["phone"]); // Очищаем номер
 
@@ -28,7 +65,9 @@ $fUserId = $request['fUserId'];
 $siteId = $request['siteId'];
 $basket = Bitrix\Sale\Basket::loadItemsForFUser($fUserId, $siteId);
 
-if (!$USER->isAuthorized()){
+$userId = $USER->GetID();
+
+if (!$USER->isAuthorized()) {
     $rsUsers = CUser::GetList(array(), 'sort', array('PERSONAL_PHONE' => $phoneCleaned));
     if ($rsUsers->SelectedRowsCount() <= 0) {
         $arResult = $USER->Register($phoneCleaned, "", "", $phoneCleaned, $phoneCleaned, $phoneCleaned . "@vl28.ru");
@@ -37,17 +76,19 @@ if (!$USER->isAuthorized()){
                 "PERSONAL_PHONE" => $phoneCleaned,
             );
             $USER->Update($arResult['ID'], $fields);
-            //$fUserId = $USER->GetID();
+            $userId = $USER->GetID();
         }
     } else {
         $rsUser = CUser::GetByLogin($phoneCleaned);
         $arUser = $rsUser->Fetch();
-        $USER->Authorize($arUser['ID']); // авторизуем
+        $userId = $arUser['ID'];
+        //$USER->Authorize($arUser['ID']); // авторизуем
     }
+    $USER->Logout();
 }
 
 // Создаёт новый заказ
-$order = Order::create($siteId, $USER->isAuthorized() ? $USER->GetID() : $arUser['ID']);
+$order = Order::create($siteId, $USER->isAuthorized() ? $USER->GetID() : $userId);
 $order->setPersonTypeId(1);
 if ($comment) {
     $order->setField('USER_DESCRIPTION', $comment); // Устанавливаем поля комментария покупателя
@@ -86,6 +127,8 @@ $result = $order->save();
 $orderId = $order->getId();
 
 if ($result) {
+
+
     header('Content-Type: application/json');
     echo json_encode(['status' => 'success', 'message' => 'Заказ успешно добавлен.', 'data' => $result]);
 } else {

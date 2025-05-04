@@ -58,3 +58,4 @@ upload/
 bitrix/templates/landing24/
 bitrix/templates/learning/
 /local/php_interface/include/sms_auth.php
+/local/php_interface/classes/

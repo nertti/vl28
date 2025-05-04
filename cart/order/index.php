@@ -159,6 +159,24 @@ foreach ($basket as $basketItem) {
     //echo $basketItem->getField('NAME') . $basketItem->getField('PRODUCT_ID') . ' - ' . $basketItem->getQuantity() . '<br />';
 }
 
+$fullPrice = $basket->getBasePrice();
+$salePrice = 0;
+if ($USER->isAuthorized()) {
+    $userId = $USER->GetID();
+    $rsUser = CUser::GetByID($userId);
+    $arUser = $rsUser->Fetch();
+
+    if ($arUser['UF_CARD'] == 10) {
+        $fullPrice = floor($fullPrice * 0.95);
+        $salePrice = floor($fullPrice * 0.05);
+    } elseif ($arUser['UF_CARD'] == 11) {
+        $fullPrice = floor($fullPrice * 0.90);
+        $salePrice = floor($fullPrice * 0.10);
+    } elseif ($arUser['UF_CARD'] == 12) {
+        $fullPrice = floor($fullPrice * 0.85);
+        $salePrice = floor($fullPrice * 0.15);
+    }
+}
 ?>
 <section class="checkout first-section">
     <div class="container">
@@ -191,46 +209,45 @@ foreach ($basket as $basketItem) {
             </div>
 
             <form id="form" action="/ajax/createOrder.php" class="checkout__form">
-                <input type="hidden" name="siteId" value="<?= $siteId ?>">
-                <input type="hidden" name="fUserId" value="<?= $fUserId ?>">
+                <input id="siteId" type="hidden" name="siteId" value="<?= $siteId ?>">
+                <input id="fUserId" type="hidden" name="fUserId" value="<?= $fUserId ?>">
                 <div class="checkout__form-left">
                     <div class="checkout__label">
                         <p class="checkout__name">E-mail</p>
                         <div class="checkout__inputs">
-                            <input type="text" class="form-input checkout__input" placeholder="E-mail">
+                            <p class="error-text email" style="display: none;">Пожалуйста, введите свой email.</p>
+                            <input type="text" class="form-input checkout__input email" placeholder="E-mail"
+                                   name="email">
                             <label class="checkout__checkbox">
                                 <input type="checkbox" name="news">
                                 <div class="checkmark"></div>
                                 <span>
-                      Хочу получать новости и узнавать о специальных предложениях в числе первых
-                    </span>
+                                  Хочу получать новости и узнавать о специальных предложениях в числе первых
+                                </span>
                             </label>
                         </div>
                     </div>
                     <div class="checkout__label">
                         <p class="checkout__name">Имя</p>
                         <div class="checkout__inputs">
-                            <input type="text" name="name" class="form-input checkout__input" placeholder="Имя">
+                            <p class="error-text name" style="display: none;">Пожалуйста, введите своё имя.</p>
+                            <input type="text" name="name" class="form-input checkout__input name" placeholder="Имя">
                         </div>
                     </div>
                     <div class="checkout__label">
                         <p class="checkout__name">Фамилия</p>
                         <div class="checkout__inputs">
-                            <input type="text" name="subname" class="form-input checkout__input" placeholder="Фамилия">
+                            <p class="error-text surname" style="display: none;">Пожалуйста, введите свою фамилию.</p>
+                            <input type="text" name="surname" class="form-input checkout__input surname"
+                                   placeholder="Фамилия">
                         </div>
                     </div>
                     <div class="checkout__label">
                         <p class="checkout__name">Телефон</p>
                         <div class="checkout__inputs">
-                            <input type="text" name="phone" class="form-input phone-input checkout__input"
+                            <p class="error-text phone" style="display: none;">Пожалуйста, введите свой телефон.</p>
+                            <input type="text" name="phone" class="form-input phone-input checkout__input phone"
                                    placeholder="+7 (___) ___-__-__">
-                        </div>
-                    </div>
-                    <div class="checkout__label">
-                        <p class="checkout__name">Населённый пункт</p>
-                        <div class="checkout__inputs">
-                            <input id="city" type="text" name="city" class="form-input checkout__input"
-                                   placeholder="Населённый пункт">
                         </div>
                     </div>
                     <div class="checkout__label checkout__label_radios">
@@ -267,20 +284,36 @@ foreach ($basket as $basketItem) {
                             </label>
                         </div>
                     </div>
-                    <div class="checkout__label address" style="display: none">
-                        <p class="checkout__name">Улица</p>
-                        <div class="checkout__inputs">
-                            <input type="text" name="street" class="form-input checkout__input"
-                                   placeholder="пр-кт Ленинградский">
-                            <div class="checkout__inputs-inner">
-                                <div class="checkout__inputs-item">
-                                    <p class="checkout__name">Дом</p>
-                                    <input type="text" name="dom" class="form-input checkout__input" placeholder="14 Б">
-                                </div>
-                                <div class="checkout__inputs-item">
-                                    <p class="checkout__name">Квартира / офис</p>
-                                    <input type="text" name="kvartira" class="form-input checkout__input"
-                                           placeholder="79">
+                    <div class="address" style="flex-direction: column">
+                        <div class="checkout__label" style="padding-bottom: 20px">
+                            <p class="checkout__name">Населённый пункт</p>
+                            <div class="checkout__inputs">
+                                <p class="error-text city" style="display: none;">Пожалуйста, введите свой город.</p>
+                                <input id="city" type="text" name="city" class="form-input checkout__input city"
+                                       placeholder="Населённый пункт">
+                            </div>
+                        </div>
+                        <div class="checkout__label">
+                            <p class="checkout__name">Улица</p>
+                            <div class="checkout__inputs">
+                                <p class="error-text street" style="display: none;">Пожалуйста, введите свою улицу.</p>
+                                <input type="text" name="street" class="form-input checkout__input street"
+                                       placeholder="пр-кт Ленинградский">
+                                <div class="checkout__inputs-inner">
+                                    <div class="checkout__inputs-item">
+                                        <p class="checkout__name">Дом</p>
+                                        <p class="error-text dom" style="display: none;">Пожалуйста, введите свой
+                                            дом.</p>
+                                        <input type="text" name="dom" class="form-input checkout__input dom"
+                                               placeholder="14 Б">
+                                    </div>
+                                    <div class="checkout__inputs-item">
+                                        <p class="checkout__name">Квартира / офис</p>
+                                        <p class="error-text kvartira" style="display: none;">Пожалуйста, введите свою
+                                            квартиру.</p>
+                                        <input type="text" name="kvartira" class="form-input checkout__input kvartira"
+                                               placeholder="79">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -295,7 +328,7 @@ foreach ($basket as $basketItem) {
                       Оплата картой онлайн
                     </span>
                             </label>
-                            <label class="checkout__radio" id="moskva" style="display: none">
+                            <label class="checkout__radio" id="moskva">
                                 <input type="radio" name="payment" value="card_moskoy">
                                 <div class="checkmark"></div>
                                 <span>
@@ -336,10 +369,10 @@ foreach ($basket as $basketItem) {
                         </div>
 
                         <!-- Если юзер имеет скидку -->
-                        <?php if ($saleCard): ?>
+                        <?php if ($salePrice > 0): ?>
                             <div class="checkout__param-item checkout__param-item_sale">
                                 <p>Скидка по программе лояльности</p>
-                                <p>-0 ₽</p>
+                                <p id="salePrice">-<?= $salePrice ?> ₽</p>
                             </div>
                         <?php endif; ?>
 
@@ -351,19 +384,18 @@ foreach ($basket as $basketItem) {
                         </div>
                         <div class="checkout__param-item totalPrice">
                             <p>Итого:</p>
-                            <strong><?= $basket->getPrice(); ?> ₽</strong>
+                            <strong><?= $fullPrice; ?> ₽</strong>
                         </div>
                     </div>
 
                     <!-- Если юзер авторизован -->
                     <div class="promo" <?php if (!$USER->isAuthorized()): ?> style="display: none" <?php endif; ?>>
                         <!-- Если юзер тратит баллы -->
-                        <?php if ($saleBonus): ?>
-                            <div class="checkout__param-item checkout__param-item_sale">
-                                <p>Программа лояльности</p>
-                                <p>-0 ₽</p>
-                            </div>
-                        <?php endif; ?>
+                        <div id="applyBonusBlock" class="checkout__param-item checkout__param-item_sale"
+                             style="display: none">
+                            <p>Программа лояльности</p>
+                            <p id="applyBonusText">-0 ₽</p>
+                        </div>
                         <div class="promo__activate">
                             <p>Программа лояльности: <strong><?= $userBonus ?> баллов</strong></p>
                             <div class="promo__btn" <?php if ($userBonus <= 0): ?> style="display: none" <?php endif; ?>>
@@ -373,9 +405,10 @@ foreach ($basket as $basketItem) {
 
                         <div class="promo__show" style="display: none;">
                             <div class="promo__form">
-                                <input type="number" class="promo__input"
-                                       value="<?= calculateMaxPointsToSpend($basket->getPrice(), $userBonus) ?>">
-                                <input type="submit" class="border-btn" value="Применить">
+                                <input type="hidden" name="setBonus" id="setBonus" value="N">
+                                <input type="number" class="promo__input" name="bonus" id="bonus" max="<?= calculateMaxPointsToSpend($fullPrice, $userBonus) ?>"
+                                       value="<?= calculateMaxPointsToSpend($fullPrice, $userBonus) ?>">
+                                <button id="applyBonus" type="button" class="border-btn">Применить</button>
                             </div>
                         </div>
                     </div>
@@ -390,7 +423,7 @@ foreach ($basket as $basketItem) {
                     document.addEventListener('DOMContentLoaded', function () {
                         const myModalSuccess = new HystModal({
                             linkAttributeName: 'data-hystmodal',
-                            afterClose: function(modal){
+                            afterClose: function (modal) {
                                 window.location = '/'
                             },
                         });
@@ -421,8 +454,104 @@ foreach ($basket as $basketItem) {
                                 .then(response => response.json())
                                 .then(data => {
                                     saveBtn.innerHTML = `Оплатить`;
+
+                                    let errorEmailError = document.querySelector('.error-text.email');
+                                    let errorEmailInput = document.querySelector('.form-input.email');
+
+                                    let errorNameError = document.querySelector('.error-text.name');
+                                    let errorNameInput = document.querySelector('.form-input.name');
+
+                                    let errorSurnameError = document.querySelector('.error-text.surname');
+                                    let errorSurnameInput = document.querySelector('.form-input.surname');
+
+                                    let errorPhoneError = document.querySelector('.error-text.phone');
+                                    let errorPhoneInput = document.querySelector('.form-input.phone');
+
+                                    let errorCityError = document.querySelector('.error-text.city');
+                                    let errorCityInput = document.querySelector('.form-input.city');
+
+                                    let errorStreetError = document.querySelector('.error-text.street');
+                                    let errorStreetInput = document.querySelector('.form-input.street');
+
+                                    let errorDomError = document.querySelector('.error-text.dom');
+                                    let errorDomInput = document.querySelector('.form-input.dom');
+
+                                    let errorKvartiraError = document.querySelector('.error-text.kvartira');
+                                    let errorKvartiraInput = document.querySelector('.form-input.kvartira');
+
                                     if (data.status === 'error') {
-                                        console.log('1');
+                                        // Сначала убираем все предыдущие ошибки
+                                        errorEmailInput.classList.remove('error');
+                                        errorEmailError.style.display = 'none';
+
+                                        errorNameInput.classList.remove('error');
+                                        errorNameError.style.display = 'none';
+
+                                        errorSurnameInput.classList.remove('error');
+                                        errorSurnameError.style.display = 'none';
+
+                                        errorPhoneInput.classList.remove('error');
+                                        errorPhoneError.style.display = 'none';
+
+                                        errorCityInput.classList.remove('error');
+                                        errorCityError.style.display = 'none';
+
+                                        errorStreetInput.classList.remove('error');
+                                        errorStreetError.style.display = 'none';
+
+                                        errorDomInput.classList.remove('error');
+                                        errorDomError.style.display = 'none';
+
+                                        errorKvartiraInput.classList.remove('error');
+                                        errorKvartiraError.style.display = 'none';
+
+                                        if (data.message.email) {
+                                            errorEmailInput.classList.add('error');
+                                            errorEmailError.style.display = 'block';
+                                            errorEmailError.innerHTML = data.message.email;
+                                        }
+
+                                        if (data.message.name) {
+                                            errorNameInput.classList.add('error');
+                                            errorNameError.style.display = 'block';
+                                            errorNameError.innerHTML = data.message.name;
+                                        }
+
+                                        if (data.message.surname) {
+                                            errorSurnameInput.classList.add('error');
+                                            errorSurnameError.style.display = 'block';
+                                            errorSurnameError.innerHTML = data.message.surname;
+                                        }
+
+                                        if (data.message.phone) {
+                                            errorPhoneInput.classList.add('error');
+                                            errorPhoneError.style.display = 'block';
+                                            errorPhoneError.innerHTML = data.message.phone;
+                                        }
+
+                                        if (data.message.city) {
+                                            errorCityInput.classList.add('error');
+                                            errorCityError.style.display = 'block';
+                                            errorCityError.innerHTML = data.message.city;
+                                        }
+
+                                        if (data.message.street) {
+                                            errorStreetInput.classList.add('error');
+                                            errorStreetError.style.display = 'block';
+                                            errorStreetError.innerHTML = data.message.street;
+                                        }
+
+                                        if (data.message.dom) {
+                                            errorDomInput.classList.add('error');
+                                            errorDomError.style.display = 'block';
+                                            errorDomError.innerHTML = data.message.dom;
+                                        }
+
+                                        if (data.message.kvartira) {
+                                            errorKvartiraInput.classList.add('error');
+                                            errorKvartiraError.style.display = 'block';
+                                            errorKvartiraError.innerHTML = data.message.kvartira;
+                                        }
                                     } else {
                                         document.querySelector('#alertModal .alertText .h2').textContent = data.message
                                         myModalSuccess.open('#alertModal');
@@ -431,6 +560,62 @@ foreach ($basket as $basketItem) {
                                 .catch(error => {
                                     console.error('Ошибка при отправке формы:', error);
                                 });
+                        }
+                    });
+                    document.addEventListener('DOMContentLoaded', function () {
+
+                        const inputBonus = document.getElementById('bonus');
+                        // Обработчик изменения значения
+                        inputBonus.addEventListener('change', function() {
+                            let value = Number(this.value);
+
+                            // Если значение больше максимального, устанавливаем максимальное
+                            if (value > this.max) {
+                                value = Number(this.max);
+                                this.value = value;
+                            }
+                        });
+                        inputBonus.addEventListener('input', function() {
+                            let value = Number(this.value);
+
+                            // Если значение больше максимального, устанавливаем максимальное
+                            if (value > this.max) {
+                                value = Number(this.max);
+                                this.value = value;
+                            }
+                        });
+
+                        const myModalSuccess = new HystModal({
+                            linkAttributeName: 'data-hystmodal',
+                            afterClose: function (modal) {
+                                window.location = '/'
+                            },
+                        });
+                        const myModalReject = new HystModal({
+                            linkAttributeName: 'data-hystmodal',
+                        });
+
+                        const applyBonusBtn = document.querySelector('#applyBonus');
+                        if (applyBonusBtn) {
+                            applyBonusBtn.addEventListener('click', handleFormSubmit);
+                        } else {
+                            console.warn('Форма не найдена на странице');
+                        }
+
+                        function handleFormSubmit(event) {
+                            event.preventDefault();
+                            applyBonusBtn.innerHTML = `
+                              <span class='spinner-grow spinner-grow-sm' aria-hidden='true'></span>
+                              <span role='status'>Списываем бонусы</span>
+                            `;
+                            applyBonusBtn.disabled = true;
+                            let totalPrice = document.querySelector('.totalPrice strong').textContent;
+                            totalPrice = totalPrice.replace(/[^\d]/g, '')
+                            const bonus = document.querySelector('#bonus').value;
+                            document.querySelector('#setBonus').value = 'Y';
+                            document.querySelector('.totalPrice strong').textContent = totalPrice - bonus + ' ₽';
+                            document.querySelector('#applyBonusBlock').style.display = 'flex';
+                            document.querySelector('#applyBonusText').textContent = '-' + bonus + ' ₽';
                         }
                     });
                 </script>
@@ -454,12 +639,21 @@ foreach ($basket as $basketItem) {
             if (total <= 0) {
                 return 0;
             }
+            if (<?=$arUser['UF_CARD']?> == 10) {
+                // Вычисляем 5% от суммы заказа
+                return Math.round(total * 0.05);
+            } else if(<?=$arUser['UF_CARD']?> == 11){
+                // Вычисляем 10% от суммы заказа
+                return Math.round(total * 0.10);
+            } else if(<?=$arUser['UF_CARD']?> == 12){
+                // Вычисляем 15% от суммы заказа
+                return Math.round(total * 0.15);
+            }
 
-            // Вычисляем 5% от суммы заказа
-            return Math.round(total * 0.05);
+
         }
 
-        let totalPrice = <?=$basket->getPrice();?>;
+        let totalPrice = <?=$fullPrice;?>;
         document.querySelector('.bonusPoints').textContent = '+' + calculateBonusPoints(totalPrice) + ' баллов';
         document.querySelector('.bonusPointsValue').value = calculateBonusPoints(totalPrice);
 
@@ -506,6 +700,9 @@ foreach ($basket as $basketItem) {
                             }
                             if (data.totalPrice !== '') {
                                 document.querySelector('.totalPrice strong').textContent = data.totalPrice + ' ₽';
+                            }
+                            if (data.salePrice !== '') {
+                                document.querySelector('#salePrice').textContent = '-' + data.salePrice + ' ₽';
                             }
                         }
                     })
@@ -560,11 +757,27 @@ foreach ($basket as $basketItem) {
     document.addEventListener('DOMContentLoaded', function () {
         // в зависимости от города скрываем способ оплаты
         const inputCity = document.querySelector('#city');
-        inputCity.addEventListener('input', function (e) {
-            if (inputCity.value.toLowerCase() === 'москва') {
-                document.querySelector('#moskva').style.display = 'flex';
+
+        function updateMoskvaInput(value) {
+            if (value.toLowerCase() !== 'москва') {
+                document.querySelector('#moskva').style.color = 'grey';
+                document.querySelector('#moskva .checkmark').style.border = '1px solid grey';
+                document.querySelector('#moskva input').disabled = true;
+            } else {
+                document.querySelector('#moskva').style.color = 'black';
+                document.querySelector('#moskva .checkmark').style.border = '1px solid black';
+                document.querySelector('#moskva input').disabled = false;
             }
-        })
+        }
+
+        // Выполнение при загрузке
+        updateMoskvaInput(inputCity.value);
+
+        // Существующий обработчик события
+        inputCity.addEventListener('input', function (e) {
+            updateMoskvaInput(e.target.value);
+        });
+
         // в зависимости от выбранной доставки выводим блоки (Адрес или выбор ПВЗ города)
         const selectExport = document.querySelectorAll('input[name="delivery"]');
         const streetBlock = document.querySelector('.address');
@@ -590,7 +803,8 @@ foreach ($basket as $basketItem) {
 </script>
 <div class="hystmodal" id="alertModal" aria-hidden="true">
     <div class="hystmodal__wrap">
-        <div class="hystmodal__window hystmodal__window_subscribe" role="dialog" aria-modal="true" style="  min-height: auto;">
+        <div class="hystmodal__window hystmodal__window_subscribe" role="dialog" aria-modal="true"
+             style="  min-height: auto;">
             <button data-hystclose="" class="hystmodal__close"></button>
             <div class="alertText">
                 <p class="h2"></p>
