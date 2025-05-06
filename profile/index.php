@@ -1,8 +1,11 @@
 <?php
 
 /** @var \CMain $APPLICATION */
+/** @var \CMain $userBonus */
 
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
+require($_SERVER["DOCUMENT_ROOT"] . "/include/order/bonus.php");
+
 $APPLICATION->SetTitle("Профиль");
 
 global $USER;
@@ -48,7 +51,7 @@ $arUser = $rsUser->Fetch();
                             <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/card1.svg" alt="Light">
                             <div class="account__loyal-inner">
                                 <p>Уровень карты: <strong>Light</strong></p>
-                                <p>Доступные бонусы: <strong>698 баллов</strong></p>
+                                <p>Доступные бонусы: <strong><?=$userBonus?> баллов</strong></p>
                             </div>
                         </div>
                     </div>

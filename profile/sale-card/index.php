@@ -99,7 +99,7 @@ while ($item = $dbRes->fetch()) {
                             <div class="account__card-params">
                                 <p>Уровень карты: <strong><?= $arCard['VALUE'] ?></strong></p>
                                 <p>Доступные бонусы: <strong><?= $userBonus ?> баллов</strong></p>
-                                <p>Ближайшая дата сгорания бонусов: <strong><?= $lastDate ?></strong></p>
+<!--                                <p>Ближайшая дата сгорания бонусов: <strong>--><?php //= $lastDate ?><!--</strong></p>-->
                                 <?php if ($bunusPrice > 75000 && $bunusPrice < 149999): ?>
                                     <p>До следующего уровня (Highlight) осталось: <strong><?= $bunusPrice - 75000 ?>
                                             ₽</strong></p>
