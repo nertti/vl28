@@ -421,10 +421,10 @@ if ($USER->isAuthorized()) {
                 </div>
                 <script>
                     document.addEventListener('DOMContentLoaded', function () {
-                        const myModalSuccess = new HystModal({
+                        const myModalSuccessOrder = new HystModal({
                             linkAttributeName: 'data-hystmodal',
                             afterClose: function (modal) {
-                                window.location = '/'
+                                //window.location = '/'
                             },
                         });
                         const myModalReject = new HystModal({
@@ -554,7 +554,7 @@ if ($USER->isAuthorized()) {
                                         }
                                     } else {
                                         document.querySelector('#alertModal .alertText .h2').textContent = data.message
-                                        myModalSuccess.open('#alertModal');
+                                        myModalSuccessOrder.open('#alertModal');
                                     }
                                 })
                                 .catch(error => {

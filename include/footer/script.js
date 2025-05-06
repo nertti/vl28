@@ -13,6 +13,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Функция добавления в избранное
 function addFavorite(id, action) {
+    const myFavoriteModal = new HystModal({
+        linkAttributeName: 'data-hystmodal',
+
+        afterClose: function (modal) {
+            location.reload();
+        },
+    });
+
     const param = new FormData();
     param.append('id', id);
     param.append('action', action);
@@ -28,11 +36,13 @@ function addFavorite(id, action) {
             if (result === 1) {
                 favorElement.classList.add('active');
                 updateWishCount(true);
+                myFavoriteModal.open('#addFavoriteModal');
             } else if (result === 2) {
                 favorElement.classList.remove('active');
                 updateWishCount(false);
+                myFavoriteModal.open('#delFavoriteModal');
             }
-            location.reload(); // Перезагружаем страницу
+            //location.reload(); // Перезагружаем страницу
 
         })
         .catch(error => console.error('Ошибка:', error));
