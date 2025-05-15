@@ -2,7 +2,7 @@
 $aMenuLinks = Array(
 	Array(
 		"Клиентам", 
-		"/customers/", 
+		"/customers/?code=delivery", 
 		Array(), 
 		Array(), 
 		"" 
@@ -24,9 +24,9 @@ $aMenuLinks = Array(
 	Array(
 		"Программа лояльности", 
 		"#", 
-		Array(),
-        Array("data-hystmodal"=>"loyalModal"),
-        ""
+		Array(), 
+		Array("data-hystmodal"=>"loyalModal"), 
+		"" 
 	),
 	Array(
 		"Уход за изделиями", 

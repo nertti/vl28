@@ -22,8 +22,8 @@ $aMenuLinks = Array(
 		"" 
 	),
 	Array(
-		"vl28@commerce.ru", 
-		"mailto:vl28@commerce.ru", 
+		"info@vl28.pro", 
+		"mailto:info@vl28.pro", 
 		Array(), 
 		Array("description"=>"для сотрудничества"), 
 		"" 

@@ -12,6 +12,7 @@ $isMainPage = $APPLICATION->GetCurPage(false) === '/';
 $isAboutPage = $APPLICATION->GetCurPage(false) === '/about/';
 $isCartPage = $APPLICATION->GetCurPage(false) === '/cart/';
 $isProfilePages = strpos($APPLICATION->GetCurPage(false), '/profile/') !== false;
+$isFavoritePage = $APPLICATION->GetCurPage(false) === '/profile/favorite/';
 
 function checkCatalogPath($url) {
     // Проверяем начало пути
@@ -26,7 +27,7 @@ function checkCatalogPath($url) {
     return $depth >= 3;
 }
 
-if ($isProfilePages){
+if ($isProfilePages && !$isFavoritePage){
     if (!$USER->IsAuthorized()) {
         header('Location: /login/');
         exit();

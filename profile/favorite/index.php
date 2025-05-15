@@ -1,7 +1,8 @@
 <?php
-
 /** @var \CMain $APPLICATION */
+
 use \Bitrix\Main\Application;
+
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
 $APPLICATION->SetTitle("Избранное");
 
@@ -22,9 +23,9 @@ if (!$USER->IsAuthorized()) // Для неавторизованного
     $favorites = $arUser['UF_FAVORITES'];
 
 }
-if (!empty($favorites)){
+if (!empty($favorites)) {
     $GLOBALS['arrFilter'] = array("ID" => $favorites);
-} else{
+} else {
     $GLOBALS['arrFilter'] = array("ID" => 0);
 }
 ?>
@@ -35,25 +36,26 @@ if (!empty($favorites)){
                 <p class="h2">
                     <?php $APPLICATION->ShowTitle(); ?>
                 </p>
-                <?php $APPLICATION->IncludeComponent(
-                    "bitrix:menu",
-                    "profile",
-                    array(
-                        "ALLOW_MULTI_SELECT" => "N",
-                        "CHILD_MENU_TYPE" => "left",
-                        "COMPONENT_TEMPLATE" => "profile",
-                        "DELAY" => "N",
-                        "MAX_LEVEL" => "1",
-                        "MENU_CACHE_GET_VARS" => array(
+                <?php if ($USER->IsAuthorized()): ?>
+                    <?php $APPLICATION->IncludeComponent(
+                        "bitrix:menu",
+                        "profile",
+                        array(
+                            "ALLOW_MULTI_SELECT" => "N",
+                            "CHILD_MENU_TYPE" => "left",
+                            "COMPONENT_TEMPLATE" => "profile",
+                            "DELAY" => "N",
+                            "MAX_LEVEL" => "1",
+                            "MENU_CACHE_GET_VARS" => array(),
+                            "MENU_CACHE_TIME" => "3600",
+                            "MENU_CACHE_TYPE" => "N",
+                            "MENU_CACHE_USE_GROUPS" => "Y",
+                            "ROOT_MENU_TYPE" => "left",
+                            "USE_EXT" => "N"
                         ),
-                        "MENU_CACHE_TIME" => "3600",
-                        "MENU_CACHE_TYPE" => "N",
-                        "MENU_CACHE_USE_GROUPS" => "Y",
-                        "ROOT_MENU_TYPE" => "left",
-                        "USE_EXT" => "N"
-                    ),
-                    false
-                ); ?>
+                        false
+                    ); ?>
+                <?php endif; ?>
             </div>
             <div class="account__right">
                 <?php $APPLICATION->IncludeComponent(
@@ -187,4 +189,4 @@ if (!empty($favorites)){
             </div>
         </div>
     </div>
-    <br><?php require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/footer.php"); ?>
+<?php require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/footer.php"); ?>

@@ -359,7 +359,7 @@ use Bitrix\Main\Page\Asset;
             <button data-hystclose="" class="hystmodal__close"></button>
             <div class="thanks" style="flex-direction: column">
                 <p class="h2">Товар добавлен в Избранное!</p>
-                <a href="/favorite/" class="">Всё избранное</a>
+                <a href="/profile/favorite/" class="">Всё избранное</a>
             </div>
         </div>
     </div>

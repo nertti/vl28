@@ -16,7 +16,7 @@ $APPLICATION->SetTitle("Поиск по сайту");
 			1 => "blog",
 		),
 		"arrFILTER" => array(
-			0 => "no",
+			0 => "iblock_rest_entity",
 		),
 		"SHOW_WHERE" => "N",
 		"PAGE_RESULT_COUNT" => "50",
@@ -77,7 +77,10 @@ $APPLICATION->SetTitle("Поиск по сайту");
 			13 => "16",
 		),
 		"COMPOSITE_FRAME_MODE" => "A",
-		"COMPOSITE_FRAME_TYPE" => "AUTO"
+		"COMPOSITE_FRAME_TYPE" => "AUTO",
+		"arrFILTER_iblock_rest_entity" => array(
+			0 => "2",
+		)
 	),
 	false
 ); ?>
