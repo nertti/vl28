@@ -12,6 +12,7 @@ $context = $application->getContext();
 /* Избранное */
 
 global $APPLICATION;
+global $USER;
 $result = 0;
 if ($_POST['id']) {
     if (!$USER->IsAuthorized()) // Для неавторизованного
@@ -39,7 +40,11 @@ if ($_POST['id']) {
         $idUser = $USER->GetID();
         $rsUser = CUser::GetByID($idUser);
         $arUser = $rsUser->Fetch();
-        $arElements = $arUser['UF_FAVORITES'];  // Достаём избранное пользователя
+        if (empty($arUser['UF_FAVORITES'])){
+            $arElements = array();
+        } else {
+            $arElements = $arUser['UF_FAVORITES'];
+        }
         if (!in_array($_POST['id'], $arElements)) // Если еще нету этой позиции в избранном
         {
             $arElements[] = $_POST['id'];

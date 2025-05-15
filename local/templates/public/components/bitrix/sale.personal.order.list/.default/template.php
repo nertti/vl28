@@ -14,8 +14,8 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
 <div class="account__default account__default_borderless">
     <div class="account__orders">
         <div class="account__list">
-            <?php
-            foreach ($arResult['ORDERS'] as $key => $order):?>
+            <?php if(!empty($arResult['ORDERS'])):?>
+            <?php foreach ($arResult['ORDERS'] as $key => $order):?>
                 <?php if ($order['ORDER']['PRICE'] != 0): ?>
                     <?php //pr($order['BASKET_ITEMS']) ?>
                     <div class="account__order">
@@ -60,6 +60,8 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
                     </div>
                 <?php endif; ?>
             <?php endforeach; ?>
+            <?php else:?>На данный момент у Вас нет заказов
+            <?php endif;?>
         </div>
     </div>
 </div>

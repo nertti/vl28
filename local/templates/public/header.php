@@ -182,7 +182,7 @@ if ($isProfilePages){
         <a href="/cart/" class="header__link header__cart">
             <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/cart.svg" alt="cart icon"
                  class="header__link-icon header__link-icon_cart svg">
-                 <?php $APPLICATION->IncludeComponent("bitrix:sale.basket.basket.line", "basket", Array(
+                 <?php $APPLICATION->IncludeComponent("bitrix:sale.basket.basket.line", "basket", array(
                     "HIDE_ON_BASKET_PAGES" => "N",	// Не показывать на страницах корзины и оформления заказа
                         "PATH_TO_BASKET" => "/cart/",	// Страница корзины
                         "PATH_TO_ORDER" => "/cart/order/",	// Страница оформления заказа
@@ -218,7 +218,7 @@ if ($isProfilePages){
 <div class="hystmodal hystmodal_menu" id="menuModal" aria-hidden="true">
     <div class="hystmodal__wrap">
         <div class="hystmodal__window" role="dialog" aria-modal="true">
-            <div class="modal-menu">
+            <div class="modal-menu" style="flex-direction: column">
                 <ul>
                     <?php $APPLICATION->IncludeComponent(
                         "bitrix:menu",
@@ -239,12 +239,18 @@ if ($isProfilePages){
                         false
                     ); ?>
                 </ul>
-                <?php $APPLICATION->IncludeComponent("bitrix:search.form", "search", array(
-                    "PAGE" => "#SITE_DIR#search/",    // Страница выдачи результатов поиска (доступен макрос #SITE_DIR#)
-                    "USE_SUGGEST" => "N",    // Показывать подсказку с поисковыми фразами
-                ),
-                    false
-                ); ?>
+                <div style="padding: 10px;border: 1px gray solid;">
+                    <?php
+
+                    $APPLICATION->IncludeComponent("bitrix:search.form", "search", array(
+                        "PAGE" => "#SITE_DIR#search/",    // Страница выдачи результатов поиска (доступен макрос #SITE_DIR#)
+                        "USE_SUGGEST" => "N",    // Показывать подсказку с поисковыми фразами
+                    ),
+                        false
+                    );
+
+                    ?>
+                </div>
             </div>
         </div>
     </div>

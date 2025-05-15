@@ -820,12 +820,15 @@ section {
   }
   .product .swiper-button-next,
   .product .swiper-button-prev {
-    display:none
+    /*display:none*/
+    width: 30px;
+    height: 30px;
+    opacity: 1;
   }
   .product .swiper-scrollbar {
     display:-webkit-box;
     display:-ms-flexbox;
-    display:flex;
+    display:none;
     bottom:0;
     left:0;
     width:100%;

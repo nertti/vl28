@@ -31,6 +31,9 @@ if (isset($_POST['white'])){
 if (isset($_POST['black'])){
     $arrFilter["OFFERS"]['PROPERTY_COLOR'][] = 61;
 }
+if (isset($_POST['bisque'])){
+    $arrFilter["OFFERS"]['PROPERTY_COLOR'][] = 153;
+}
 
 if (isset($_POST['xs'])){
     $arrFilter["OFFERS"]['PROPERTY_SIZE'][] = 7;

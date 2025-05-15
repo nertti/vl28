@@ -259,7 +259,10 @@ foreach ($arFavorites as $favorite) {
                             );
                             ?>
                             <?php if ($key == 'COLOR' && false): ?>
-                                <?php pr($skuProperty);?>
+                                <?php
+                                pr($skuProperty);
+                                // на этапе разработки
+                                ?>
                                 <div class="tovar__color">
                                     <div class="tovar__color-text">
                                         <p class="tovar__color-title">Цвет</p>
@@ -282,7 +285,6 @@ foreach ($arFavorites as $favorite) {
                                     <div class="tovar__sizes">
                                         <div class="product-item-detail-info-section">
                                             <div id="<?= $itemIds['TREE_ID'] ?>">
-
                                                 <div class="product-item-detail-info-container"
                                                      data-entity="sku-line-block">
                                                     <div class="title tovar__size-title"><?= htmlspecialcharsEx($skuProperty['NAME']) ?></div>
@@ -338,6 +340,13 @@ foreach ($arFavorites as $favorite) {
         <div class="container">
             <p class="h2">Вам может понравится</p>
         </div>
+        <?php
+        $currentSectionID = $arResult['IBLOCK_SECTION_ID'];
+        global $arrFilter;
+        $arrFilter = [];
+        $arrFilter = array("!ID" => $arResult['ID']);
+        //$arrFilter = array("IBLOCK_SECTION_ID" => $arResult['IBLOCK_SECTION_ID']);
+        ?>
         <?php $APPLICATION->IncludeComponent(
             "bitrix:catalog.section",
             "main",
@@ -353,7 +362,7 @@ foreach ($arFavorites as $favorite) {
                 "AJAX_OPTION_JUMP" => "N",
                 "AJAX_OPTION_STYLE" => "Y",
                 "BACKGROUND_IMAGE" => "UF_BACKGROUND_IMAGE",
-                "BASKET_URL" => "/personal/basket.php",
+                "BASKET_URL" => "",
                 "BRAND_PROPERTY" => "COLLECTION",
                 "BROWSER_TITLE" => "-",
                 "CACHE_FILTER" => "N",
@@ -370,9 +379,14 @@ foreach ($arFavorites as $favorite) {
                 "DISCOUNT_PERCENT_POSITION" => "bottom-right",
                 "DISPLAY_BOTTOM_PAGER" => "Y",
                 "DISPLAY_TOP_PAGER" => "N",
-                "ELEMENT_SORT_FIELD" => "sort",
+//                "SORT_BY1" => "IBLOCK_SECTION_ID",  // первичная сортировка по разделу
+//                "SORT_ORDER1" => "DESC",
+                "ELEMENT_SORT_FIELD" => "CASE 
+                    WHEN IBLOCK_SECTION_ID = {$currentSectionID} THEN 0 
+                    ELSE 1 
+                END",
+                "ELEMENT_SORT_ORDER" => "ASK",
                 "ELEMENT_SORT_FIELD2" => "id",
-                "ELEMENT_SORT_ORDER" => "asc",
                 "ELEMENT_SORT_ORDER2" => "desc",
                 "ENLARGE_PRODUCT" => "PROP",
                 "ENLARGE_PROP" => "COLLECTION",
@@ -1098,47 +1112,307 @@ foreach ($arFavorites as $favorite) {
         ?>
     </div>
     <div class="hystmodal" id="sizeModal" aria-hidden="true">
+        <?php //pr($arResult['SECTION_CODE'])?>
         <div class="hystmodal__wrap">
             <div class="hystmodal__window" role="dialog" aria-modal="true">
                 <button data-hystclose="" class="hystmodal__close"></button>
                 <div class="sizes">
-                    <div class="sizes__title">
-                        <p class="h2">Футболки</p>
-                    </div>
-                    <table class="sizes__table">
-                        <tbody>
-                        <tr>
-                            <th>Размеры</th>
-                            <th>M</th>
-                            <th>L</th>
-                            <th>XL</th>
-                        </tr>
-                        <tr>
-                            <td>Длина изделия</td>
-                            <td>68 см</td>
-                            <td>70 см</td>
-                            <td>71 см</td>
-                        </tr>
-                        <tr>
-                            <td>Ширина изделия</td>
-                            <td>56 см</td>
-                            <td>58 см</td>
-                            <td>60 см</td>
-                        </tr>
-                        <tr>
-                            <td>Длина плеча</td>
-                            <td>15.5 см</td>
-                            <td>16 см</td>
-                            <td>16.5 см</td>
-                        </tr>
-                        <tr>
-                            <td>Длина рукава</td>
-                            <td>26 см</td>
-                            <td>26 см</td>
-                            <td>26 см</td>
-                        </tr>
-                        </tbody>
-                    </table>
+                    <?php if ($arResult['ORIGINAL_PARAMETERS']['SECTION_CODE'] == 't-shirts'): ?>
+                        <div class="sizes__title">
+                            <p class="h2">Футболки</p>
+                        </div>
+                        <table class="sizes__table">
+                            <tbody>
+                            <tr>
+                                <th>Размеры</th>
+                                <th>M</th>
+                                <th>L</th>
+                                <th>XL</th>
+                            </tr>
+                            <tr>
+                                <td>Длина изделия</td>
+                                <td>68 см</td>
+                                <td>70 см</td>
+                                <td>71 см</td>
+                            </tr>
+                            <tr>
+                                <td>Ширина изделия</td>
+                                <td>56 см</td>
+                                <td>58 см</td>
+                                <td>60 см</td>
+                            </tr>
+                            <tr>
+                                <td>Длина плеча</td>
+                                <td>15.5 см</td>
+                                <td>16 см</td>
+                                <td>16.5 см</td>
+                            </tr>
+                            <tr>
+                                <td>Длина рукава</td>
+                                <td>26 см</td>
+                                <td>26 см</td>
+                                <td>26 см</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    <?php endif; ?>
+                    <?php if ($arResult['ORIGINAL_PARAMETERS']['SECTION_CODE'] == 'hoodies'): ?>
+                        <div class="sizes__title">
+                            <p class="h2">Худи</p>
+                        </div>
+                        <table class="sizes__table">
+                            <tbody>
+                            <tr>
+                                <th>Размеры</th>
+                                <th>M</th>
+                                <th>L</th>
+                                <th>XL</th>
+                            </tr>
+                            <tr>
+                                <td>Длина изделия</td>
+                                <td>65 см</td>
+                                <td>68 см</td>
+                                <td>70 см</td>
+                            </tr>
+                            <tr>
+                                <td>Ширина изделия</td>
+                                <td>56 см</td>
+                                <td>58 см</td>
+                                <td>60 см</td>
+                            </tr>
+                            <tr>
+                                <td>Длина рукова</td>
+                                <td>60 см</td>
+                                <td>62 см</td>
+                                <td>64 см</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    <?php endif; ?>
+                    <?php if ($arResult['ORIGINAL_PARAMETERS']['SECTION_CODE'] == 'hoodies-with-zipper'): ?>
+                        <div class="sizes__title">
+                            <p class="h2">
+                                Худи на молнии
+                            </p>
+                        </div>
+                        <table class="sizes__table">
+                            <tbody>
+                            <tr>
+                                <th>Размеры</th>
+                                <th>M</th>
+                                <th>L</th>
+                                <th>XL</th>
+                            </tr>
+                            <tr>
+                                <td>Длина изделия</td>
+                                <td>66 см</td>
+                                <td>68 см</td>
+                                <td>70 см</td>
+                            </tr>
+                            <tr>
+                                <td>Ширина изделия</td>
+                                <td>56 см</td>
+                                <td>58 см</td>
+                                <td>60 см</td>
+                            </tr>
+                            <tr>
+                                <td>Длина рукава</td>
+                                <td>60 см</td>
+                                <td>62 см</td>
+                                <td>64 см</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    <?php endif; ?>
+                    <?php if ($arResult['ORIGINAL_PARAMETERS']['SECTION_CODE'] == 'joggers'): ?>
+                        <div class="sizes__title">
+                            <p class="h2">Джогеры</p>
+                        </div>
+                        <table class="sizes__table">
+                            <tbody>
+                            <tr>
+                                <th>Размеры</th>
+                                <th>M</th>
+                                <th>L</th>
+                                <th>XL</th>
+                            </tr>
+                            <tr>
+                                <td>Длина изделия</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td>Обхват талии</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td>Обхват бедер</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    <?php endif; ?>
+                    <?php if ($arResult['ORIGINAL_PARAMETERS']['SECTION_CODE'] == 'sweatshirts'): ?>
+                        <div class="sizes__title">
+                            <p class="h2">Свитшот</p>
+                        </div>
+                        <table class="sizes__table">
+                            <tbody>
+                            <tr>
+                                <th>Размеры</th>
+                                <th>M</th>
+                                <th>L</th>
+                                <th>XL</th>
+                            </tr>
+                            <tr>
+                                <td>Длина изделия</td>
+                                <td>65 см</td>
+                                <td>68 см</td>
+                                <td>70 см</td>
+                            </tr>
+                            <tr>
+                                <td>Ширина изделия</td>
+                                <td>56 см</td>
+                                <td>58 см</td>
+                                <td>60 см</td>
+                            </tr>
+                            <tr>
+                                <td>Длина рукава</td>
+                                <td>60 см</td>
+                                <td>62 см</td>
+                                <td>64 см</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    <?php endif; ?>
+                    <?php if ($arResult['ORIGINAL_PARAMETERS']['SECTION_CODE'] == 'thermal-underwear'): ?>
+                        <div class="sizes__title">
+                            <p class="h2">Гоночное термобелье слитное</p>
+                        </div>
+                        <table class="sizes__table">
+                            <tbody>
+                            <tr>
+                                <th>Размеры</th>
+                                <th>XS/S</th>
+                                <th>M</th>
+                                <th>L/XL</th>
+                            </tr>
+                            <tr>
+                                <td>Рост</td>
+                                <td>175 см</td>
+                                <td>185 см</td>
+                                <td>190 см</td>
+                            </tr>
+                            <tr>
+                                <td>Обхват груди</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td>Обхват талии</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td>Обхват бедер</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td>Длина рукава</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="sizes__title top40">
+                            <p class="h2">
+                                Гоночное термобелье раздельное
+                            </p>
+                        </div>
+                        <table class="sizes__table">
+                            <tbody>
+                            <tr>
+                                <th>Размеры</th>
+                                <th>XS/S</th>
+                                <th>M</th>
+                                <th>L/XL</th>
+                            </tr>
+                            <tr>
+                                <td>Рост</td>
+                                <td>175 см</td>
+                                <td>185 см</td>
+                                <td>190 см</td>
+                            </tr>
+                            <tr>
+                                <td>Обхват груди</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td>Обхват талии</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td>Обхват бедер</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td>Длина рукава</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    <?php endif; ?>
+                    <?php if ($arResult['ORIGINAL_PARAMETERS']['SECTION_CODE'] == 'shorts'): ?>
+                        <div class="sizes__title">
+                            <p class="h2">Шорты</p>
+                        </div>
+                        <table class="sizes__table">
+                            <tbody>
+                            <tr>
+                                <th>Размеры</th>
+                                <th>M</th>
+                                <th>L</th>
+                                <th>XL</th>
+                            </tr>
+                            <tr>
+                                <td>Длина изделия</td>
+                                <td>55 см</td>
+                                <td>56 см</td>
+                                <td>58 см</td>
+                            </tr>
+                            <tr>
+                                <td>Ширина низа</td>
+                                <td>30 см</td>
+                                <td>31 см</td>
+                                <td>32 см</td>
+                            </tr>
+                            <tr>
+                                <td>Высота пояса</td>
+                                <td>6 см</td>
+                                <td>6 см</td>
+                                <td>6 см</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
