@@ -17,9 +17,9 @@ $this->setFrameMode(true);
         <div class="hystmodal__window" role="dialog" aria-modal="true">
             <button data-hystclose class="hystmodal__close"></button>
             <div class="filter">
-                <a href="#" class="filter__clear">очистить фильтры</a>
+                <a href="#" data-hystclose class="filter__clear">очистить фильтры</a>
                 <form id="form" action="/ajax/catalogFilter.php" class="filter__form">
-                    <input type="hidden" name="section" value="<?=$arParams['SECTION_ID']?>">
+                    <input type="hidden" name="section" id="section" value="<?=$arParams['SECTION_ID']?>">
                     <div class="filter__wrap">
                         <?php foreach ($arResult['ITEMS'] as $arItem): ?>
                             <?php if (empty($arItem['DISPLAY_TYPE'])) {
@@ -27,7 +27,7 @@ $this->setFrameMode(true);
                             } ?>
                             <div class="filter__block">
                                 <p class="filter__name"><?= $arItem['NAME'] ?></p>
-                                <div class="filter__list <?php if ($arItem['DISPLAY_TYPE'] == 'K'): ?>filter__list_row<?php endif; ?>">
+                                <div class="filter__list <?php if ($arItem['DISPLAY_TYPE'] == 'K'): ?>filter__list_row<?php endif; ?> <?php if ($arItem['NAME'] == 'Размер'): ?>filter_size_list<?php endif; ?>">
                                     <?php //pr($arItem) ?>
                                     <?php foreach ($arItem['VALUES'] as $key => $value): ?>
                                         <?php if ($arItem['DISPLAY_TYPE'] == 'F' && $arItem['CODE'] !== 'COLOR'): ?>
@@ -68,18 +68,26 @@ $this->setFrameMode(true);
     document.addEventListener('DOMContentLoaded', function () {
         const form = document.querySelector('#form');
         const submit_btn = document.querySelector('#submit_btn');
+        const clear_btn = document.querySelector('.filter__clear');
         // Если форма найдена, добавляем слушатель события submit
         if (form) {
             form.addEventListener('submit', handleFormSubmit);
+            clear_btn.addEventListener('click', handleFormReset);
         } else {
             console.warn('Форма не найдена на странице');
         }
-        function sendForm() {
+        function sendForm(reset) {
             submit_btn.innerHTML = `
                   <span class='spinner-grow spinner-grow-sm' aria-hidden='true'></span>
                   <span role='status'>Фильтруем...</span>
                 `;
-            const formData = new FormData(form);
+            let formData;
+            if(reset){
+                formData = new FormData();
+                formData.append('section', document.querySelector('#section').value);
+            } else {
+                formData = new FormData(form);
+            }
             fetch(form.action, {
                 method: 'POST',
                 body: formData
@@ -102,7 +110,11 @@ $this->setFrameMode(true);
         }
         function handleFormSubmit(event) {
             event.preventDefault();
-            sendForm();
+            sendForm(false);
+        }
+        function handleFormReset(event) {
+            event.preventDefault();
+            sendForm(true);
         }
 
 

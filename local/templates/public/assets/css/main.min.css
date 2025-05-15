@@ -675,7 +675,8 @@ section {
   min-height:100%
 }
 .arrow {
-  fill:#222
+  /*fill:#222*/
+  fill:#888
 }
 .products {
   display:-webkit-box;
@@ -1467,6 +1468,9 @@ section {
 }
 .filter__list_row {
   gap:30px 60px
+}
+.filter_size_list{
+  gap: 0;
 }
 .filter__list_row .filter__item {
   width:auto
