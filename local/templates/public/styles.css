@@ -23,3 +23,26 @@
 img{
     display: block;
 }
+
+/*card start*/
+.bx-sbb-empty-cart-image {
+    width: 131px;
+    height: 116px;
+    margin: 50px auto 42px;
+    background: url(/bitrix/components/bitrix/sale.basket.basket/templates/.default/images/empty_cart.svg) no-repeat center;
+    background-size: auto;
+    background-size: contain;
+}
+.bx-sbb-empty-cart-text {
+    font-size: 36px;
+    text-align: center;
+    color: #bababa;
+    margin-bottom: 42px;
+}
+.bx-sbb-empty-cart-desc {
+    text-align: center;
+    color: #000;
+    font-size: 16px;
+    margin-bottom: 42px;
+}
+/*card end*/

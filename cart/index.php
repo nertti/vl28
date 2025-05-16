@@ -136,6 +136,9 @@ $basket = Bitrix\Sale\Basket::loadItemsForFUser($fUserId, $siteId);
 
                             } else {
                                 wrapperProduct.style.display = 'none';
+                                if(data.count === 0){
+                                    location.reload();
+                                }
                             }
                         })
                         .catch(error => {
@@ -151,10 +154,13 @@ $basket = Bitrix\Sale\Basket::loadItemsForFUser($fUserId, $siteId);
             <p class="h2">Корзина</p>
             <div class="cart__inner">
                 <div class="cart__list">
-                    Товаров в корзине нет
+                    <span class="bx-sbb-empty-cart-image"></span>
+                    <span class="bx-sbb-empty-cart-text">Ваша корзина пуста</span>
+                    <a href="/catalog/" class="bx-sbb-empty-cart-desc">В каталог</a>
                 </div>
             </div>
         </div>
     </section>
 <?php endif; ?>
+
 <?php require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/footer.php"); ?>
