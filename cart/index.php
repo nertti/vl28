@@ -4,105 +4,157 @@
 
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
 $APPLICATION->SetTitle("Корзина");
+
+$fUserId = Bitrix\Sale\Fuser::getId();
+$siteId = Bitrix\Main\Context::getCurrent()->getSite();
+$basket = Bitrix\Sale\Basket::loadItemsForFUser($fUserId, $siteId);
 ?>
 
+<?php if (count($basket) !== 0): ?>
+    <?php
+    function getProductInfo($productId)
+    {
+        $result = \CIBlockElement::GetList(
+            array(),
+            array(
+                "ID" => $productId,
+                "=ACTIVE" => "Y"
+            ),
+            false,
+            false,
+            array("*")
+        );
+
+        if ($item = $result->Fetch()) {
+            return $item;
+        }
+        return false;
+    }
+
+    function getElementProperties($iblockId, $elementId, $code)
+    {
+        $db_props = CIBlockElement::GetProperty($iblockId, $elementId, "sort", "asc", array("CODE" => $code));
+        if ($ar_props = $db_props->Fetch()) {
+            return $ar_props;
+        }
+    }
+
+    ?>
+    <?php
+    global $APPLICATION;
+    global $USER;
+
+    if (!$USER->IsAuthorized()) {
+        $arFavorites = unserialize($APPLICATION->get_cookie("favorites"));
+        //pr($arFavorites);
+    } else {
+        $idUser = $USER->GetID();
+        $rsUser = CUser::GetByID($idUser);
+        $arUser = $rsUser->Fetch();
+        $arFavorites = $arUser['UF_FAVORITES'];  // Достаём избранное пользователя
+
+    }
+    ?>
     <section class="cart first-section">
         <div class="container">
             <p class="h2">Корзина</p>
-            <?php $APPLICATION->IncludeComponent(
-	"bitrix:sale.basket.basket", 
-	"cart", 
-	array(
-		"ACTION_VARIABLE" => "action",
-		"ADDITIONAL_PICT_PROP_2" => "-",
-		"ADDITIONAL_PICT_PROP_5" => "-",
-		"AUTO_CALCULATION" => "N",
-		"BASKET_IMAGES_SCALING" => "adaptive",
-		"COLUMNS_LIST" => array(
-			0 => "NAME",
-			1 => "DISCOUNT",
-			2 => "WEIGHT",
-			3 => "DELETE",
-			4 => "DELAY",
-			5 => "TYPE",
-			6 => "PRICE",
-			7 => "QUANTITY",
-		),
-		"COLUMNS_LIST_EXT" => array(
-			0 => "PREVIEW_PICTURE",
-			1 => "DISCOUNT",
-			2 => "DELETE",
-			3 => "DELAY",
-			4 => "TYPE",
-			5 => "SUM",
-		),
-		"COLUMNS_LIST_MOBILE" => array(
-			0 => "PREVIEW_PICTURE",
-			1 => "DISCOUNT",
-			2 => "DELETE",
-			3 => "DELAY",
-			4 => "TYPE",
-			5 => "SUM",
-		),
-		"COMPATIBLE_MODE" => "Y",
-		"CORRECT_RATIO" => "Y",
-		"DEFERRED_REFRESH" => "N",
-		"DISCOUNT_PERCENT_POSITION" => "bottom-right",
-		"DISPLAY_MODE" => "compact",
-		"EMPTY_BASKET_HINT_PATH" => "/",
-		"GIFTS_BLOCK_TITLE" => "Выберите один из подарков",
-		"GIFTS_CONVERT_CURRENCY" => "N",
-		"GIFTS_HIDE_BLOCK_TITLE" => "N",
-		"GIFTS_HIDE_NOT_AVAILABLE" => "N",
-		"GIFTS_MESS_BTN_BUY" => "Выбрать",
-		"GIFTS_MESS_BTN_DETAIL" => "Подробнее",
-		"GIFTS_PAGE_ELEMENT_COUNT" => "4",
-		"GIFTS_PLACE" => "BOTTOM",
-		"GIFTS_PRODUCT_PROPS_VARIABLE" => "prop",
-		"GIFTS_PRODUCT_QUANTITY_VARIABLE" => "",
-		"GIFTS_SHOW_DISCOUNT_PERCENT" => "N",
-		"GIFTS_SHOW_IMAGE" => "Y",
-		"GIFTS_SHOW_NAME" => "Y",
-		"GIFTS_SHOW_OLD_PRICE" => "N",
-		"GIFTS_TEXT_LABEL_GIFT" => "Подарок",
-		"HIDE_COUPON" => "Y",
-		"LABEL_PROP" => array(
-			0 => "COLLECTION",
-			1 => "MATERIAL",
-			2 => "SIZE",
-		),
-		"LABEL_PROP_MOBILE" => array(
-			0 => "COLLECTION",
-			1 => "MATERIAL",
-			2 => "SIZE",
-		),
-		"LABEL_PROP_POSITION" => "top-left",
-		"OFFERS_PROPS" => array(
-			0 => "SIZES_SHOES",
-			1 => "SIZES_CLOTHES",
-		),
-		"PATH_TO_ORDER" => "/cart/order/",
-		"PRICE_DISPLAY_MODE" => "Y",
-		"PRICE_VAT_SHOW_VALUE" => "N",
-		"PRODUCT_BLOCKS_ORDER" => "props,sku,columns",
-		"QUANTITY_FLOAT" => "N",
-		"SET_TITLE" => "Y",
-		"SHOW_DISCOUNT_PERCENT" => "Y",
-		"SHOW_FILTER" => "N",
-		"SHOW_RESTORE" => "N",
-		"TEMPLATE_THEME" => "",
-		"TOTAL_BLOCK_DISPLAY" => array(
-			0 => "bottom",
-		),
-		"USE_DYNAMIC_SCROLL" => "Y",
-		"USE_ENHANCED_ECOMMERCE" => "N",
-		"USE_GIFTS" => "Y",
-		"USE_PREPAYMENT" => "N",
-		"USE_PRICE_ANIMATION" => "Y",
-		"COMPONENT_TEMPLATE" => "cart"
-	),
-	false
-); ?>
+            <div class="cart__inner">
+                <div class="cart__list">
+                    <?php foreach ($basket as $basketItem): ?>
+                        <div class="cart__item" id="<?= $basketItem->getField('ID') ?>">
+                            <?php
+                            $product = getProductInfo($basketItem->getField('PRODUCT_ID'));
+                            $propertySize = getElementProperties($product['IBLOCK_ID'], $product['ID'], 'SIZE');
+                            $propertyColor = getElementProperties($product['IBLOCK_ID'], $product['ID'], 'COLOR');
+                            ?>
+                            <?php
+                            $active = false;
+                            foreach ($arFavorites as $favorite) {
+                                if ($favorite == explode('#', $basketItem->getField('PRODUCT_XML_ID'))[0]) {
+                                    $active = true;
+                                }
+                            }
+                            ?>
+                            <div class="cart__left">
+                                <img src="<?= CFile::getPath($product['PREVIEW_PICTURE']) ?>"
+                                     alt="<?= $product['NAME'] ?>">
+                            </div>
+                            <div class="cart__right">
+                                <p class="cart__title"><?= $product['NAME'] ?></p>
+                                <div class="cart__param">
+                                    <p class="cart__value"><?= $propertySize['VALUE_ENUM'] ?></p>
+                                    <p class="cart__value"><?= $basketItem->getQuantity() ?> шт</p>
+                                    <div class="cart__color">
+                                        <span style="background: <?= $propertyColor['VALUE_XML_ID'] ?>;"></span>
+                                    </div>
+                                </div>
+                                <p class="cart__price"><?= number_format($basketItem->getFinalPrice(), 0, '', ' ') ?>
+                                    ₽ </p>
+                                <?php if (!$active): ?>
+                                    <span class="cart__favorite favor"
+                                          data-item="<?= explode('#', $basketItem->getField('PRODUCT_XML_ID'))[0] ?>">Добавить в избранное</span>
+                                <?php else: ?>
+                                    <span>Товар уже в избранном</span>
+                                <?php endif; ?>
+                            </div>
+                            <a href="#" class="cart__remove pointer"></a>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                <a href="/cart/order/" class="black-btn">Оформить заказ</a>
+            </div>
+
         </div>
     </section>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const deleteBtn = document.querySelectorAll('.cart__remove');
+            deleteBtn.forEach(element => {
+                element.addEventListener('click', handleDelete);
+            });
+
+            // Удаление товаров в корзине
+            function handleDelete(event) {
+                setTimeout(() => {
+                    const wrapperProduct = event.target.closest('.cart__item');
+                    const siteId = '<?=$siteId?>';
+                    const fUserId = '<?=$fUserId?>';
+                    fetch('/ajax/orderProductDelete.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            id: wrapperProduct.id,    // ID товара в корзине
+                            siteId: siteId,
+                            fUserId: fUserId,
+                        })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'error') {
+
+                            } else {
+                                wrapperProduct.style.display = 'none';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Ошибка при авторизации:', error);
+                        });
+                }, 1);
+            }
+        });
+    </script>
+<?php else: ?>
+    <section class="cart first-section">
+        <div class="container">
+            <p class="h2">Корзина</p>
+            <div class="cart__inner">
+                <div class="cart__list">
+                    Товаров в корзине нет
+                </div>
+            </div>
+        </div>
+    </section>
+<?php endif; ?>
 <?php require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/footer.php"); ?>

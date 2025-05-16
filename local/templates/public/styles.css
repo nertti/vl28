@@ -10,7 +10,7 @@
 .bottom40{
     padding-bottom: 40px;
 }
-.favor.active{
+.favorite-btn.active{
     cursor: pointer;
     background-image: url(assets/img/favorite-active.svg);
 }
@@ -19,4 +19,7 @@
 }
 .product__inner{
     padding-top: 30px;
+}
+img{
+    display: block;
 }

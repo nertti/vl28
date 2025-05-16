@@ -639,13 +639,14 @@ if ($USER->isAuthorized()) {
             if (total <= 0) {
                 return 0;
             }
-            if (<?=$arUser['UF_CARD']?> == 10) {
+            let uf_card = <?=$arUser['UF_CARD'] ?? 0?>;
+            if (uf_card == 10) {
                 // Вычисляем 5% от суммы заказа
                 return Math.round(total * 0.05);
-            } else if(<?=$arUser['UF_CARD']?> == 11){
+            } else if(uf_card == 11){
                 // Вычисляем 10% от суммы заказа
                 return Math.round(total * 0.10);
-            } else if(<?=$arUser['UF_CARD']?> == 12){
+            } else if(uf_card == 12){
                 // Вычисляем 15% от суммы заказа
                 return Math.round(total * 0.15);
             }
@@ -653,7 +654,7 @@ if ($USER->isAuthorized()) {
 
         }
 
-        let totalPrice = <?=$fullPrice;?>;
+        let totalPrice = <?=$fullPrice?>;
         document.querySelector('.bonusPoints').textContent = '+' + calculateBonusPoints(totalPrice) + ' баллов';
         document.querySelector('.bonusPointsValue').value = calculateBonusPoints(totalPrice);
 
@@ -691,7 +692,7 @@ if ($USER->isAuthorized()) {
 
                         } else {
                             const total = data.totalPrice;
-                            const bonus = <?=$userBonus?>;
+                            const bonus = <?=$userBonus ?? 0?>;
                             document.querySelector('.promo__input').value = calculateMaxPointsToSpend(total, bonus);
                             document.querySelector('.bonusPoints').textContent = '+' + calculateBonusPoints(total) + ' баллов';
                             document.querySelector('.bonusPointsValue').value = calculateBonusPoints(total);
@@ -735,7 +736,7 @@ if ($USER->isAuthorized()) {
 
                         } else {
                             const total = data.totalPrice;
-                            const bonus = <?=$userBonus?>;
+                            const bonus = <?=$userBonus ?? 0?>;
                             document.querySelector('.promo__input').value = calculateMaxPointsToSpend(total, bonus);
                             document.querySelector('.bonusPoints').textContent = '+' + calculateBonusPoints(total) + ' баллов';
                             document.querySelector('.bonusPointsValue').value = calculateBonusPoints(total);

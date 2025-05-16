@@ -32,7 +32,7 @@ function addFavorite(id, action) {
         .then(response => response.json())
         .then(result => {
             const favorElement = document.querySelector(`.favor[data-item="${id}"]`);
-            console.log(result)
+
             if (result === 1) {
                 favorElement.classList.add('active');
                 updateWishCount(true);
