@@ -33,7 +33,7 @@ $arUser = $rsUser->Fetch();
             </div>
             <div class="account__right">
                 <div class="account__form-wrap">
-                    <form action="/ajax/profile.php" class="account__form" id="form">
+                    <form action="/ajax/profile.php" class="account__form top50" id="form">
                         <input type="hidden" value="<?=$userId?>" name="ID">
                         <div class="account__label">
                             <p class="account__name">Имя</p>

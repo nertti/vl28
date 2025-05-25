@@ -11,6 +11,7 @@ use Bitrix\Main\Page\Asset;
 $isMainPage = $APPLICATION->GetCurPage(false) === '/';
 $isAboutPage = $APPLICATION->GetCurPage(false) === '/about/';
 $isCartPage = $APPLICATION->GetCurPage(false) === '/cart/';
+$isOrderPage = $APPLICATION->GetCurPage(false) === '/cart/order/';
 $isProfilePages = strpos($APPLICATION->GetCurPage(false), '/profile/') !== false;
 $isFavoritePage = $APPLICATION->GetCurPage(false) === '/profile/favorite/';
 
@@ -325,7 +326,8 @@ if ($isProfilePages && !$isFavoritePage){
             "STRICT_SECTION_CHECK" => "Y",    // Строгая проверка раздела для показа списка
             "USE_RATING" => "N",
             "USE_SHARE" => "N"
-        ), false); ?>
+        ), false,
+        Array('HIDE_ICONS' => 'Y')); ?>
         <section class="products">
             <p class="h2">Новые поступления</p>
             <?php $APPLICATION->IncludeComponent(
@@ -485,7 +487,8 @@ if ($isProfilePages && !$isFavoritePage){
 		"SECTION_CODE_PATH" => "",
 		"DISPLAY_COMPARE" => "N"
 	),
-	false
+	false,
+	Array('HIDE_ICONS' => 'Y')
 );?>
 
             <a href="/catalog/" class="products__link link">Перейти в каталог</a>
@@ -693,7 +696,7 @@ if ($isProfilePages && !$isFavoritePage){
               </div>
             </section>
         <?php endif;?>
-        <?php if(!defined('ERROR_404') && !checkCatalogPath($APPLICATION->GetCurPageParam()) && !$isCartPage):?>
+        <?php if(!defined('ERROR_404') && !checkCatalogPath($APPLICATION->GetCurPageParam()) && !$isCartPage&& !$isOrderPage):?>
             <div class="container top40">
                 <?php $APPLICATION->IncludeComponent(
                     "bitrix:breadcrumb",

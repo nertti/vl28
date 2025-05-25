@@ -4,6 +4,14 @@
 .top40{
     padding-top: 40px;
 }
+.top50{
+    padding-top: 50px;
+}
+@media screen and (max-width:600px) {
+    .account__form.top50{
+        padding-top: 0;
+    }
+}
 .top0{
     padding-top: 0;
 }

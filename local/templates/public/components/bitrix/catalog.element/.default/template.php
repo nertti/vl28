@@ -338,7 +338,7 @@ foreach ($arFavorites as $favorite) {
 <?php /** Конец карточки товара*/ ?>
     <section class="products products_others">
         <div class="container">
-            <p class="h2">Вам может понравится</p>
+            <p class="h2">Может вам понравиться</p>
         </div>
         <?php
         $currentSectionID = $arResult['IBLOCK_SECTION_ID'];
@@ -1479,8 +1479,8 @@ foreach ($arFavorites as $favorite) {
         <div class="hystmodal__wrap">
             <div class="hystmodal__window" role="dialog" aria-modal="true">
                 <button data-hystclose="" class="hystmodal__close"></button>
+                <p class="h2">Информация о товаре</p>
                 <div class="gray">
-                    <p class="h2">Информация о товаре</p>
                     <?= $arResult['DETAIL_TEXT'] ?>
                 </div>
             </div>

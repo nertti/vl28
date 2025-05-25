@@ -352,12 +352,14 @@ if ($USER->isAuthorized()) {
                     </div>
                 </div>
                 <div class="checkout__form-right">
-                    <?php if (!$USER->isAuthorized()): ?>
+
                         <div class="checkout__links">
                             <a href="/cart/" class="checkout__back">Назад</a>
-                            <a href="/login/" class="checkout__login">Войти в личный кабинет</a>
+                            <?php if (!$USER->isAuthorized()): ?>
+                                <a href="/login/" class="checkout__login">Войти в личный кабинет</a>
+                            <?php endif; ?>
                         </div>
-                    <?php endif; ?>
+
                     <div class="checkout__param">
                         <div class="checkout__param-item">
                             <p>Доставка:</p>
@@ -552,6 +554,7 @@ if ($USER->isAuthorized()) {
                                             errorKvartiraError.style.display = 'block';
                                             errorKvartiraError.innerHTML = data.message.kvartira;
                                         }
+                                        window.scrollTo({ top: 0, behavior: 'smooth' });
                                     } else {
                                         document.querySelector('#alertModal .alertText .h2').textContent = data.message
                                         myModalSuccessOrder.open('#alertModal');

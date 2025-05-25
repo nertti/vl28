@@ -19,7 +19,7 @@ $this->setFrameMode(true);
             <div class="filter">
                 <a href="#" data-hystclose class="filter__clear">очистить фильтры</a>
                 <form id="form" action="/ajax/catalogFilter.php" class="filter__form">
-                    <input type="hidden" name="section" id="section" value="<?=$arParams['SECTION_ID']?>">
+                    <input type="hidden" name="section" id="section" value="<?= $arParams['SECTION_ID'] ?>">
                     <div class="filter__wrap">
                         <?php foreach ($arResult['ITEMS'] as $arItem): ?>
                             <?php if (empty($arItem['DISPLAY_TYPE'])) {
@@ -76,13 +76,14 @@ $this->setFrameMode(true);
         } else {
             console.warn('Форма не найдена на странице');
         }
+
         function sendForm(reset) {
             submit_btn.innerHTML = `
                   <span class='spinner-grow spinner-grow-sm' aria-hidden='true'></span>
                   <span role='status'>Фильтруем...</span>
                 `;
             let formData;
-            if(reset){
+            if (reset) {
                 formData = new FormData();
                 formData.append('section', document.querySelector('#section').value);
             } else {
@@ -103,15 +104,28 @@ $this->setFrameMode(true);
                     if (existingMainSection && mainSection) {
                         existingMainSection.replaceWith(mainSection);
                     }
+                    setTimeout(function () {
+                        let productSwiperFilter = new Swiper('.product__swiper ', {
+                            slidesPerView: 1,
+                            loop: true,
+                            observer: true,
+                            pagination: {
+                                el: '.product-swiper .swiper-pagination',
+                                clickable: true,
+                            },
+                        });
+                    }, 100);
                 })
                 .catch(error => {
                     console.error('Ошибка при авторизации:', error);
                 });
         }
+
         function handleFormSubmit(event) {
             event.preventDefault();
             sendForm(false);
         }
+
         function handleFormReset(event) {
             event.preventDefault();
             sendForm(true);

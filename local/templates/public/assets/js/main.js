@@ -62,6 +62,7 @@ jQuery(document).ready(function($) {
    const productSwiper = new Swiper('.product-swiper', {
     slidesPerView: 1,
     loop: true,
+    observer: true,
     pagination: {
       el: '.product-swiper .swiper-pagination',
       clickable: true,

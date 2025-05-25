@@ -28,7 +28,9 @@ $APPLICATION->IncludeComponent("bitrix:catalog.section.list", "tree", array(
     "SECTION_USER_FIELDS" => $arParams["SECTION_USER_FIELDS"],
     "CURRENT_SECTION_ID" => $arResult["ID"]
 ),
-    $component
+    $component,
+    array('HIDE_ICONS' => 'Y')
+
 );
 $APPLICATION->IncludeComponent("bitrix:catalog.section", "links_catalog", array(
     "IBLOCK_TYPE" => $arParams["IBLOCK_TYPE"],
@@ -40,8 +42,7 @@ $APPLICATION->IncludeComponent("bitrix:catalog.section", "links_catalog", array(
     "PAGE_ELEMENT_COUNT" => 0, // Без пагинации
     "DETAIL_URL" => $arResult["FOLDER"] . $arResult["URL_TEMPLATES"]["element"],
     "BASKET_URL" => $arParams["BASKET_URL"]
-), $component);
-
+), $component, array('HIDE_ICONS' => 'Y'));
 
 
 $APPLICATION->IncludeComponent("bitrix:catalog.smart.filter", "", array(
@@ -63,7 +64,7 @@ $APPLICATION->IncludeComponent("bitrix:catalog.smart.filter", "", array(
     'CONVERT_CURRENCY' => $arParams['CONVERT_CURRENCY'],
     'CURRENCY_ID' => $arParams['CURRENCY_ID'],
     "SEF_MODE" => $arParams["SEF_MODE"],
-    "SEF_RULE" => $arResult["FOLDER"].$arResult["URL_TEMPLATES"]["smart_filter"],
+    "SEF_RULE" => $arResult["FOLDER"] . $arResult["URL_TEMPLATES"]["smart_filter"],
     "SMART_FILTER_PATH" => $arResult["VARIABLES"]["SMART_FILTER_PATH"],
     "PAGER_PARAMS_NAME" => $arParams["PAGER_PARAMS_NAME"],
     "INSTANT_RELOAD" => $arParams["INSTANT_RELOAD"],

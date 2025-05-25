@@ -336,5 +336,7 @@ $APPLICATION->SetTitle("Каталог");
 			"smart_filter" => "",
 		)
 	),
-	false
+	false,
+    array('HIDE_ICONS' => 'Y')
+
 );?><?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>

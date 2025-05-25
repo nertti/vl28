@@ -9,7 +9,7 @@ use Bitrix\Main\Page\Asset;
 /** @var \CUser $USER */
 
 if ($USER->IsAuthorized()) {
-    header('Location: /cabinet/');
+    header('Location: /profile/');
     exit();
 }
 ?>
