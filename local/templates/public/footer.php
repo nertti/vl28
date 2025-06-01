@@ -441,7 +441,13 @@ use Bitrix\Main\Page\Asset;
         </div>
     </div>
 </div>
-
+<?php $APPLICATION->IncludeFile(
+    "/include/footer/flat-cart.php",
+    array(),
+    array(
+        "MODE" => "text"
+    )
+); ?>
 <?php
 Asset::getInstance()->addJs(SITE_TEMPLATE_PATH.'/assets/js/jquery-3.7.1.min.js');
 Asset::getInstance()->addJs(SITE_TEMPLATE_PATH.'/assets/js/hystmodal.min.js');

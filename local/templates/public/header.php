@@ -60,12 +60,10 @@ if ($isProfilePages && !$isFavoritePage){
 </svg>
         <span class="menu-btn__text">Меню</span>
       </a>
-      <?php $APPLICATION->IncludeComponent("bitrix:search.form", "search", array(
-            "PAGE" => "#SITE_DIR#search/",    // Страница выдачи результатов поиска (доступен макрос #SITE_DIR#)
-            "USE_SUGGEST" => "N",    // Показывать подсказку с поисковыми фразами
-        ),
-            false
-        ); ?>
+      <a href="#" data-hystmodal="#searchModal" class="search-btn">
+          <img src="<?=SITE_TEMPLATE_PATH?>/assets/img/search.svg" alt="menu icon" class="search-btn__icon svg">
+          <span class="search-btn__text">Поиск</span>
+        </a>
     </div>
     <a href="/" class="header__logo logo">
       <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/logo.svg" alt="VL28" class="logo__img">
@@ -112,12 +110,10 @@ if ($isProfilePages && !$isFavoritePage){
 </svg>
         <span class="menu-btn__text">Меню</span>
       </a>
-      <?php $APPLICATION->IncludeComponent("bitrix:search.form", "search", array(
-            "PAGE" => "#SITE_DIR#search/",    // Страница выдачи результатов поиска (доступен макрос #SITE_DIR#)
-            "USE_SUGGEST" => "N",    // Показывать подсказку с поисковыми фразами
-        ),
-            false
-        ); ?>
+      <a href="#" data-hystmodal="#searchModal" class="search-btn">
+          <img src="<?=SITE_TEMPLATE_PATH?>/assets/img/search.svg" alt="menu icon" class="search-btn__icon svg">
+          <span class="search-btn__text">Поиск</span>
+        </a>
     </div>
     <a href="/" class="header__logo logo">
       <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/logo.svg" alt="VL28" class="logo__img">
@@ -179,10 +175,9 @@ if ($isProfilePages && !$isFavoritePage){
         <a href="/profile/" class="header__link">
             <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/user.svg" alt="user icon" class="header__link-icon svg">
         </a>
-        <a href="/cart/" class="header__link header__cart">
-            <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/cart.svg" alt="cart icon"
-                 class="header__link-icon header__link-icon_cart svg">
-                 <?php $APPLICATION->IncludeComponent("bitrix:sale.basket.basket.line", "basket", array(
+      <a href="#" data-hystmodal="#cartModal" class="header__link header__cart">
+        <img src="<?=SITE_TEMPLATE_PATH?>/assets/img/cart.svg" alt="cart icon" class="header__link-icon header__link-icon_cart svg">
+        <?php $APPLICATION->IncludeComponent("bitrix:sale.basket.basket.line", "basket", array(
                     "HIDE_ON_BASKET_PAGES" => "N",	// Не показывать на страницах корзины и оформления заказа
                         "PATH_TO_BASKET" => "/cart/",	// Страница корзины
                         "PATH_TO_ORDER" => "/cart/order/",	// Страница оформления заказа
@@ -210,7 +205,7 @@ if ($isProfilePages && !$isFavoritePage){
                     ),
                     false
                 );?>
-        </a>
+      </a>
     </div>
 </header>
 <!-- header-end -->
