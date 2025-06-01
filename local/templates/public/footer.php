@@ -374,6 +374,74 @@ use Bitrix\Main\Page\Asset;
         </div>
     </div>
 </div>
+<div class="hystmodal" id="searchModal" aria-hidden="true">
+    <div class="hystmodal__wrap hystmodal_search">
+        <div class="hystmodal__window hystmodal__window_search" role="dialog" aria-modal="true">
+            <div class="search-modal">
+                <p class="search-modal__title">Поиск</p>
+                <form action="#" role="search" method="get" class="search-form">
+                    <input type="search" class="search-form__input" placeholder="Введите что вы хотите найти?" value="" name="s">
+                    <input type="submit" class="main-btn" value="Найти">
+                </form>
+                <button data-hystclose class="hystmodal__close">Закрыть</button>
+                <div class="search-modal__wrap">
+                    <div class="search-modal__left">
+                        <p class="h2">Недавние запросы</p>
+                        <p>джинсы</p>
+                        <p>футболка</p>
+                    </div>
+                    <div class="search-modal__right">
+                        <p class="h2">Результат</p>
+                        <div class="swiper-button-prev">
+                            <svg class="arrow">
+                                <use xlink:href="assets/img/arrows.svg#arrow-left"></use>
+                            </svg>
+                        </div>
+                        <div class="swiper-button-next">
+                            <svg class="arrow">
+                                <use xlink:href="assets/img/arrows.svg#arrow-right"></use>
+                            </svg>
+                        </div>
+                        <div class="search-modal__swiper swiper">
+                            <div class="swiper-wrapper">
+                                <a href="#" class="swiper-slide product">
+                                    <img src="assets/img/export/product1.webp" alt="T-SHIRT DENSE BLACK 100" class="product__img">
+                                    <div class="product__inner">
+                                        <p class="product__title">T-SHIRT DENSE BLACK 100</p>
+                                        <p class="product__price">8 900 ₽</p>
+                                    </div>
+                                </a>
+                                <a href="#" class="swiper-slide product">
+                                    <img src="assets/img/export/product1.webp" alt="T-SHIRT DENSE BLACK 100" class="product__img">
+                                    <div class="product__inner">
+                                        <p class="product__title">T-SHIRT DENSE BLACK 100</p>
+                                        <p class="product__price">8 900 ₽</p>
+                                    </div>
+                                </a>
+                                <a href="#" class="swiper-slide product">
+                                    <img src="assets/img/export/product1.webp" alt="T-SHIRT DENSE BLACK 100" class="product__img">
+                                    <div class="product__inner">
+                                        <p class="product__title">T-SHIRT DENSE BLACK 100</p>
+                                        <p class="product__price">8 900 ₽</p>
+                                    </div>
+                                </a>
+                                <a href="#" class="swiper-slide product">
+                                    <img src="assets/img/export/product1.webp" alt="T-SHIRT DENSE BLACK 100" class="product__img">
+                                    <div class="product__inner">
+                                        <p class="product__title">T-SHIRT DENSE BLACK 100</p>
+                                        <p class="product__price">8 900 ₽</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <a href="#">Смотреть весь результат ( 4 изделия )</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?php
 Asset::getInstance()->addJs(SITE_TEMPLATE_PATH.'/assets/js/jquery-3.7.1.min.js');
 Asset::getInstance()->addJs(SITE_TEMPLATE_PATH.'/assets/js/hystmodal.min.js');

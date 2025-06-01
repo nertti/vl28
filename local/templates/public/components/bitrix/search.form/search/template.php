@@ -12,6 +12,6 @@
 /** @var CBitrixComponent $component */
 $this->setFrameMode(true);?>
 <form action="<?=$arResult["FORM_ACTION"]?>" role="search" method="get" class="search-form">
-    <input type="submit" class="search-form__button" value="Искать">
-    <input type="search" class="search-form__input" placeholder="Поиск" value="" name="q">
+    <input type="search" class="search-form__input" placeholder="Введите что вы хотите найти?" value="" name="q">
+    <input type="submit" class="main-btn" value="Найти">
 </form>

@@ -163,12 +163,10 @@ if ($isProfilePages && !$isFavoritePage){
             <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/menu.svg" alt="menu icon" class="menu-btn__icon svg">
             <span class="menu-btn__text">Меню</span>
         </a>
-        <?php $APPLICATION->IncludeComponent("bitrix:search.form", "search", array(
-            "PAGE" => "#SITE_DIR#search/",    // Страница выдачи результатов поиска (доступен макрос #SITE_DIR#)
-            "USE_SUGGEST" => "N",    // Показывать подсказку с поисковыми фразами
-        ),
-            false
-        ); ?>
+        <a href="#" data-hystmodal="#searchModal" class="search-btn">
+          <img src="<?=SITE_TEMPLATE_PATH?>/assets/img/search.svg" alt="menu icon" class="search-btn__icon svg">
+          <span class="search-btn__text">Поиск</span>
+        </a>
     </div>
     <a href="/" class="header__logo logo">
         <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/logo.svg" alt="VL28" class="logo__img">
@@ -241,21 +239,32 @@ if ($isProfilePages && !$isFavoritePage){
                         false
                     ); ?>
                 </ul>
-                <div style="padding: 10px;border: 1px gray solid;">
-                    <?php
-
-                    $APPLICATION->IncludeComponent("bitrix:search.form", "search", array(
-                        "PAGE" => "#SITE_DIR#search/",    // Страница выдачи результатов поиска (доступен макрос #SITE_DIR#)
-                        "USE_SUGGEST" => "N",    // Показывать подсказку с поисковыми фразами
-                    ),
-                        false
-                    );
-
-                    ?>
-                </div>
+                <a href="#" data-hystmodal="#searchModal" class="search-btn">
+                  <img src="<?=SITE_TEMPLATE_PATH?>/assets/img/search.svg" alt="menu icon" class="search-btn__icon svg">
+                  <span class="search-btn__text">Поиск</span>
+                </a>
             </div>
         </div>
     </div>
+</div>
+<div class="hystmodal" id="searchModal" aria-hidden="true">
+  <div class="hystmodal__wrap hystmodal_search">
+    <div class="hystmodal__window hystmodal__window_search" role="dialog" aria-modal="true">
+      <div class="search-modal">
+        <p class="search-modal__title">Поиск</p>
+
+        <?php
+        $APPLICATION->IncludeComponent("bitrix:search.form", "search", array(
+            "PAGE" => "#SITE_DIR#search/",    // Страница выдачи результатов поиска (доступен макрос #SITE_DIR#)
+            "USE_SUGGEST" => "N",    // Показывать подсказку с поисковыми фразами
+        ),
+        false
+        );
+        ?>
+        <button data-hystclose class="hystmodal__close">Закрыть</button>
+      </div>
+    </div>
+  </div>
 </div>
 <main <?php if (checkCatalogPath($APPLICATION->GetCurPageParam())):?>class="product-page"<?php endif;?>>
     <?php if ($isMainPage): ?>
@@ -327,7 +336,7 @@ if ($isProfilePages && !$isFavoritePage){
             "USE_RATING" => "N",
             "USE_SHARE" => "N"
         ), false,
-        Array('HIDE_ICONS' => 'Y')); ?>
+        array('HIDE_ICONS' => 'Y')); ?>
         <section class="products">
             <p class="h2">Новые поступления</p>
             <?php $APPLICATION->IncludeComponent(
@@ -488,7 +497,7 @@ if ($isProfilePages && !$isFavoritePage){
 		"DISPLAY_COMPARE" => "N"
 	),
 	false,
-	Array('HIDE_ICONS' => 'Y')
+	array('HIDE_ICONS' => 'Y')
 );?>
 
             <a href="/catalog/" class="products__link link">Перейти в каталог</a>
@@ -709,7 +718,7 @@ if ($isProfilePages && !$isFavoritePage){
                     ),
                     false
                 ); ?>
-                <?php if (!$isAboutPage):?>
+                <?php if (!$isAboutPage && !$isProfilePages):?>
                 <p class="h2"><?php $APPLICATION->ShowTitle(); ?></p>
                 <?php endif;?>
             </div>

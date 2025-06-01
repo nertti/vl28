@@ -60,7 +60,10 @@
                 </a>
             <?php endforeach; ?>
         <?php else: ?>
-            <?php ShowNote(GetMessage('SEARCH_NOTHING_TO_FOUND')); ?>
+        <div class="search-modal">
+            <p class="h2">Ничего не нашлось...</p>
+            <p>Проверьте, правильно ли введен запрос</p>
+        </div>
         <?php endif; ?>
     </div>
 </section>

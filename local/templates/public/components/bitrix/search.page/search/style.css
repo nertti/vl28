@@ -1,27 +1,12 @@
-.hystmodal__window {
-    background-color: #fff;
-    width: 50%;
-    height: 100%;
-    margin-left: auto;
-    padding: 45px 40px 80px;
-    -webkit-transform: translateY(-100%);
-    transform: translateY(-100%);
-    -webkit-transform: translateX(0) !important;
-    transform: translateX(0) !important;
-    -webkit-transition: all .4s ease;
-    transition: all .4s ease;
-}
-.hystmodal--active .hystmodal__window {
-    -webkit-transform: translateY(0);
-    transform: translateY(0);
-}
-/* todo на общую страницу */
 .search-page{
     width: 100%;
     margin: 0 auto;
     padding: 0 40px;
 }
 
-.search-modal .search-form {
+main .search-modal .search-form {
     max-width: unset !important;
+}
+.products__list{
+    padding: 0 40px;
 }
