@@ -709,7 +709,7 @@ if ($isProfilePages && !$isFavoritePage){
                     ),
                     false
                 ); ?>
-                <?php if ($isAboutPage):?>
+                <?php if (!$isAboutPage):?>
                 <p class="h2"><?php $APPLICATION->ShowTitle(); ?></p>
                 <?php endif;?>
             </div>

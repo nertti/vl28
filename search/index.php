@@ -5,23 +5,20 @@
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 $APPLICATION->SetTitle("Поиск по сайту");
 ?>
-<?php $APPLICATION->IncludeComponent(
-	"bitrix:search.page", 
-	".default", 
-	array(
-		"RESTART" => "Y",
-		"CHECK_DATES" => "Y",
+<?php $APPLICATION->IncludeComponent("bitrix:search.page", "search", Array(
+	"RESTART" => "Y",	// Искать без учета морфологии (при отсутствии результата поиска)
+		"CHECK_DATES" => "Y",	// Искать только в активных по дате документах
 		"arrWHERE" => array(
 			0 => "forum",
 			1 => "blog",
 		),
-		"arrFILTER" => array(
+		"arrFILTER" => array(	// Ограничение области поиска
 			0 => "iblock_rest_entity",
 		),
-		"SHOW_WHERE" => "N",
-		"PAGE_RESULT_COUNT" => "50",
-		"CACHE_TYPE" => "A",
-		"CACHE_TIME" => "3600",
+		"SHOW_WHERE" => "N",	// Показывать выпадающий список "Где искать"
+		"PAGE_RESULT_COUNT" => "50",	// Количество результатов на странице
+		"CACHE_TYPE" => "A",	// Тип кеширования
+		"CACHE_TIME" => "3600",	// Время кеширования (сек.)
 		"TAGS_SORT" => "NAME",
 		"TAGS_PAGE_ELEMENTS" => "20",
 		"TAGS_PERIOD" => "",
@@ -38,27 +35,27 @@ $APPLICATION->SetTitle("Поиск по сайту");
 		"WIDTH" => "100%",
 		"PATH_TO_USER_PROFILE" => "#SITE_DIR#people/user/#USER_ID#/",
 		"COMPONENT_TEMPLATE" => ".default",
-		"NO_WORD_LOGIC" => "N",
-		"USE_TITLE_RANK" => "Y",
-		"DEFAULT_SORT" => "rank",
-		"FILTER_NAME" => "",
-		"SHOW_WHEN" => "N",
-		"AJAX_MODE" => "N",
-		"AJAX_OPTION_JUMP" => "N",
-		"AJAX_OPTION_STYLE" => "N",
-		"AJAX_OPTION_HISTORY" => "N",
-		"AJAX_OPTION_ADDITIONAL" => "",
-		"USE_LANGUAGE_GUESS" => "N",
-		"USE_SUGGEST" => "Y",
+		"NO_WORD_LOGIC" => "N",	// Отключить обработку слов как логических операторов
+		"USE_TITLE_RANK" => "Y",	// При ранжировании результата учитывать заголовки
+		"DEFAULT_SORT" => "rank",	// Сортировка по умолчанию
+		"FILTER_NAME" => "",	// Дополнительный фильтр
+		"SHOW_WHEN" => "N",	// Показывать фильтр по датам
+		"AJAX_MODE" => "N",	// Включить режим AJAX
+		"AJAX_OPTION_JUMP" => "N",	// Включить прокрутку к началу компонента
+		"AJAX_OPTION_STYLE" => "N",	// Включить подгрузку стилей
+		"AJAX_OPTION_HISTORY" => "N",	// Включить эмуляцию навигации браузера
+		"AJAX_OPTION_ADDITIONAL" => "",	// Дополнительный идентификатор
+		"USE_LANGUAGE_GUESS" => "N",	// Включить автоопределение раскладки клавиатуры
+		"USE_SUGGEST" => "Y",	// Показывать подсказку с поисковыми фразами
 		"SHOW_ITEM_TAGS" => "Y",
 		"SHOW_ITEM_DATE_CHANGE" => "Y",
 		"SHOW_ORDER_BY" => "Y",
 		"SHOW_TAGS_CLOUD" => "N",
-		"DISPLAY_TOP_PAGER" => "N",
-		"DISPLAY_BOTTOM_PAGER" => "Y",
-		"PAGER_TITLE" => "Результаты поиска",
-		"PAGER_SHOW_ALWAYS" => "N",
-		"PAGER_TEMPLATE" => "",
+		"DISPLAY_TOP_PAGER" => "N",	// Выводить над результатами
+		"DISPLAY_BOTTOM_PAGER" => "Y",	// Выводить под результатами
+		"PAGER_TITLE" => "Результаты поиска",	// Название результатов поиска
+		"PAGER_SHOW_ALWAYS" => "N",	// Выводить всегда
+		"PAGER_TEMPLATE" => "",	// Название шаблона
 		"arrFILTER_main" => "",
 		"arrFILTER_iblock_main_ru" => array(
 			0 => "2",
@@ -78,7 +75,7 @@ $APPLICATION->SetTitle("Поиск по сайту");
 		),
 		"COMPOSITE_FRAME_MODE" => "A",
 		"COMPOSITE_FRAME_TYPE" => "AUTO",
-		"arrFILTER_iblock_rest_entity" => array(
+		"arrFILTER_iblock_rest_entity" => array(	// Искать в информационных блоках типа "iblock_rest_entity"
 			0 => "2",
 		)
 	),
