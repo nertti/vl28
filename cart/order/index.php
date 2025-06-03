@@ -353,12 +353,12 @@ if ($USER->isAuthorized()) {
                 </div>
                 <div class="checkout__form-right">
 
-                        <div class="checkout__links">
-                            <a href="/cart/" class="checkout__back">Назад</a>
-                            <?php if (!$USER->isAuthorized()): ?>
-                                <a href="/login/" class="checkout__login">Войти в личный кабинет</a>
-                            <?php endif; ?>
-                        </div>
+                    <div class="checkout__links">
+                        <a href="/cart/" class="checkout__back">Назад</a>
+                        <?php if (!$USER->isAuthorized()): ?>
+                            <a href="/login/" class="checkout__login">Войти в личный кабинет</a>
+                        <?php endif; ?>
+                    </div>
 
                     <div class="checkout__param">
                         <div class="checkout__param-item">
@@ -408,7 +408,8 @@ if ($USER->isAuthorized()) {
                         <div class="promo__show" style="display: none;">
                             <div class="promo__form">
                                 <input type="hidden" name="setBonus" id="setBonus" value="N">
-                                <input type="number" class="promo__input" name="bonus" id="bonus" max="<?= calculateMaxPointsToSpend($fullPrice, $userBonus) ?>"
+                                <input type="number" class="promo__input" name="bonus" id="bonus"
+                                       max="<?= calculateMaxPointsToSpend($fullPrice, $userBonus) ?>"
                                        value="<?= calculateMaxPointsToSpend($fullPrice, $userBonus) ?>">
                                 <button id="applyBonus" type="button" class="border-btn">Применить</button>
                             </div>
@@ -554,7 +555,7 @@ if ($USER->isAuthorized()) {
                                             errorKvartiraError.style.display = 'block';
                                             errorKvartiraError.innerHTML = data.message.kvartira;
                                         }
-                                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                                        window.scrollTo({top: 0, behavior: 'smooth'});
                                     } else {
                                         document.querySelector('#alertModal .alertText .h2').textContent = data.message
                                         myModalSuccessOrder.open('#alertModal');
@@ -569,7 +570,7 @@ if ($USER->isAuthorized()) {
 
                         const inputBonus = document.getElementById('bonus');
                         // Обработчик изменения значения
-                        inputBonus.addEventListener('change', function() {
+                        inputBonus.addEventListener('change', function () {
                             let value = Number(this.value);
 
                             // Если значение больше максимального, устанавливаем максимальное
@@ -578,7 +579,7 @@ if ($USER->isAuthorized()) {
                                 this.value = value;
                             }
                         });
-                        inputBonus.addEventListener('input', function() {
+                        inputBonus.addEventListener('input', function () {
                             let value = Number(this.value);
 
                             // Если значение больше максимального, устанавливаем максимальное
@@ -646,10 +647,10 @@ if ($USER->isAuthorized()) {
             if (uf_card == 10) {
                 // Вычисляем 5% от суммы заказа
                 return Math.round(total * 0.05);
-            } else if(uf_card == 11){
+            } else if (uf_card == 11) {
                 // Вычисляем 10% от суммы заказа
                 return Math.round(total * 0.10);
-            } else if(uf_card == 12){
+            } else if (uf_card == 12) {
                 // Вычисляем 15% от суммы заказа
                 return Math.round(total * 0.15);
             }
