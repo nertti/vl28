@@ -204,6 +204,7 @@ foreach ($arFavorites as $favorite) {
         $active = true;
     }
 }
+
 ?>
 <?php /** Начало карточки товара*/ ?>
     <section class="tovar">
@@ -215,7 +216,21 @@ foreach ($arFavorites as $favorite) {
             </div>
             <div class="swiper product-swiper">
                 <div class="swiper-wrapper">
-                    <?php foreach ($arResult['PROPERTIES']['IMAGES']['VALUE'] as $image): ?>
+                    <?php foreach ($arResult['PROPERTIES']['IMAGES']['VALUE'] as $index => $image): ?>
+                        <?php if ($index == 1): ?>
+                            <?php if (!empty($arResult['PROPERTIES']['VIDEO']['VALUE'])): ?>
+                                <div class="swiper-slide">
+                                    <video style="margin: 0 auto"
+                                            autoplay
+                                            muted
+                                            playsinline
+                                           controls
+                                            height="1010"
+                                            src="<?= CFile::getPath($arResult['PROPERTIES']['VIDEO']['VALUE']) ?>"
+                                    ></video>
+                                </div>
+                            <?php endif; ?>
+                        <?php endif; ?>
                         <div class="swiper-slide">
                             <img src="<?= CFile::getPath($image) ?>" alt="Фото">
                         </div>
@@ -260,8 +275,8 @@ foreach ($arFavorites as $favorite) {
                             ?>
                             <?php if ($key == 'COLOR' && false): ?>
                                 <?php
-                                pr($skuProperty);
-                                // на этапе разработки
+                                // pr($skuProperty);
+                                // на этапе разработки выбор цвета
                                 ?>
                                 <div class="tovar__color">
                                     <div class="tovar__color-text">
@@ -329,12 +344,50 @@ foreach ($arFavorites as $favorite) {
                    href="javascript:void(0);">
                     <span>Добавить в корзину</span>
                 </a>
+                <!--                <span class="black-btn" id="addToBasket">-->
+                <!--                    <span>Добавить в корзину</span>-->
+                <!--                </span>-->
             </form>
             <a href="#" class="tovar__link" data-hystmodal="#descriptionModal">Описание</a>
             <a href="#" class="tovar__link" data-hystmodal="#howModal">Состав и уход</a>
-            <a href="http://vl26908655.nichost.ru/customers/?code=delivery" class="tovar__link">Доставка и возврат</a>
+            <a href="/customers/?code=delivery" class="tovar__link">Доставка и возврат</a>
         </div>
     </section>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const addToBasket = document.querySelector('#addToBasket');
+            // Если форма найдена, добавляем слушатель события submit
+            if (addToBasket) {
+                addToBasket.addEventListener('click', handleFormAddToBasket);
+            }
+
+            function handleFormAddToBasket(event) {
+                event.preventDefault();
+                addToBasket.innerHTML = `
+                  <span>Добавляем...</span>
+                `;
+                const data = new FormData();
+                data.append('PRODUCT_ID', <?=$arResult['ID']?>)
+                fetch('/ajax/addInBasket.php', {
+                    method: 'POST',
+                    body: data
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        addToBasket.innerHTML = `<span>Добавить в корзину</span>`;
+                        if (data.status === 'error') {
+
+                        } else {
+                            console.log('УСПЕХ')
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Ошибка при добавлении товара в корзину:', error);
+                    });
+            }
+        });
+    </script>
+
 <?php /** Конец карточки товара*/ ?>
     <section class="products products_others">
         <div class="container">
