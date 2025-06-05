@@ -58,6 +58,24 @@ img{
 .hystmodal__window_search {
     min-height: unset !important;
 }
-.hystmodal__window {
+.hystmodal__window{
     padding: 45px 40px 0 !important;
+}
+.hystmodal__window.hystmodal__window_loyal{
+    padding: 45px 40px 20px !important;
+}
+.loyal {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center !important;
+}
+.loyal .h2{
+    align-self: center !important;
 }

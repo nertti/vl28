@@ -83,12 +83,29 @@ if ($USER->IsAuthorized()) {
                         false
                     ); ?>
                 </ul>
-                <?php $APPLICATION->IncludeComponent("bitrix:search.form", "search", array(
+                <a href="#" data-hystmodal="#searchModal" class="search-btn">
+                    <img src="<?=SITE_TEMPLATE_PATH?>/assets/img/search.svg" alt="menu icon" class="search-btn__icon svg">
+                    <span class="search-btn__text">Поиск</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="hystmodal" id="searchModal" aria-hidden="true">
+    <div class="hystmodal__wrap hystmodal_search">
+        <div class="hystmodal__window hystmodal__window_search" role="dialog" aria-modal="true">
+            <div class="search-modal">
+                <p class="search-modal__title">Поиск</p>
+
+                <?php
+                $APPLICATION->IncludeComponent("bitrix:search.form", "search", array(
                     "PAGE" => "#SITE_DIR#search/",    // Страница выдачи результатов поиска (доступен макрос #SITE_DIR#)
                     "USE_SUGGEST" => "N",    // Показывать подсказку с поисковыми фразами
                 ),
                     false
-                ); ?>
+                );
+                ?>
+                <button data-hystclose class="hystmodal__close">Закрыть</button>
             </div>
         </div>
     </div>
