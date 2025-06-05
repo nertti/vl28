@@ -555,7 +555,8 @@ if ($USER->isAuthorized()) {
                                             errorKvartiraError.style.display = 'block';
                                             errorKvartiraError.innerHTML = data.message.kvartira;
                                         }
-                                        window.scrollTo({top: 0, behavior: 'smooth'});
+
+                                        window.scrollTo({top: document.querySelector('.checkout__form').offsetTop - 100, behavior: 'smooth'});
                                     } else {
                                         document.querySelector('#alertModal .alertText .h2').textContent = data.message
                                         myModalSuccessOrder.open('#alertModal');

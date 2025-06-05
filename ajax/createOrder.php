@@ -11,15 +11,12 @@ use Bitrix\Sale\PaySystem;
 
 global $USER;
 
-Bitrix\Main\Loader::includeModule("sale");
-Bitrix\Main\Loader::includeModule("catalog");
+Loader::includeModule("sale");
+Loader::includeModule("catalog");
 
-// Допустим некоторые поля приходит в запросе
 $request = Context::getCurrent()->getRequest();
-
 $pattern = '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/';
 
-// Проверяем заполненные значения
 $errors = [];
 if (empty($request['email'])) {
     $errors['email'] = "Пожалуйста, введите свой email.";
@@ -36,34 +33,26 @@ if (empty($request['phone'])) {
     $errors['phone'] = "Пожалуйста, введите свой телефон.";
 }
 if ($request['delivery'] == 1 || $request['delivery'] == 3) {
-    if (empty($request['city'])) {
-        $errors['city'] = "Пожалуйста, укажите населённый пункт.";
-    }
-    if (empty($request['street'])) {
-        $errors['street'] = "Пожалуйста, укажите улицу.";
-    }
-    if (empty($request['dom'])) {
-        $errors['dom'] = "Пожалуйста, укажите номер дома.";
-    }
-    if (empty($request['kvartira'])) {
-        $errors['kvartira'] = "Пожалуйста, укажите номер квартиры.";
-    }
+    if (empty($request['city'])) $errors['city'] = "Пожалуйста, укажите населённый пункт.";
+    if (empty($request['street'])) $errors['street'] = "Пожалуйста, укажите улицу.";
+    if (empty($request['dom'])) $errors['dom'] = "Пожалуйста, укажите номер дома.";
+    if (empty($request['kvartira'])) $errors['kvartira'] = "Пожалуйста, укажите номер квартиры.";
 }
-// Если есть ошибки, возвращаем их в виде JSON
 if (!empty($errors)) {
     header('Content-Type: application/json');
     echo json_encode(['status' => 'error', 'message' => $errors]);
     exit();
 }
-$phone = $request["phone"];
-$phoneCleaned = preg_replace("/[^0-9]/", "", $_POST["phone"]); // Очищаем номер
 
+$phone = $request["phone"];
+$phoneCleaned = preg_replace("/[^0-9]/", "", $_POST["phone"]);
 $name = $request["name"];
 $comment = $request["comment"];
+$email = $request["email"];
 
 $fUserId = $request['fUserId'];
 $siteId = $request['siteId'];
-$basket = Bitrix\Sale\Basket::loadItemsForFUser($fUserId, $siteId);
+$basket = Basket::loadItemsForFUser($fUserId, $siteId);
 
 $userId = $USER->GetID();
 
@@ -72,9 +61,7 @@ if (!$USER->isAuthorized()) {
     if ($rsUsers->SelectedRowsCount() <= 0) {
         $arResult = $USER->Register($phoneCleaned, "", "", $phoneCleaned, $phoneCleaned, $phoneCleaned . "@vl28.ru");
         if ($arResult['TYPE'] == 'OK') {
-            $fields = array(
-                "PERSONAL_PHONE" => $phoneCleaned,
-            );
+            $fields = array("PERSONAL_PHONE" => $phoneCleaned);
             $USER->Update($arResult['ID'], $fields);
             $userId = $USER->GetID();
         }
@@ -82,20 +69,19 @@ if (!$USER->isAuthorized()) {
         $rsUser = CUser::GetByLogin($phoneCleaned);
         $arUser = $rsUser->Fetch();
         $userId = $arUser['ID'];
-        //$USER->Authorize($arUser['ID']); // авторизуем
     }
     $USER->Logout();
 }
 
-// Создаёт новый заказ
+// Создание заказа
 $order = Order::create($siteId, $USER->isAuthorized() ? $USER->GetID() : $userId);
 $order->setPersonTypeId(1);
 if ($comment) {
-    $order->setField('USER_DESCRIPTION', $comment); // Устанавливаем поля комментария покупателя
+    $order->setField('USER_DESCRIPTION', $comment);
 }
 $order->setBasket($basket);
 
-// Создаём одну отгрузку и устанавливаем способ доставки - "Без доставки" (он служебный)
+// Отгрузка
 $shipmentCollection = $order->getShipmentCollection();
 $shipment = $shipmentCollection->createItem();
 $service = Delivery\Services\Manager::getById(Delivery\Services\EmptyDeliveryService::getEmptyDeliveryServiceId());
@@ -105,32 +91,83 @@ $shipment->setFields(array(
 ));
 $shipmentItemCollection = $shipment->getShipmentItemCollection();
 
-// Создаём оплату со способом #1
+// Оплата
 $paymentCollection = $order->getPaymentCollection();
 $payment = $paymentCollection->createItem();
-$paySystemService = PaySystem\Manager::getObjectById(2); //"Наличный расчёт"
+$paySystemService = PaySystem\Manager::getObjectById(7); //"Т-Банк"
 $payment->setFields(array(
     'PAY_SYSTEM_ID' => $paySystemService->getField("PAY_SYSTEM_ID"),
     'PAY_SYSTEM_NAME' => $paySystemService->getField("NAME"),
 ));
 
-// Устанавливаем свойства
-$propertyCollection = $order->getPropertyCollection();
-//$phoneProp = $propertyCollection->getPhone();
-//$phoneProp->setValue($phone);
-//$nameProp = $propertyCollection->getPayerName();
-//$nameProp->setValue($name);
-
-// Сохраняем
 $order->doFinalAction(true);
 $result = $order->save();
 $orderId = $order->getId();
+$price = $order->getPrice();
 
-if ($result) {
+if ($result->isSuccess()) {
 
+    // 📦 Интеграция с Т-Банком
+    $terminalKey = '1713425997317';
+    $secretKey = '1nujjyr9acqgxf9i';
+    $amountKopecks = intval($price * 100); // копейки
+    $orderNumber = 'ORDER-' . $orderId;
+
+    // Токен по документации Т-Банка (в алфавитном порядке ключей)
+    $tokenData = [
+        'Amount' => $amountKopecks,
+        'Description' => 'Оплата заказа №' . $orderId,
+        'OrderId' => $orderNumber,
+        'TerminalKey' => $terminalKey,
+        'DATA' => [
+            'Email' => $email,
+            'Phone' => $phoneCleaned
+        ]
+    ];
+    $flattened = array_merge($tokenData, ['Password' => $secretKey]);
+    ksort($flattened);
+    $tokenString = '';
+    foreach ($flattened as $k => $v) {
+        if (is_array($v)) continue;
+        $tokenString .= $v;
+    }
+    $token = hash('sha256', $tokenString);
+
+    $requestData = [
+        'TerminalKey' => $terminalKey,
+        'Amount' => $amountKopecks,
+        'OrderId' => $orderNumber,
+        'Description' => 'Оплата заказа №' . $orderId,
+        //'SuccessURL' => 'https://ваш-домен.рф/payment-success.php',
+        //'FailURL' => 'https://ваш-домен.рф/payment-fail.php',
+        //'NotificationURL' => 'https://ваш-домен.рф/api/tinkoff-callback.php',
+        'DATA' => [
+            'Email' => $email,
+            'Phone' => $phoneCleaned
+        ],
+        'Token' => $token
+    ];
+
+    $ch = curl_init('https://securepay.tinkoff.ru/v2/Init');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($requestData));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    $responseData = json_decode($response, true);
+    if (!empty($responseData['PaymentURL'])) {
+        $payUrl = $responseData['PaymentURL'];
+    }
 
     header('Content-Type: application/json');
-    echo json_encode(['status' => 'success', 'message' => 'Заказ успешно добавлен.', 'data' => $result]);
+    echo json_encode([
+        'status' => 'success',
+        'message' => 'Заказ успешно оформлен',
+        'price' => $price,
+        'order_id' => $orderId,
+        'pay_url' => $payUrl ?? null
+    ]);
 } else {
     header('Content-Type: application/json');
     echo json_encode(['status' => 'error', 'message' => $result]);
