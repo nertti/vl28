@@ -220,12 +220,11 @@ foreach ($arFavorites as $favorite) {
                         <?php if ($index == 1): ?>
                             <?php if (!empty($arResult['PROPERTIES']['VIDEO']['VALUE'])): ?>
                                 <div class="swiper-slide">
-                                    <video style="margin: 0 auto"
+                                    <video class="catalog-cart-video"
                                             autoplay
                                             muted
                                             playsinline
-                                           controls
-                                            height="1010"
+                                            loop
                                             src="<?= CFile::getPath($arResult['PROPERTIES']['VIDEO']['VALUE']) ?>"
                                     ></video>
                                 </div>

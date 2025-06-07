@@ -106,58 +106,70 @@ $orderId = $order->getId();
 $price = $order->getPrice();
 
 if ($result->isSuccess()) {
-
-    // 📦 Интеграция с Т-Банком
+    // === ЗАПРОС В Т-БАНК НА ОПЛАТУ ===
+    $apiUrl = 'https://securepay.tinkoff.ru/v2/Init'; // URL для создания платежа
     $terminalKey = '1713425997317';
-    $secretKey = '1nujjyr9acqgxf9i';
-    $amountKopecks = intval($price * 100); // копейки
-    $orderNumber = 'ORDER-' . $orderId;
+    $secretKey = '1nujjyr9acqxgf9i';
 
-    // Токен по документации Т-Банка (в алфавитном порядке ключей)
+    // Сумма в копейках
+    $amount = intval(round($price * 100)); // например 1234.56 => 123456
+
+    // Подпись (Token)
     $tokenData = [
-        'Amount' => $amountKopecks,
-        'Description' => 'Оплата заказа №' . $orderId,
-        'OrderId' => $orderNumber,
+        'Amount' => $amount,
+        'OrderId' => $orderId,
+        'Password' => $secretKey,
         'TerminalKey' => $terminalKey,
-        'DATA' => [
-            'Email' => $email,
-            'Phone' => $phoneCleaned
-        ]
     ];
-    $flattened = array_merge($tokenData, ['Password' => $secretKey]);
-    ksort($flattened);
+    ksort($tokenData);
     $tokenString = '';
-    foreach ($flattened as $k => $v) {
-        if (is_array($v)) continue;
-        $tokenString .= $v;
+    foreach ($tokenData as $value) {
+        $tokenString .= $value;
     }
     $token = hash('sha256', $tokenString);
 
+    // Данные запроса
     $requestData = [
         'TerminalKey' => $terminalKey,
-        'Amount' => $amountKopecks,
-        'OrderId' => $orderNumber,
+        'Amount' => $amount,
+        'OrderId' => $orderId,
         'Description' => 'Оплата заказа №' . $orderId,
-        //'SuccessURL' => 'https://ваш-домен.рф/payment-success.php',
-        //'FailURL' => 'https://ваш-домен.рф/payment-fail.php',
-        //'NotificationURL' => 'https://ваш-домен.рф/api/tinkoff-callback.php',
-        'DATA' => [
+        'Token' => $token,
+        'Receipt' => [
             'Email' => $email,
-            'Phone' => $phoneCleaned
+            'Taxation' => 'osn',
+            'Items' => [],
         ],
-        'Token' => $token
     ];
 
-    $ch = curl_init('https://securepay.tinkoff.ru/v2/Init');
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($requestData));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-    $response = curl_exec($ch);
-    curl_close($ch);
+    // Заполнение данных товаров для чека
+    foreach ($basket as $basketItem) {
+        $itemPrice = intval(round($basketItem->getPrice() * 100));
+        $itemQuantity = $basketItem->getQuantity();
+        $requestData['Receipt']['Items'][] = [
+            'Name' => $basketItem->getField('NAME'),
+            'Price' => $itemPrice,
+            'Quantity' => $itemQuantity,
+            'Amount' => $itemPrice * $itemQuantity,
+            'Tax' => 'vat10',
+        ];
+    }
 
-    $responseData = json_decode($response, true);
-    if (!empty($responseData['PaymentURL'])) {
-        $payUrl = $responseData['PaymentURL'];
+    // Отправка запроса в Т-Банк
+    $curl = curl_init($apiUrl);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($curl, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    curl_setopt($curl, CURLOPT_POST, true);
+    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($requestData));
+    $response = curl_exec($curl);
+    curl_close($curl);
+
+    $resultData = json_decode($response, true);
+    file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/local/log.txt', print_r($resultData, 1), FILE_APPEND);
+    if (!empty($resultData['PaymentURL'])) {
+        $payUrl = $resultData['PaymentURL'];
+    } else {
+        $payUrl = null;
     }
 
     header('Content-Type: application/json');
@@ -166,7 +178,7 @@ if ($result->isSuccess()) {
         'message' => 'Заказ успешно оформлен',
         'price' => $price,
         'order_id' => $orderId,
-        'pay_url' => $payUrl ?? null
+        'pay_url' => $payUrl
     ]);
 } else {
     header('Content-Type: application/json');
