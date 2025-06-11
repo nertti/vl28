@@ -206,7 +206,7 @@ if ($result->isSuccess()) {
     curl_close($curl);
 
     $resultData = json_decode($response, true);
-    file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/local/log.txt', print_r($resultData, 1), FILE_APPEND);
+    //file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/local/log.txt', print_r($resultData, 1), FILE_APPEND);
 
     $payUrl = $resultData['PaymentURL'] ?? null;
 
