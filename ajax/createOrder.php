@@ -15,9 +15,10 @@ Loader::includeModule("sale");
 Loader::includeModule("catalog");
 
 $request = Context::getCurrent()->getRequest();
-$pattern = '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/';
 
+$pattern = '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/';
 $errors = [];
+
 if (empty($request['email'])) {
     $errors['email'] = "Пожалуйста, введите свой email.";
 } elseif (!preg_match($pattern, $request['email'])) {
@@ -33,10 +34,10 @@ if (empty($request['phone'])) {
     $errors['phone'] = "Пожалуйста, введите свой телефон.";
 }
 if ($request['delivery'] == 1 || $request['delivery'] == 3) {
-    if (empty($request['city'])) $errors['city'] = "Пожалуйста, укажите населённый пункт.";
-    if (empty($request['street'])) $errors['street'] = "Пожалуйста, укажите улицу.";
-    if (empty($request['dom'])) $errors['dom'] = "Пожалуйста, укажите номер дома.";
-    if (empty($request['kvartira'])) $errors['kvartira'] = "Пожалуйста, укажите номер квартиры.";
+    if (empty($request['city'])) $errors['city'] = "Укажите населённый пункт.";
+    if (empty($request['street'])) $errors['street'] = "Укажите улицу.";
+    if (empty($request['dom'])) $errors['dom'] = "Укажите номер дома.";
+    if (empty($request['kvartira'])) $errors['kvartira'] = "Укажите номер квартиры.";
 }
 if (!empty($errors)) {
     header('Content-Type: application/json');
@@ -44,24 +45,23 @@ if (!empty($errors)) {
     exit();
 }
 
+$email = $request["email"];
 $phone = $request["phone"];
-$phoneCleaned = preg_replace("/[^0-9]/", "", $_POST["phone"]);
+$phoneCleaned = preg_replace("/[^0-9]/", "", $phone);
 $name = $request["name"];
 $comment = $request["comment"];
-$email = $request["email"];
 
 $fUserId = $request['fUserId'];
 $siteId = $request['siteId'];
 $basket = Basket::loadItemsForFUser($fUserId, $siteId);
-
 $userId = $USER->GetID();
 
 if (!$USER->isAuthorized()) {
-    $rsUsers = CUser::GetList(array(), 'sort', array('PERSONAL_PHONE' => $phoneCleaned));
+    $rsUsers = CUser::GetList(array(), 'sort', ['PERSONAL_PHONE' => $phoneCleaned]);
     if ($rsUsers->SelectedRowsCount() <= 0) {
         $arResult = $USER->Register($phoneCleaned, "", "", $phoneCleaned, $phoneCleaned, $phoneCleaned . "@vl28.ru");
         if ($arResult['TYPE'] == 'OK') {
-            $fields = array("PERSONAL_PHONE" => $phoneCleaned);
+            $fields = ["PERSONAL_PHONE" => $phoneCleaned];
             $USER->Update($arResult['ID'], $fields);
             $userId = $USER->GetID();
         }
@@ -73,7 +73,7 @@ if (!$USER->isAuthorized()) {
     $USER->Logout();
 }
 
-// Создание заказа
+// Создаём заказ
 $order = Order::create($siteId, $USER->isAuthorized() ? $USER->GetID() : $userId);
 $order->setPersonTypeId(1);
 if ($comment) {
@@ -81,68 +81,68 @@ if ($comment) {
 }
 $order->setBasket($basket);
 
-// Отгрузка
+// Доставка
 $shipmentCollection = $order->getShipmentCollection();
 $shipment = $shipmentCollection->createItem();
 $service = Delivery\Services\Manager::getById(Delivery\Services\EmptyDeliveryService::getEmptyDeliveryServiceId());
-$shipment->setFields(array(
+$shipment->setFields([
     'DELIVERY_ID' => $service['ID'],
     'DELIVERY_NAME' => $service['NAME'],
-));
-$shipmentItemCollection = $shipment->getShipmentItemCollection();
+]);
 
 // Оплата
 $paymentCollection = $order->getPaymentCollection();
 $payment = $paymentCollection->createItem();
-$paySystemService = PaySystem\Manager::getObjectById(7); //"Т-Банк"
-$payment->setFields(array(
+$paySystemService = PaySystem\Manager::getObjectById(7); // ID Т-Банка в Bitrix
+$payment->setFields([
     'PAY_SYSTEM_ID' => $paySystemService->getField("PAY_SYSTEM_ID"),
     'PAY_SYSTEM_NAME' => $paySystemService->getField("NAME"),
-));
+]);
 
+// Сохраняем заказ
 $order->doFinalAction(true);
 $result = $order->save();
 $orderId = $order->getId();
 $price = $order->getPrice();
 
 if ($result->isSuccess()) {
-    // === ЗАПРОС В Т-БАНК НА ОПЛАТУ ===
-    $apiUrl = 'https://securepay.tinkoff.ru/v2/Init'; // URL для создания платежа
+    // === Отправка на оплату в Т-Банк ===
+    $apiUrl = 'https://securepay.tinkoff.ru/v2/Init';
     $terminalKey = '1713425997317';
     $secretKey = '1nujjyr9acqxgf9i';
+    $amount = intval(round($price * 100));
+    $description = 'Оплата заказа №' . $orderId;
 
-    // Сумма в копейках
-    $amount = intval(round($price * 100)); // например 1234.56 => 123456
-
-    // Подпись (Token)
-    $tokenData = [
+    // Формируем токен по инструкции
+    $tokenFields = [
+        'TerminalKey' => $terminalKey,
         'Amount' => $amount,
         'OrderId' => $orderId,
-        'Password' => $secretKey,
-        'TerminalKey' => $terminalKey,
+        'Description' => $description,
+        'Password' => $secretKey
     ];
-    ksort($tokenData);
-    $tokenString = '';
-    foreach ($tokenData as $value) {
-        $tokenString .= $value;
-    }
-    $token = hash('sha256', $tokenString);
+    ksort($tokenFields);
+    $token = hash('sha256', implode('', $tokenFields));
 
-    // Данные запроса
+    // Тело запроса
     $requestData = [
         'TerminalKey' => $terminalKey,
         'Amount' => $amount,
         'OrderId' => $orderId,
-        'Description' => 'Оплата заказа №' . $orderId,
+        'Description' => $description,
         'Token' => $token,
+        'DATA' => [
+            'Phone' => '+' . $phoneCleaned,
+            'Email' => $email,
+        ],
         'Receipt' => [
             'Email' => $email,
+            'Phone' => '+' . $phoneCleaned,
             'Taxation' => 'osn',
             'Items' => [],
         ],
     ];
 
-    // Заполнение данных товаров для чека
     foreach ($basket as $basketItem) {
         $itemPrice = intval(round($basketItem->getPrice() * 100));
         $itemQuantity = $basketItem->getQuantity();
@@ -155,7 +155,7 @@ if ($result->isSuccess()) {
         ];
     }
 
-    // Отправка запроса в Т-Банк
+    // CURL-запрос
     $curl = curl_init($apiUrl);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($curl, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
@@ -166,11 +166,8 @@ if ($result->isSuccess()) {
 
     $resultData = json_decode($response, true);
     file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/local/log.txt', print_r($resultData, 1), FILE_APPEND);
-    if (!empty($resultData['PaymentURL'])) {
-        $payUrl = $resultData['PaymentURL'];
-    } else {
-        $payUrl = null;
-    }
+
+    $payUrl = $resultData['PaymentURL'] ?? null;
 
     header('Content-Type: application/json');
     echo json_encode([
