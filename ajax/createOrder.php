@@ -49,7 +49,17 @@ $email = $request["email"];
 $phone = $request["phone"];
 $phoneCleaned = preg_replace("/[^0-9]/", "", $phone);
 $name = $request["name"];
+$surname = $request["surname"];
+$city = $request["city"];
+$street = $request["street"];
+$dom = $request["dom"];
+$kvartira = $request["kvartira"];
 $comment = $request["comment"];
+
+if ($request["setBonus"] == 'Y') {
+    $bonusPointsWithdraw = $request["bonus"];
+}
+$bonusPoints = $request["bonusPoints"];
 
 $fUserId = $request['fUserId'];
 $siteId = $request['siteId'];
@@ -92,24 +102,52 @@ $shipment->setFields([
 
 // Оплата
 $paymentCollection = $order->getPaymentCollection();
-$payment = $paymentCollection->createItem();
 $paySystemService = PaySystem\Manager::getObjectById(7); // ID Т-Банка в Bitrix
-$payment->setFields([
-    'PAY_SYSTEM_ID' => $paySystemService->getField("PAY_SYSTEM_ID"),
-    'PAY_SYSTEM_NAME' => $paySystemService->getField("NAME"),
-]);
+
+if ($bonusPointsWithdraw > 0) {
+    // Первый платеж - бонусные баллы
+    $payment = $paymentCollection->createItem();
+    $payment->setFields([
+        'PAY_SYSTEM_ID' => 6,
+        'PAY_SYSTEM_NAME' => PaySystem\Manager::getObjectById(6)->getField("NAME"),
+        'SUM' => $bonusPointsWithdraw,
+    ]);
+    $payment->setField('PAID', 'Y');
+    // Второй платеж - оставшаяся сумма через Т-Банк
+    $remainingSum = $order->getPrice() - $bonusPointsWithdraw;
+    if ($remainingSum > 0) {
+        $newPayment = $paymentCollection->createItem();
+        $newPayment->setFields([
+            'PAY_SYSTEM_ID' => $paySystemService->getField("PAY_SYSTEM_ID"),
+            'PAY_SYSTEM_NAME' => $paySystemService->getField("NAME"),
+            'SUM' => $remainingSum,
+        ]);
+    }
+} else {
+    // Единый платеж через Т-Банк
+    $payment = $paymentCollection->createItem();
+    $payment->setFields([
+        'PAY_SYSTEM_ID' => $paySystemService->getField("PAY_SYSTEM_ID"),
+        'PAY_SYSTEM_NAME' => $paySystemService->getField("NAME"),
+        'SUM' => $order->getPrice(),
+    ]);
+}
 
 // Сохраняем заказ
 $order->doFinalAction(true);
 $result = $order->save();
 $orderId = $order->getId();
-$price = $order->getPrice();
+$price = $order->getPrice() - $order->getSumPaid();
 
 if ($result->isSuccess()) {
     // === Отправка на оплату в Т-Банк ===
     $apiUrl = 'https://securepay.tinkoff.ru/v2/Init';
-    $terminalKey = '1713425997317';
-    $secretKey = '1nujjyr9acqxgf9i';
+
+    require_once $_SERVER["DOCUMENT_ROOT"] . '/local/php_interface/include/t_auth.php';
+
+    /** @var $terminalKey */
+    /** @var $secretKey */
+
     $amount = intval(round($price * 100));
     $description = 'Оплата заказа №' . $orderId;
 
@@ -143,8 +181,11 @@ if ($result->isSuccess()) {
         ],
     ];
 
-    foreach ($basket as $basketItem) {
+    foreach ($basket as $key => $basketItem) {
         $itemPrice = intval(round($basketItem->getPrice() * 100));
+        if ($key == 0 && $bonusPointsWithdraw > 0) {
+            $itemPrice -= $bonusPointsWithdraw * 100;
+        }
         $itemQuantity = $basketItem->getQuantity();
         $requestData['Receipt']['Items'][] = [
             'Name' => $basketItem->getField('NAME'),
@@ -170,12 +211,37 @@ if ($result->isSuccess()) {
     $payUrl = $resultData['PaymentURL'] ?? null;
 
     header('Content-Type: application/json');
+
+    $propertyCollection = $order->getPropertyCollection();
+    $linkPayProp = $propertyCollection->getItemByOrderPropertyCode('LINK_PAY');
+    $linkPayProp->setValue($payUrl);
+    $nameProp = $propertyCollection->getItemByOrderPropertyCode('NAME');
+    $nameProp->setValue($name);
+    $surnameProp = $propertyCollection->getItemByOrderPropertyCode('SURNAME');
+    $surnameProp->setValue($surname);
+    $phoneProp = $propertyCollection->getItemByOrderPropertyCode('PHONE');
+    $phoneProp->setValue($phoneCleaned);
+    $cityProp = $propertyCollection->getItemByOrderPropertyCode('CITY');
+    $cityProp->setValue($city);
+    $streetProp = $propertyCollection->getItemByOrderPropertyCode('STREET');
+    $streetProp->setValue($street);
+    $domProp = $propertyCollection->getItemByOrderPropertyCode('HOUSE');
+    $domProp->setValue($dom);
+    $kvartiraProp = $propertyCollection->getItemByOrderPropertyCode('APARTMENT');
+    $kvartiraProp->setValue($kvartira);
+    $emailProp = $propertyCollection->getItemByOrderPropertyCode('EMAIL');
+    $emailProp->setValue($email);
+    $emailProp = $propertyCollection->getItemByOrderPropertyCode('BONUS');
+    $emailProp->setValue($bonusPoints);
+
+    $order->save(); // Обновляем заказ
+
     echo json_encode([
         'status' => 'success',
         'message' => 'Заказ успешно оформлен',
         'price' => $price,
         'order_id' => $orderId,
-        'pay_url' => $payUrl
+        'pay_url' => $payUrl,
     ]);
 } else {
     header('Content-Type: application/json');

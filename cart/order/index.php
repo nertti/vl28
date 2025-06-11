@@ -427,7 +427,7 @@ if ($USER->isAuthorized()) {
                         const myModalSuccessOrder = new HystModal({
                             linkAttributeName: 'data-hystmodal',
                             afterClose: function (modal) {
-                                //window.location = '/'
+                                window.location = '/'
                             },
                         });
                         const myModalReject = new HystModal({
@@ -559,6 +559,8 @@ if ($USER->isAuthorized()) {
                                         window.scrollTo({top: document.querySelector('.checkout__form').offsetTop - 100, behavior: 'smooth'});
                                     } else {
                                         document.querySelector('#alertModal .alertText .h2').textContent = data.message
+                                        document.querySelector('#alertModal .alertText .text').textContent = 'Перейти к оплате'
+                                        document.querySelector('#alertModal .alertText .text').href = data.pay_url
                                         myModalSuccessOrder.open('#alertModal');
                                     }
                                 })
@@ -588,16 +590,6 @@ if ($USER->isAuthorized()) {
                                 value = Number(this.max);
                                 this.value = value;
                             }
-                        });
-
-                        const myModalSuccess = new HystModal({
-                            linkAttributeName: 'data-hystmodal',
-                            afterClose: function (modal) {
-                                window.location = '/'
-                            },
-                        });
-                        const myModalReject = new HystModal({
-                            linkAttributeName: 'data-hystmodal',
                         });
 
                         const applyBonusBtn = document.querySelector('#applyBonus');
@@ -814,6 +806,7 @@ if ($USER->isAuthorized()) {
             <button data-hystclose="" class="hystmodal__close"></button>
             <div class="alertText">
                 <p class="h2"></p>
+                <a href="" class="text link"></a>
             </div>
         </div>
     </div>
