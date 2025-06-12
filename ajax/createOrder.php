@@ -231,8 +231,8 @@ if ($result->isSuccess()) {
     $kvartiraProp->setValue($kvartira);
     $emailProp = $propertyCollection->getItemByOrderPropertyCode('EMAIL');
     $emailProp->setValue($email);
-    $emailProp = $propertyCollection->getItemByOrderPropertyCode('BONUS');
-    $emailProp->setValue($bonusPoints);
+    $bonusProp = $propertyCollection->getItemByOrderPropertyCode('BONUS');
+    $bonusProp->setValue($bonusPoints);
 
     $order->save(); // Обновляем заказ
 
