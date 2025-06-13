@@ -58,8 +58,8 @@ img{
 .hystmodal__window_search {
     min-height: unset !important;
 }
-.hystmodal__window{
-    /*padding: 45px 40px 0 !important;*/
+.hystmodal__window.hystmodal__window_search{
+    padding: 45px 40px 0 !important;
 }
 .hystmodal__window.hystmodal__window_loyal{
     padding: 45px 40px 20px !important;
@@ -78,4 +78,8 @@ img{
 }
 .loyal .h2{
     align-self: center !important;
+}
+
+.account__orders_border .account__default{
+    padding-top: 30px;
 }

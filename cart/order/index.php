@@ -12,7 +12,7 @@ Bitrix\Main\Loader::includeModule("Sale");
 Bitrix\Main\Loader::includeModule("Catalog");
 
 require_once($_SERVER["DOCUMENT_ROOT"] . "/include/order/bonus.php");
-
+$userBonus = str_replace(' ', '', $userBonus);
 function calculateMaxPointsToSpend($total, $bonus)
 {
     // Проверяем корректность входных данных
@@ -398,13 +398,14 @@ if ($USER->isAuthorized()) {
                             <p>Программа лояльности</p>
                             <p id="applyBonusText">-0 ₽</p>
                         </div>
-                        <div class="promo__activate">
-                            <p>Программа лояльности: <strong><?= $userBonus ?> баллов</strong></p>
-                            <div class="promo__btn" <?php if ($userBonus <= 0): ?> style="display: none" <?php endif; ?>>
-                                <div class="promo__btn-circle"></div>
+                        <?php if ($userBonus > 0): ?>
+                            <div class="promo__activate">
+                                <p>Программа лояльности: <strong><?= $userBonus ?> баллов</strong></p>
+                                <div class="promo__btn" <?php if ($userBonus <= 0): ?> style="display: none" <?php endif; ?>>
+                                    <div class="promo__btn-circle"></div>
+                                </div>
                             </div>
-                        </div>
-
+                        <?php endif; ?>
                         <div class="promo__show" style="display: none;">
                             <div class="promo__form">
                                 <input type="hidden" name="setBonus" id="setBonus" value="N">
@@ -556,7 +557,10 @@ if ($USER->isAuthorized()) {
                                             errorKvartiraError.innerHTML = data.message.kvartira;
                                         }
 
-                                        window.scrollTo({top: document.querySelector('.checkout__form').offsetTop - 100, behavior: 'smooth'});
+                                        window.scrollTo({
+                                            top: document.querySelector('.checkout__form').offsetTop - 100,
+                                            behavior: 'smooth'
+                                        });
                                     } else {
                                         document.querySelector('#alertModal .alertText .h2').textContent = data.message
                                         document.querySelector('#alertModal .alertText .text').textContent = 'Перейти к оплате'
@@ -579,7 +583,7 @@ if ($USER->isAuthorized()) {
                             // Если значение больше максимального, устанавливаем максимальное
                             if (value > this.max) {
                                 value = Number(this.max);
-                                this.value = value;
+                                this.value = value - value * 0.10;
                             }
                         });
                         inputBonus.addEventListener('input', function () {
@@ -588,7 +592,7 @@ if ($USER->isAuthorized()) {
                             // Если значение больше максимального, устанавливаем максимальное
                             if (value > this.max) {
                                 value = Number(this.max);
-                                this.value = value;
+                                this.value = value - value * 0.10;
                             }
                         });
 
@@ -811,9 +815,6 @@ if ($USER->isAuthorized()) {
         </div>
     </div>
 </div>
-
-
-
 
 
 <?php require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/footer.php"); ?>

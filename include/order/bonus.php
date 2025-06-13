@@ -18,6 +18,6 @@ if (!Loader::includeModule("sale")) {
 if ($USER->IsAuthorized()) {
     $userId = $USER->GetID();
     $userBalance = CSaleUserAccount::GetByUserID($userId, "RUB");
-    $userBonus = number_format($userBalance['CURRENT_BUDGET'], 0,'.',' ') ?: null;
+    $userBonus = number_format($userBalance['CURRENT_BUDGET'], 0,'.',' ') ?: 0;
 
 }
