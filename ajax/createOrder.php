@@ -141,7 +141,8 @@ $price = $order->getPrice() - $order->getSumPaid();
 
 if ($result->isSuccess()) {
     // === Отправка на оплату в Т-Банк ===
-    $apiUrl = 'https://securepay.tinkoff.ru/v2/Init';
+//    $apiUrl = 'https://securepay.tinkoff.ru/v2/Init';
+    $apiUrl = 'https://rest-api-test.tinkoff.ru/v2/Init';
 
     require_once $_SERVER["DOCUMENT_ROOT"] . '/local/php_interface/include/t_auth.php';
 
@@ -206,7 +207,7 @@ if ($result->isSuccess()) {
     curl_close($curl);
 
     $resultData = json_decode($response, true);
-    //file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/local/log.txt', print_r($resultData, 1), FILE_APPEND);
+    file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/local/log.txt', print_r($curl, 1), FILE_APPEND);
 
     $payUrl = $resultData['PaymentURL'] ?? null;
 
