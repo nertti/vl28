@@ -34,12 +34,10 @@ if ($USER->IsAuthorized()) {
             <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/menu.svg" alt="menu icon" class="menu-btn__icon svg">
             <span class="menu-btn__text">Меню</span>
         </a>
-        <?php $APPLICATION->IncludeComponent("bitrix:search.form", "search", array(
-            "PAGE" => "#SITE_DIR#search/",    // Страница выдачи результатов поиска (доступен макрос #SITE_DIR#)
-            "USE_SUGGEST" => "N",    // Показывать подсказку с поисковыми фразами
-        ),
-            false
-        ); ?>
+        <a href="#" data-hystmodal="#searchModal" class="search-btn">
+            <img src="<?=SITE_TEMPLATE_PATH?>/assets/img/search.svg" alt="menu icon" class="search-btn__icon svg">
+            <span class="search-btn__text">Поиск</span>
+        </a>
     </div>
     <a href="/" class="header__logo logo">
         <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/logo.svg" alt="VL28" class="logo__img">

@@ -54,6 +54,7 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
                                     </div>
                                     <a href="<?= htmlspecialcharsbx($order["ORDER"]["URL_TO_DETAIL"]) ?>"
                                        class="black-btn">Больше информации</a>
+
                                 </div>
                             </div>
                         </div>

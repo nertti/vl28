@@ -141,8 +141,8 @@ $price = $order->getPrice() - $order->getSumPaid();
 
 if ($result->isSuccess()) {
     // === Отправка на оплату в Т-Банк ===
-//    $apiUrl = 'https://securepay.tinkoff.ru/v2/Init';
-    $apiUrl = 'https://rest-api-test.tinkoff.ru/v2/Init';
+      $apiUrl = 'https://securepay.tinkoff.ru/v2/Init';
+//    $apiUrl = 'https://rest-api-test.tinkoff.ru/v2/Init';
 
     require_once $_SERVER["DOCUMENT_ROOT"] . '/local/php_interface/include/t_auth.php';
 
@@ -210,12 +210,22 @@ if ($result->isSuccess()) {
     file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/local/log.txt', print_r($curl, 1), FILE_APPEND);
 
     $payUrl = $resultData['PaymentURL'] ?? null;
+    $paymentId = $resultData['PaymentId'] ?? null;
+    $terminalKey = $resultData['TerminalKey'] ?? null;
 
     header('Content-Type: application/json');
 
     $propertyCollection = $order->getPropertyCollection();
+
     $linkPayProp = $propertyCollection->getItemByOrderPropertyCode('LINK_PAY');
     $linkPayProp->setValue($payUrl);
+    $linkPayProp = $propertyCollection->getItemByOrderPropertyCode('TERMINAL_KEY');
+    $linkPayProp->setValue($terminalKey);
+    $linkPayProp = $propertyCollection->getItemByOrderPropertyCode('PAYMENT_ID');
+    $linkPayProp->setValue($paymentId);
+    $linkPayProp = $propertyCollection->getItemByOrderPropertyCode('TOKEN');
+    $linkPayProp->setValue($token);
+
     $nameProp = $propertyCollection->getItemByOrderPropertyCode('NAME');
     $nameProp->setValue($name);
     $surnameProp = $propertyCollection->getItemByOrderPropertyCode('SURNAME');

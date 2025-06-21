@@ -14,6 +14,8 @@ $userId = $USER->GetID();
 $rsUser = CUser::GetByID($userId);
 $arUser = $rsUser->Fetch();
 //pr($arUser);
+
+
 ?>
     <div class="container">
         <div class="account__wrap">
