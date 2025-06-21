@@ -25,16 +25,16 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
                                 <a href="<?= $prop['VALUE'] ?>" class="link">Ссылка на оплату</a>
                             <?php endif; ?>
                         <?php endforeach; ?>
+                    <?php elseif($arResult['STATUS']['ID'] == 'P' || $arResult['STATUS']['ID'] == 'N'):?>
+                        <form action="/ajax/cancelPay.php" id="form">
+                            <?php foreach ($arResult['ORDER_PROPS'] as $prop): ?>
+                                <?php if ($prop['ID'] == 26 || $prop['ID'] == 25 || $prop['ID'] == 24): ?>
+                                    <input type="hidden" name="<?=$prop['CODE']?>" value="<?=$prop['VALUE']?>">
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                            <span class="link cancelOrder">Отменить заказ</span>
+                        </form>
                     <?php endif; ?>
-                    <form action="/ajax/cancelPay.php" id="form">
-                        <?php foreach ($arResult['ORDER_PROPS'] as $prop): ?>
-                            <?php if ($prop['ID'] == 26 || $prop['ID'] == 25 || $prop['ID'] == 24): ?>
-                                <input type="hidden" name="<?=$prop['CODE']?>" value="<?=$prop['VALUE']?>">
-                            <?php endif; ?>
-                        <?php endforeach; ?>
-
-                        <span class="link cancelOrder">Отменить заказ</span>
-                    </form>
                     <div class="account__product">
 
                         <?php foreach ($arResult['BASKET'] as $item): ?>

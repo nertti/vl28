@@ -49,6 +49,8 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
                                                 Принят, ожидается оплата
                                             <?php elseif ($order['ORDER']['STATUS_ID'] == 'F'): ?>
                                                 Выполнено
+                                            <?php elseif ($order['ORDER']['STATUS_ID'] == 'P'): ?>
+                                                Оплачено
                                             <?php endif; ?>
                                         </p>
                                     </div>

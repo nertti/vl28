@@ -67,7 +67,8 @@ $arUser = $rsUser->Fetch();
 		"CUSTOM_SELECT_PROPS" => array(
 		),
 		"HISTORIC_STATUSES" => array(
-			0 => "F",
+			0 => "N",
+			1 => "P",
 		),
 		"SEF_FOLDER" => "/profile/order-list/",
 		"COMPONENT_TEMPLATE" => "order-list",
