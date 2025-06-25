@@ -9,15 +9,19 @@
 	font-weight: 500;
 }
 .swiper .swiper-slide{
-	/*height: auto;*/
+	height: auto;
 }
 .swiper-slide img{
 	object-fit: cover;
 }
 
 .catalog-cart-video{
-	width: 75%;
-	height: 100%;
+	width: 100%;
+	/*width: 75%;*/
+	height: auto;
 	margin: 0 auto;
 	pointer-events: none;
+
+	object-fit: cover;
+	position: absolute;
 }
