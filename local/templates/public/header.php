@@ -9,6 +9,7 @@ use Bitrix\Main\Page\Asset;
 /** @var \CMain $USER */
 
 $isMainPage = $APPLICATION->GetCurPage(false) === '/';
+$isServicePages = strpos($APPLICATION->GetCurPage(false), '/ajax/') !== false;
 $isAboutPage = $APPLICATION->GetCurPage(false) === '/about/';
 $isCartPage = $APPLICATION->GetCurPage(false) === '/cart/';
 $isOrderPage = $APPLICATION->GetCurPage(false) === '/cart/order/';
@@ -738,6 +739,7 @@ if ($isProfilePages && !$isFavoritePage){
         <?php endif;?>
         <?php if(!defined('ERROR_404') && !checkCatalogPath($APPLICATION->GetCurPageParam()) && !$isCartPage&& !$isOrderPage):?>
             <div class="container top40">
+                <?php if (!$isServicePages):?>
                 <?php $APPLICATION->IncludeComponent(
                     "bitrix:breadcrumb",
                     "breadcrumb",
@@ -749,6 +751,7 @@ if ($isProfilePages && !$isFavoritePage){
                     ),
                     false
                 ); ?>
+                <?php endif;?>
                 <?php if (!$isAboutPage && !$isProfilePages):?>
                 <p class="h2"><?php $APPLICATION->ShowTitle(); ?></p>
                 <?php endif;?>

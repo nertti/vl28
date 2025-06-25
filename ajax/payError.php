@@ -2,34 +2,6 @@
 //require($_SERVER["DOCUMENT_ROOT"] . '/bitrix/modules/main/include/prolog_before.php');
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 
-use Bitrix\Sale;
-
-if (CModule::IncludeModule('sale')) {
-
-// нужно перевести статус в "оплачено"
-// проставить оплату заказа
-
-    if ($_GET['Success']) {
-        $orderId = $_GET['OrderId'];
-
-        $order = Sale\Order::load($orderId);
-        $paymentCollection = $order->getPaymentCollection();
-        foreach ($paymentCollection as $payment) {
-            $payment->setPaid('Y');
-        }
-        $order->setField('STATUS_ID', 'P'); // статус
-        $order->save();
-
-        $propertyCollection = $order->getPropertyCollection();
-        $bonusProp = $propertyCollection->getItemByOrderPropertyCode('BONUS');
-        $bonusProp->setValue(0);
-        $bonusCreditedProp = $propertyCollection->getItemByOrderPropertyCode('BONUS_CREDITED');
-        $bonusCreditedProp->setValue('Y');
-
-        $order->save();
-
-    }
-}
 ?>
 
 <style>
@@ -113,12 +85,10 @@ if (CModule::IncludeModule('sale')) {
     }
 </style>
 <div class="success-container">
-    <h1 class="success-title">Спасибо за ваш заказ!</h1>
+    <h1 class="success-title">Неожиданная ошибка!</h1>
     <p class="success-message">
-        Ваш платеж был успешно оплачен.<br>
-        Мы отправили детали вашего заказа на ваш email.
+        Просим прощения, при оплате заказа произошла ошибка, попробуйте позже
     </p>
-
     <div class="order-details">
         <div class="details-item">
             <span class="details-label">Номер заказа:</span>

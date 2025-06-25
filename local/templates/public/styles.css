@@ -22,7 +22,7 @@
     cursor: pointer;
     background-image: url(assets/img/favorite-active.svg);
 }
-.favor, .pointer{
+.pointer{
     cursor: pointer;
 }
 .product__inner{
