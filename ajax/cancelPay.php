@@ -3,7 +3,15 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.
 require_once $_SERVER["DOCUMENT_ROOT"] . '/local/php_interface/include/t_auth.php';
 /** @var $terminalKey */
 /** @var $secretKey */
+
 //pr($_POST);
+use Bitrix\Sale;
+
+if (CModule::IncludeModule('sale')) {
+    $orderId = $_POST['ID'];
+    $order = Sale\Order::load($orderId);
+    $order->setField('STATUS_ID', 'C'); // статус Отмены
+}
 $data = [
     "TerminalKey" => $_POST['TERMINAL_KEY'],
     "PaymentId" => $_POST['PAYMENT_ID'],
@@ -53,14 +61,12 @@ try {
 
     // Проверяем успешность запроса
     if ($httpCode === 200) {
-        echo "Ответ сервера:\n";
-        print_r(json_decode($response, true));
-    } else {
-        throw new Exception("Ошибка при отмене платежа. HTTP код: {$httpCode}");
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'success', 'data' => $response]);
     }
 } catch (Exception $e) {
-    echo "Произошла ошибка: " . $e->getMessage();
+    header('Content-Type: application/json');
+    echo json_encode(['status' => 'error', 'data' => $e->getMessage()]);
 } finally {
-    // Закрываем сессию cURL
     curl_close($ch);
 }

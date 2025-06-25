@@ -31,8 +31,9 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
                                 <?php if ($prop['ID'] == 26 || $prop['ID'] == 25 || $prop['ID'] == 24): ?>
                                     <input type="hidden" name="<?=$prop['CODE']?>" value="<?=$prop['VALUE']?>">
                                 <?php endif; ?>
+                                <input type="hidden" name="ID" value="<?=$arResult['ID']?>">
                             <?php endforeach; ?>
-                            <span class="link cancelOrder">Отменить заказ</span>
+                            <span class="link cancelOrder pointer">Отменить заказ</span>
                         </form>
                     <?php endif; ?>
                     <div class="account__product">
@@ -94,6 +95,13 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        const cancelOrder = new HystModal({
+            linkAttributeName: 'data-hystmodal',
+            afterClose: function (modal) {
+                window.location = '/profile/order-list/'
+            },
+        });
+
         const form = document.querySelector('#form');
         const btn = document.querySelector('.cancelOrder');
         // Если форма найдена, добавляем слушатель события submit
@@ -118,9 +126,13 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
                 .then(data => {
                     btn.innerHTML = `Отменить заказ`;
                     if (data.status === 'error') {
-                        console.log('1');
+                        console.log('Ошибка отмены оплаты');
                     } else {
-
+                        if(data.data.Success === '1'){
+                            cancelOrder.open('#alertModal');
+                        } else {
+                            cancelOrder.open('#alertModal2');
+                        }
                     }
                 })
                 .catch(error => {
@@ -130,3 +142,27 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
     })
     ;
 </script>
+<div class="hystmodal" id="alertModal2" aria-hidden="true">
+    <div class="hystmodal__wrap">
+        <div class="hystmodal__window hystmodal__window_subscribe" role="dialog" aria-modal="true"
+             style="  min-height: auto;">
+            <button data-hystclose="" class="hystmodal__close"></button>
+            <div class="alertText">
+                <p class="h2">Заказ успешно отменён!</p>
+                <a href="/catalog/" class="text link">В каталог</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="hystmodal" id="alertModal" aria-hidden="true">
+    <div class="hystmodal__wrap">
+        <div class="hystmodal__window hystmodal__window_subscribe" role="dialog" aria-modal="true"
+             style="  min-height: auto;">
+            <button data-hystclose="" class="hystmodal__close"></button>
+            <div class="alertText">
+                <p class="h2">Заказ уже отменён!</p>
+                <a href="/catalog/" class="text link">В каталог</a>
+            </div>
+        </div>
+    </div>
+</div>
