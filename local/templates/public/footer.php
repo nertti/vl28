@@ -256,7 +256,7 @@ use Bitrix\Main\Page\Asset;
                     </div>
                 </div>
                 <p class="loyal__small">* - На один заказ за 7 дней до и 7 дней после дня рождения </p>
-                <a href="#" class="loyal__link">Регламент использования</a>
+<!--                <a href="#" class="loyal__link">Регламент использования</a>-->
             </div>
         </div>
     </div>
@@ -458,6 +458,6 @@ Asset::getInstance()->addJs(SITE_TEMPLATE_PATH.'/assets/js/main.min.js');
 Asset::getInstance()->addJs(SITE_TEMPLATE_PATH.'/include/footer/script.js');
 ?>
 <script src="/include/footer/script.js"></script>
-<button class="hystmodal__shadow"></button>
+<!--<button class="hystmodal__shadow"></button>-->
 </body>
 </html>
