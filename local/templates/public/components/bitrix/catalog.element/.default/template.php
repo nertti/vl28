@@ -257,6 +257,23 @@ foreach ($arFavorites as $favorite) {
             </div>
             <p class="tovar__price"><?= $arResult['JS_OFFERS'][0]['ITEM_PRICES'][0]['PRINT_PRICE'] ?></p>
             <form action="#" class="tovar__form">
+                <div class="tovar__color">
+                    <div class="tovar__color-text">
+                        <p class="tovar__color-title">Цвет</p>
+                        <p class="tovar__color-current"><?=$arResult['CURRENT_COLOR']?></p>
+                    </div>
+                    <?php if(!empty($arResult['OTHER_COLORS'])):?>
+                    <div class="tovar__colors">
+                        <?php foreach ($arResult['OTHER_COLORS'] as $value): ?>
+                            <label class="tovar__color-item">
+                                <a href="<?=$value['LINK']?>" class="tovar__color-circle" title="<?=$value['ANCHOR']?>">
+                                    <span style="background: <?=$value['COLOR']?>;"></span>
+                                </a>
+                            </label>
+                        <?php endforeach; ?>
+                    </div>
+                    <?php endif;?>
+                </div>
                 <?php if (isset($arResult['SKU_PROPS'])): ?>
                     <?php if ($haveOffers && !empty($arResult['OFFERS_PROP'])): ?>
                         <?php foreach ($arResult['SKU_PROPS'] as $key => $skuProperty): ?>
@@ -272,28 +289,6 @@ foreach ($arFavorites as $favorite) {
                                 'VALUES_COUNT' => $skuProperty['VALUES_COUNT']
                             );
                             ?>
-                            <?php if ($key == 'COLOR' && false): ?>
-                                <?php
-                                // pr($skuProperty);
-                                // на этапе разработки выбор цвета
-                                ?>
-                                <div class="tovar__color">
-                                    <div class="tovar__color-text">
-                                        <p class="tovar__color-title">Цвет</p>
-                                        <p class="tovar__color-current">Графит</p>
-                                    </div>
-                                    <div class="tovar__colors">
-                                        <?php foreach ($skuProperty['VALUES'] as $value): ?>
-                                            <label class="tovar__color-item">
-                                                <input type="radio" value="Черный" name="color" checked="">
-                                                <span class="tovar__color-circle">
-                                                  <span style="background: #000;"></span>
-                                                </span>
-                                            </label>
-                                        <?php endforeach; ?>
-                                    </div>
-                                </div>
-                            <?php endif; ?>
                             <?php if ($key == 'SIZE'): ?>
                                 <div class="tovar__size">
                                     <div class="tovar__sizes">
