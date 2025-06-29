@@ -2,13 +2,14 @@
 
 /** @var \CMain $APPLICATION */
 
-require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
+require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
 $APPLICATION->SetTitle("Новости / блог");
-?><section class="default first-section">
-<?$APPLICATION->IncludeComponent(
-	"bitrix:news",
-	"news",
-	Array(
+?>
+
+<? $APPLICATION->IncludeComponent(
+	"bitrix:news", 
+	"news", 
+	[
 		"ADD_ELEMENT_CHAIN" => "Y",
 		"ADD_SECTIONS_CHAIN" => "N",
 		"AJAX_MODE" => "N",
@@ -25,11 +26,20 @@ $APPLICATION->SetTitle("Новости / блог");
 		"DETAIL_ACTIVE_DATE_FORMAT" => "d.m.Y",
 		"DETAIL_DISPLAY_BOTTOM_PAGER" => "N",
 		"DETAIL_DISPLAY_TOP_PAGER" => "N",
-		"DETAIL_FIELD_CODE" => array("",""),
+		"DETAIL_FIELD_CODE" => [
+			0 => "",
+			1 => "",
+		],
 		"DETAIL_PAGER_SHOW_ALL" => "N",
 		"DETAIL_PAGER_TEMPLATE" => "",
 		"DETAIL_PAGER_TITLE" => "Страница",
-		"DETAIL_PROPERTY_CODE" => array("","CONTENT","RESULT","PHOTOS",""),
+		"DETAIL_PROPERTY_CODE" => [
+			0 => "",
+			1 => "CONTENT",
+			2 => "RESULT",
+			3 => "PHOTOS",
+			4 => "",
+		],
 		"DETAIL_SET_CANONICAL_URL" => "N",
 		"DISPLAY_BOTTOM_PAGER" => "Y",
 		"DISPLAY_DATE" => "Y",
@@ -42,8 +52,18 @@ $APPLICATION->SetTitle("Новости / блог");
 		"IBLOCK_TYPE" => "rest_entity",
 		"INCLUDE_IBLOCK_INTO_CHAIN" => "N",
 		"LIST_ACTIVE_DATE_FORMAT" => "d.m.Y",
-		"LIST_FIELD_CODE" => array("IBLOCK_TYPE_ID","IBLOCK_ID","IBLOCK_CODE","IBLOCK_NAME","IBLOCK_EXTERNAL_ID",""),
-		"LIST_PROPERTY_CODE" => array("",""),
+		"LIST_FIELD_CODE" => [
+			0 => "IBLOCK_TYPE_ID",
+			1 => "IBLOCK_ID",
+			2 => "IBLOCK_CODE",
+			3 => "IBLOCK_NAME",
+			4 => "IBLOCK_EXTERNAL_ID",
+			5 => "",
+		],
+		"LIST_PROPERTY_CODE" => [
+			0 => "",
+			1 => "",
+		],
 		"MESSAGE_404" => "",
 		"META_DESCRIPTION" => "-",
 		"META_KEYWORDS" => "-",
@@ -58,10 +78,9 @@ $APPLICATION->SetTitle("Новости / блог");
 		"PREVIEW_TRUNCATE_LEN" => "",
 		"SEF_FOLDER" => "/news/",
 		"SEF_MODE" => "Y",
-		"SEF_URL_TEMPLATES" => Array("detail"=>"#ELEMENT_CODE#/","news"=>"/news/","section"=>"#SECTION_CODE#/"),
 		"SET_LAST_MODIFIED" => "N",
 		"SET_STATUS_404" => "N",
-		"SET_TITLE" => "N",
+		"SET_TITLE" => "Y",
 		"SHOW_404" => "N",
 		"SORT_BY1" => "ACTIVE_FROM",
 		"SORT_BY2" => "SORT",
@@ -75,6 +94,15 @@ $APPLICATION->SetTitle("Новости / блог");
 		"USE_REVIEW" => "N",
 		"USE_RSS" => "N",
 		"USE_SEARCH" => "N",
-		"USE_SHARE" => "N"
-	)
-);?> </section> <br><?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
+		"USE_SHARE" => "N",
+		"COMPONENT_TEMPLATE" => "news",
+		"SEF_URL_TEMPLATES" => [
+			"news" => "/news/",
+			"section" => "#SECTION_CODE#/",
+			"detail" => "#ELEMENT_CODE#/",
+		]
+	],
+	false
+); ?>
+
+<?php require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/footer.php"); ?>
