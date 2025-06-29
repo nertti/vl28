@@ -33,6 +33,10 @@ $this->setFrameMode(true);
                 <?php if (!empty($arElement['PROPERTIES']['IMAGES']['VALUE'])): ?>
                     <div class="product__swiper swiper" id="product<?= $cell ?>">
                         <div id="swiper-wrapper-<?= $cell ?>" class="swiper-wrapper">
+                            <div class="swiper-slide">
+                                <img src="<?= $arElement['DETAIL_PICTURE']['SRC'] ?>" alt="<?= $arElement['NAME'] ?>"
+                                     class="product__img">
+                            </div>
                             <?php foreach ($arElement['PROPERTIES']['IMAGES']['VALUE'] as $image): ?>
                                 <div class="swiper-slide">
                                     <img src="<?= CFile::GetPath($image); ?>" alt="<?= $arElement['NAME'] ?>"

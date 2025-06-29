@@ -37,9 +37,9 @@ $this->setFrameMode(true);
             $arRes = $res->GetNext();
             ?>
             <div id="<?= $this->GetEditAreaId($arElement['ID']); ?>" class="product">
-                <span class="product__favorite product__favorite_active favor active"
+                <span class="product__favorite product__favorite_active favor active pointer"
                       data-item='<?= $arElement['ID'] ?>'></span>
-                <img src="<?= $arElement['PREVIEW_PICTURE']['SRC'] ?>" alt="<?= $arElement['NAME'] ?>"
+                <img src="<?= $arElement['DETAIL_PICTURE']['SRC'] ?>" alt="<?= $arElement['NAME'] ?>"
                      class="product__img">
                 <a href="/catalog/<?= $arRes['CODE'] ?>/<?= $arElement['CODE'] ?>/" class="product__inner">
                     <p class="product__title"><?= $arElement['NAME'] ?></p>

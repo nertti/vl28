@@ -217,7 +217,7 @@ foreach ($arFavorites as $favorite) {
             <div class="swiper product-swiper">
                 <div class="swiper-wrapper">
                     <?php foreach ($arResult['PROPERTIES']['IMAGES']['VALUE'] as $index => $image): ?>
-                        <?php if ($index == 1): ?>
+                        <?php if ($index == 0): ?>
                             <?php if (!empty($arResult['PROPERTIES']['VIDEO']['VALUE'])): ?>
                                 <div class="swiper-slide">
                                     <video class="catalog-cart-video"
