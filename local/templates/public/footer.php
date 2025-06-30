@@ -106,7 +106,7 @@ use Bitrix\Main\Page\Asset;
         <a href="/" class="footer__logo logo">
             <img src="<?=SITE_TEMPLATE_PATH?>/assets/img/logo.svg" alt="VL28" class="logo__img">
         </a>
-        <span>© VL28, 2024. Все права защищены</span>
+        <span>© VL28, <?=date('Y')?>. Все права защищены</span>
     </div>
 </footer>
 <div class="hystmodal" id="loyalModal" aria-hidden="true">
