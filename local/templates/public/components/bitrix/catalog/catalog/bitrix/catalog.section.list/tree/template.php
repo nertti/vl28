@@ -15,7 +15,7 @@ $this->setFrameMode(true);
 $currentPage = $APPLICATION->GetCurPage();
 ?>
 
-<section class="catalog first-section">
+<section class="catalog first-section top0">
     <div class="container">
         <div class="catalog__settings">
             <div class="category">

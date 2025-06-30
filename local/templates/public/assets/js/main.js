@@ -168,4 +168,12 @@ jQuery(document).ready(function($) {
     if (scroll >= 150) sticky.addClass('header_animate');
     else sticky.removeClass('header_animate');
   });
+
+    $(document).on("click", ".filter__item_color", function() {
+        // Удаляем активный класс со всех элементов checkmark
+        $('.checkmark').removeClass('active');
+
+        // Добавляем активный класс к вложенному элементу checkmark
+        $(this).find('.checkmark').addClass('active');
+    });
 });

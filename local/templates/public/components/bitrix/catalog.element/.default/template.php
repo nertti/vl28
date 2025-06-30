@@ -272,6 +272,14 @@ foreach ($arFavorites as $favorite) {
                             </label>
                         <?php endforeach; ?>
                     </div>
+                    <?php else:?>
+                        <div class="tovar__colors">
+                            <label class="tovar__color-item">
+                                <span class="tovar__color-circle">
+                                    <span style="background: <?=$arResult['CURRENT_COLOR_XML']?>;"></span>
+                                </span>
+                            </label>
+                        </div>
                     <?php endif;?>
                 </div>
                 <?php if (isset($arResult['SKU_PROPS'])): ?>

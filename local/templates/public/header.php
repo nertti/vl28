@@ -15,6 +15,7 @@ $isCartPage = $APPLICATION->GetCurPage(false) === '/cart/';
 $isOrderPage = $APPLICATION->GetCurPage(false) === '/cart/order/';
 $isProfilePages = strpos($APPLICATION->GetCurPage(false), '/profile/') !== false;
 $isFavoritePage = $APPLICATION->GetCurPage(false) === '/profile/favorite/';
+$isCustomersPage = $APPLICATION->GetCurPage(false) === '/customers/';
 
 function checkCatalogPath($url) {
     // Проверяем начало пути
@@ -738,7 +739,7 @@ if ($isProfilePages && !$isFavoritePage){
             </section>
         <?php endif;?>
         <?php if(!defined('ERROR_404') && !checkCatalogPath($APPLICATION->GetCurPageParam()) && !$isCartPage&& !$isOrderPage):?>
-            <div class="container top40">
+            <div class="container <?php if (!$isAboutPage):?>top40<?php else:?>top50<?php endif;?>">
                 <?php if (!$isServicePages):?>
                 <?php $APPLICATION->IncludeComponent(
                     "bitrix:breadcrumb",
@@ -752,8 +753,10 @@ if ($isProfilePages && !$isFavoritePage){
                     false
                 ); ?>
                 <?php endif;?>
-                <?php if (!$isAboutPage && !$isProfilePages):?>
+                <?php if (!$isAboutPage && !$isProfilePages && !$isCustomersPage):?>
                 <p class="h2"><?php $APPLICATION->ShowTitle(); ?></p>
+                <?php elseif ($isAboutPage):?>
+                <p class="h2" style="margin-top: 35px; margin-bottom: 25px"><?php $APPLICATION->ShowTitle(); ?></p>
                 <?php endif;?>
             </div>
         <?php endif; ?>

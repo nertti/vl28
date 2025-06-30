@@ -35,6 +35,7 @@ while ($arData = $rsData->Fetch()) {
 
     if ($current_color == $arData['UF_XML_ID']) {
         $arResult['CURRENT_COLOR'] = $arData['UF_NAME'];
+        $arResult['CURRENT_COLOR_XML'] = $arData['UF_XML_ID'];
     }
 }
 

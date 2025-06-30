@@ -15,7 +15,7 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
 /** @var CBitrixComponent $component */
 $this->setFrameMode(true);
 ?>
-<section class="default first-section">
+<section class="default first-section top0">
 
     <div class="blog__list bottom40">
         <?php foreach ($arResult["ITEMS"] as $key => $arItem):
