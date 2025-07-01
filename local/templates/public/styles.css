@@ -86,3 +86,15 @@ img{
 .account__orders_border .account__default{
     padding-top: 30px;
 }
+.account__product-params {
+    width: 100% !important;
+    max-width: 600px;
+}
+@media screen and (max-width:1500px) {
+    .account__product-params {
+        margin-top: 30px;
+    }
+}
+.account__product{
+    flex-wrap: wrap;
+}
