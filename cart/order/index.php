@@ -254,11 +254,18 @@ if ($USER->isAuthorized()) {
                         <p class="checkout__name">Способ доставки</p>
                         <div class="checkout__inputs">
                             <label class="checkout__radio export">
+                                <input type="radio" name="delivery" value="5" >
+                                <div class="checkmark"></div>
+                                <span>
+                      Курьером по Москве в пределах МКАД
+                    </span>
+                            </label>
+                            <label class="checkout__radio export">
                                 <input type="radio" name="delivery" value="1" checked="">
                                 <div class="checkmark"></div>
                                 <span>
                       СДЭК курьером в руки
-                      <span>от 5 дней, от 924 ₽</span>
+                      <span>от 5 дней, от 900 ₽</span>
                     </span>
                             </label>
                             <label class="checkout__radio export">
@@ -783,6 +790,7 @@ if ($USER->isAuthorized()) {
         // в зависимости от выбранной доставки выводим блоки (Адрес или выбор ПВЗ города)
         const selectExport = document.querySelectorAll('input[name="delivery"]');
         const streetBlock = document.querySelector('.address');
+        const city = document.querySelector('#city');
 
         function updateBlockVisibility() {
             const checkedValues = Array.from(selectExport)
@@ -791,9 +799,16 @@ if ($USER->isAuthorized()) {
 
             const shouldBeVisible =
                 checkedValues.includes('1') ||
-                checkedValues.includes('3')
-
+                checkedValues.includes('3') ||
+                checkedValues.includes('5')
+            const shouldBeMoskow = checkedValues.includes('5')
             streetBlock.style.display = shouldBeVisible ? 'flex' : 'none';
+            if(shouldBeMoskow){
+                city.value = 'Москва'
+                city.disabled = true;
+            } else {
+                city.disabled = false;
+            }
         }
 
         selectExport.forEach(checkbox => {

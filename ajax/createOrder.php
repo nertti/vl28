@@ -38,6 +38,10 @@ if ($request['delivery'] == 1 || $request['delivery'] == 3) {
     if (empty($request['street'])) $errors['street'] = "Укажите улицу.";
     if (empty($request['dom'])) $errors['dom'] = "Укажите номер дома.";
     if (empty($request['kvartira'])) $errors['kvartira'] = "Укажите номер квартиры.";
+} elseif ($request['delivery'] == 5){
+    if (empty($request['street'])) $errors['street'] = "Укажите улицу.";
+    if (empty($request['dom'])) $errors['dom'] = "Укажите номер дома.";
+    if (empty($request['kvartira'])) $errors['kvartira'] = "Укажите номер квартиры.";
 }
 if (!empty($errors)) {
     header('Content-Type: application/json');
@@ -50,7 +54,13 @@ $phone = $request["phone"];
 $phoneCleaned = preg_replace("/[^0-9]/", "", $phone);
 $name = $request["name"];
 $surname = $request["surname"];
-$city = $request["city"];
+if ($request["delivery"] == 5) {
+    // Если равно 5, устанавливаем город Москва
+    $city = "Москва";
+} else {
+    // В противном случае используем текущее значение
+    $city = $request["city"];
+}
 $street = $request["street"];
 $dom = $request["dom"];
 $kvartira = $request["kvartira"];
