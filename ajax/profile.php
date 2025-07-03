@@ -3,6 +3,7 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.
 
 // Проверяем, что форма отправлена
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $pattern = '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/';
 
     $errors = [];
     $arFields = [];
@@ -40,6 +41,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errors['SIZE'] = "Пожалуйста, введите свой размер одежды.";
     } elseif (!empty($_POST['SIZE'])) {
         $arFields['UF_SIZE'] = htmlspecialchars($_POST['SIZE']);
+    }
+    if (empty($_POST['EMAIL'])) {
+        $errors['EMAIL'] = "Пожалуйста, введите свой email.";
+    } elseif (!preg_match($pattern, $_POST['EMAIL'])) {
+        $errors['EMAIL'] = "Введите корректный электронный адрес";
+    } else {
+        $arFields['EMAIL'] = htmlspecialchars($_POST['EMAIL']);
     }
 
     // Если есть ошибки, возвращаем их в виде JSON
