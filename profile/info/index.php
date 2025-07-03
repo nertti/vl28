@@ -10,6 +10,8 @@ global $USER;
 $userId = $USER->GetID();
 $rsUser = CUser::GetByID($userId);
 $arUser = $rsUser->Fetch();
+
+CJSCore::Init(array('popup', 'date'));
 ?>
     <div class="container">
         <div class="account__wrap">
@@ -65,9 +67,20 @@ $arUser = $rsUser->Fetch();
                         </div>
                         <div class="account__label">
                             <p class="account__name">Дата рождения</p>
-                            <div class="account__inputs">
+                            <div class="account__inputs" style="position: relative" onclick="BX.calendar({node:this, field:'BIRTHDAY', form: 'form', bTime: false, currentTime: Math.floor(Date.now() / 1000), bHideTime: true});">
                                 <input type="text" name="BIRTHDAY" value="<?= $arUser['PERSONAL_BIRTHDAY'] ?>"
                                        class="form-input account__input">
+                                <img src="/local/templates/public/assets/img/calendar.svg"
+                                     style="
+                                     right: 10px;
+                                     top: 9px;
+                                     position: absolute;
+"
+                                     alt="Выбрать дату в календаре"
+                                     class="position-absolute"
+                                     width="28"
+                                     height="28"
+                                />
                             </div>
                         </div>
                         <div class="account__selects">
