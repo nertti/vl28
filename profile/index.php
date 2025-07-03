@@ -121,7 +121,7 @@ $arUser = $rsUser->Fetch();
                         <div class="account__data-list">
                             <p><?=$arUser['LAST_NAME']." ".$arUser['NAME']?></p>
                             <p><?=$arUser['PERSONAL_PHONE']?></p>
-                            <p><?=$arUser['EMAIL']?></p>
+                            <p><?= substr_compare($arUser['EMAIL'], '@vl28.ru', -strlen('@vl28.ru')) ? $arUser['EMAIL'] : ''; ?></p>
                         </div>
                     </div>
                 </div>

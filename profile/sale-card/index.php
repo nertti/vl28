@@ -50,15 +50,14 @@ $APPLICATION->SetTitle("Карта лояльности");
                         <p>Ваша карта</p>
 
                         <div class="account__card-wrap">
-                            <div class="account__card-img">
+                            <a href="#" data-hystmodal="#loyalModal" class="account__card-img" data-type="<?= $discountCard ?>">
                                 <span class="account__card-type"><?= $discountCard ?></span>
                                 <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/card1.svg" alt="Карта">
                                 <span class="account__card-count"><?= $userBonus ?> баллов</span>
-                            </div>
+                            </a>
                             <div class="account__card-params">
-                                <p>Уровень карты: <strong><?= $discountCard?></strong></p>
+                                <p>Уровень карты: <strong><?= $discountCard ?></strong></p>
                                 <p>Доступные бонусы: <strong><?= $userBonus ?> баллов</strong></p>
-<!--                                <p>Ближайшая дата сгорания бонусов: <strong>--><?php //= $lastDate ?><!--</strong></p>-->
                                 <?php if ($totalPaid < 75000): ?>
                                     <p>До следующего уровня (Highlight) осталось: <strong><?= -$totalPaid + 75000 ?>
                                             ₽</strong></p>
@@ -71,7 +70,8 @@ $APPLICATION->SetTitle("Карта лояльности");
 
                         <div class="account__card-footer">
                             <p>
-                                <?=$discountPercent?>% от стоимости покупки возвращается на Вашу карту лояльности на 15 день после получения
+                                <?= $discountPercent ?>% от стоимости покупки возвращается на Вашу карту лояльности на
+                                15 день после получения
                                 заказа
                             </p>
                             <a href="#" data-hystmodal="#loyalModal" class="black-btn">Подробнее о программе
@@ -82,4 +82,41 @@ $APPLICATION->SetTitle("Карта лояльности");
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const cardImg = document.querySelector('.account__card-img');
+            cardImg.addEventListener('click', handleCardClick);
+            let loyalItem = document.querySelectorAll('.loyal__nav-item');
+
+            function handleCardClick(event) {
+                event.preventDefault();
+
+                let cardType = cardImg.dataset.type;
+
+                // Определяем номер таба на основе типа карты
+                let tabIndex;
+                switch(cardType) {
+                    case 'Light':
+                        tabIndex = 0;
+                        break;
+                    case 'Highlight':
+                        tabIndex = 1;
+                        break;
+                    case 'Luxury':
+                        tabIndex = 2;
+                        break;
+                    default:
+                        return;
+                }
+
+                // Удаляем активный класс со всех табов
+                loyalItem.forEach(item => {
+                    item.classList.remove('active');
+                });
+
+                // Добавляем активный класс к нужному табу
+                loyalItem[tabIndex].classList.add('active');
+            }
+        });
+    </script>
 <?php require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/footer.php"); ?>
