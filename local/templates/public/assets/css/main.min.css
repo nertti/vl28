@@ -947,7 +947,7 @@ section {
   width:33.3333333333%
 }
 .article__inner {
-  margin-top:auto;
+  margin-bottom: auto;
   padding:35px 40px 0
 }
 .article__title {

@@ -17,13 +17,18 @@ $this->setFrameMode(true);
 ?>
 <section class="default first-section top0">
 
-    <div class="blog__list bottom40">
+    <div class="blog__list">
         <?php foreach ($arResult["ITEMS"] as $key => $arItem):
             $this->AddEditAction($arItem['ID'], $arItem['EDIT_LINK'], CIBlock::GetArrayByID($arItem["IBLOCK_ID"], "ELEMENT_EDIT"));
             $this->AddDeleteAction($arItem['ID'], $arItem['DELETE_LINK'], CIBlock::GetArrayByID($arItem["IBLOCK_ID"], "ELEMENT_DELETE"), array("CONFIRM" => GetMessage('CT_BNL_ELEMENT_DELETE_CONFIRM')));
             ?>
+            <?php
+            // Определяем, является ли элемент одним из последних трёх
+            $isLastThree = ($key >= count($arResult["ITEMS"]) - 3);
+            $bottomClass = $isLastThree ? '' : ' bottom45';
+            ?>
             <a id="<?= $this->GetEditAreaId($arItem['ID']); ?>" href="<?= $arItem['DETAIL_PAGE_URL'] ?>"
-               class="article">
+               class="article<?= $bottomClass ?>">
                 <img src="<?= $arItem['PREVIEW_PICTURE']['SRC'] ?>" alt="<?= $arItem['NAME'] ?>" class="article__img">
                 <div class="article__inner">
                     <p class="article__title"><?= $arItem['NAME'] ?></p>

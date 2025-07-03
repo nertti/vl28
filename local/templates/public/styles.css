@@ -21,6 +21,9 @@
 .bottom40{
     padding-bottom: 40px;
 }
+.bottom45{
+    margin-bottom: 45px;
+}
 .favorite-btn.active{
     cursor: pointer;
     background-image: url(assets/img/favorite-active.svg);
