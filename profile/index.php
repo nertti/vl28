@@ -108,13 +108,13 @@ $arUser = $rsUser->Fetch();
                     </div>
                     <div class="account__loyal">
                         <p class="account__title">Карта лояльности</p>
-                        <div class="account__loyal-card">
+                        <a href="#" data-hystmodal="#loyalModal" data-type="<?= $discountCard ?>" class="account__loyal-card">
                             <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/card1.svg" alt="Light">
                             <div class="account__loyal-inner">
                                 <p>Уровень карты: <strong><?=$discountCard?></strong></p>
                                 <p>Доступные бонусы: <strong><?=$userBonus?> баллов</strong></p>
                             </div>
-                        </div>
+                        </a>
                     </div>
                     <div class="account__data">
                         <p class="account__title">Личные данные</p>
@@ -128,4 +128,42 @@ $arUser = $rsUser->Fetch();
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const cardImg = document.querySelector('.account__loyal-card');
+            cardImg.addEventListener('click', handleCardClick);
+            let loyalItem = document.querySelectorAll('.loyal__nav-item');
+
+            function handleCardClick(event) {
+                event.preventDefault();
+
+                let cardType = cardImg.dataset.type;
+
+                // Определяем номер таба на основе типа карты
+                let tabIndex;
+                switch(cardType) {
+                    case 'Light':
+                        tabIndex = 0;
+                        break;
+                    case 'Highlight':
+                        tabIndex = 1;
+                        break;
+                    case 'Luxury':
+                        tabIndex = 2;
+                        break;
+                    default:
+                        return;
+                }
+
+                // Удаляем активный класс со всех табов
+                loyalItem.forEach(item => {
+                    item.classList.remove('active');
+                });
+
+                // Добавляем активный класс к нужному табу
+                loyalItem[tabIndex].classList.add('active');
+            }
+        });
+    </script>
+
 <?php require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/footer.php"); ?>

@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["code"])) {
             if ($arResult['TYPE'] == 'OK') {
                 $user = new CUser;
                 $fields = array(
-                    "PERSONAL_PHONE" => $phone,
+                    "PERSONAL_PHONE" => $_POST["phone"],
                 );
                 $user->Update($arResult['ID'], $fields);
                 echo json_encode(["success" => true]);
