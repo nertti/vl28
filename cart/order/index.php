@@ -11,6 +11,11 @@ $APPLICATION->SetTitle("Оформление заказа");
 Bitrix\Main\Loader::includeModule("Sale");
 Bitrix\Main\Loader::includeModule("Catalog");
 
+use Bitrix\Sale\Delivery\Services\Manager;
+
+$deliveriesList = Manager::getActiveList();
+array_shift($deliveriesList); // убираем бесплатную
+//pr($deliveriesList, true);
 require_once($_SERVER["DOCUMENT_ROOT"] . "/include/order/bonus.php");
 $userBonus = str_replace(' ', '', $userBonus);
 function calculateMaxPointsToSpend($total, $bonus)
@@ -253,42 +258,16 @@ if ($USER->isAuthorized()) {
                     <div class="checkout__label checkout__label_radios">
                         <p class="checkout__name">Способ доставки</p>
                         <div class="checkout__inputs">
-                            <label class="checkout__radio export">
-                                <input type="radio" name="delivery" value="5" >
-                                <div class="checkmark"></div>
-                                <span>
-                      Курьером по Москве в пределах МКАД
-                    </span>
-                            </label>
-                            <label class="checkout__radio export">
-                                <input type="radio" name="delivery" value="1" checked="">
-                                <div class="checkmark"></div>
-                                <span>
-                      СДЭК курьером в руки
-                      <span>от 5 дней, от 900 ₽</span>
-                    </span>
-                            </label>
-                            <label class="checkout__radio export">
-                                <input type="radio" name="delivery" value="2">
-                                <div class="checkmark"></div>
-                                <span>
-                      СДЭК самовывоз с пункта выдачи
-                    </span>
-                            </label>
-                            <label class="checkout__radio export">
-                                <input type="radio" name="delivery" value="3">
-                                <div class="checkmark"></div>
-                                <span>
-                      СДЭК-экспресс курьером в руки
-                    </span>
-                            </label>
-                            <label class="checkout__radio export">
-                                <input type="radio" name="delivery" value="4">
-                                <div class="checkmark"></div>
-                                <span>
-                      СДЭК-экспресс самовывоз с пункта выдачи
-                    </span>
-                            </label>
+                            <?php foreach ($deliveriesList as $delivery): ?>
+                                <label class="checkout__radio export">
+                                    <input type="radio" name="delivery" value="<?= $delivery['ID'] ?>">
+                                    <div class="checkmark"></div>
+                                    <span>
+                                        <?= $delivery['NAME'] ?>
+                                        <span><?= $delivery['DESCRIPTION'] ?></span>
+                                    </span>
+                                </label>
+                            <?php endforeach; ?>
                         </div>
                     </div>
                     <div class="address" style="flex-direction: column">
@@ -798,12 +777,12 @@ if ($USER->isAuthorized()) {
                 .map(cb => cb.value);
 
             const shouldBeVisible =
-                checkedValues.includes('1') ||
-                checkedValues.includes('3') ||
-                checkedValues.includes('5')
-            const shouldBeMoskow = checkedValues.includes('5')
+                checkedValues.includes('135') ||
+                checkedValues.includes('137') ||
+                checkedValues.includes('139')
+            const shouldBeMoskow = checkedValues.includes('135')
             streetBlock.style.display = shouldBeVisible ? 'flex' : 'none';
-            if(shouldBeMoskow){
+            if (shouldBeMoskow) {
                 city.value = 'Москва'
                 city.disabled = true;
             } else {
