@@ -18,5 +18,29 @@ document.addEventListener("DOMContentLoaded", function (e) {
             });
         }
     }
+
+
+    const swiper = new Swiper('.swiper', {
+        // Базовые настройки
+        loop: true, // бесконечная прокрутка
+        spaceBetween: 30, // отступ между слайдами
+
+        // Навигация
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev'
+        },
+
+        // Пагинация
+        pagination: {
+            el: '.swiper-pagination',
+            clickable: true
+        },
+
+        // Автопрокрутка
+        autoplay: {
+            delay: 5000 // смена слайда каждые 5 секунд
+        }
+    });
 });
 

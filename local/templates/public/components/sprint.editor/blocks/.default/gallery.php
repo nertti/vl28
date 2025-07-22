@@ -14,13 +14,40 @@ $images = Sprint\Editor\Blocks\Gallery::getImages(
     ]
 );
 $count = count($images);
+
+$settings = !empty($block['settings']) ? $block['settings'] : [];
+$slider = !empty($settings['slider']) ? $settings['slider'] : '';
 ?>
 
 <?php if (!empty($images)): ?>
-    <div class="default__gallery">
-        <?php foreach ($images as $image): ?>
-            <img class="default__img default__img_s<?php if ($count % 2 == 0): ?>50<?php else: ?>33<?php endif; ?>"
-                 alt="<?= $image['DESCRIPTION'] ?>" src="<?= $image['SRC'] ?>">
-        <?php endforeach; ?>
-    </div>
+    <?php if ($slider !== 'var2'): ?>
+        <div class="default__gallery">
+            <?php foreach ($images as $image): ?>
+                <img class="default__img default__img_s<?php if ($count % 2 == 0): ?>50<?php else: ?>33<?php endif; ?>"
+                     alt="<?= $image['DESCRIPTION'] ?>" src="<?= $image['SRC'] ?>">
+            <?php endforeach; ?>
+        </div>
+    <?php else: ?>
+        <div class="swiper product">
+            <div class="swiper-wrapper">
+                <!-- Слайды -->
+                <?php foreach ($images as $image): ?>
+                    <img class="swiper-slide default__img"
+                         alt="<?= $image['DESCRIPTION'] ?>" src="<?= $image['SRC'] ?>">
+                <?php endforeach; ?>
+            </div>
+
+            <!-- Навигация -->
+            <div class="swiper-button-prev">
+                <svg class="arrow">
+                    <use xlink:href="/local/templates/public/assets/img/arrows.svg#arrow-left"></use>
+                </svg>
+            </div>
+            <div class="swiper-button-next">
+                <svg class="arrow">
+                    <use xlink:href="/local/templates/public/assets/img/arrows.svg#arrow-right"></use>
+                </svg>
+            </div>
+        </div>
+    <?php endif; ?>
 <?php endif; ?>
