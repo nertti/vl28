@@ -2,7 +2,7 @@
 if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
     die();
 }
-
+require($_SERVER['DOCUMENT_ROOT'] . '/include/header/remember_auth.php');
 use Bitrix\Main\Page\Asset;
 
 /** @var \CMain $APPLICATION */

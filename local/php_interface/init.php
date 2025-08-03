@@ -8,3 +8,6 @@ if(file_exists($_SERVER['DOCUMENT_ROOT']. "/local/php_interface/handlers/OrderHa
 // ПОДКЛЮЧАЕМ СОБЫТИЯ
 if(file_exists($_SERVER['DOCUMENT_ROOT']. "/local/php_interface/events.php"))
     require_once($_SERVER['DOCUMENT_ROOT'] . "/local/php_interface/events.php");
+//запомнить авторизацию
+if(file_exists($_SERVER['DOCUMENT_ROOT']."/local/php_interface/classes/RememberAuth.php"))
+    require_once ($_SERVER['DOCUMENT_ROOT']."/local/php_interface/classes/RememberAuth.php");
