@@ -150,6 +150,22 @@ $isOrderPage = $APPLICATION->GetCurPage(false) === '/cart/order/';
                 }
             });
         </script>
-
+    <?php else:?>
+        <div class="hystmodal hystmodal_header" id="cartModal" aria-hidden="true">
+            <div class="hystmodal__wrap">
+                <div class="hystmodal__window" role="dialog" aria-modal="true">
+                    <button data-hystclose class="hystmodal__close"></button>
+                    <div class="cart-modal">
+                        <div class="cart__inner">
+                            <div class="cart__list">
+                                <span class="bx-sbb-empty-cart-image"></span>
+                                <span class="bx-sbb-empty-cart-text">Ваша корзина пуста</span>
+                                <a href="/catalog/" class="bx-sbb-empty-cart-desc">В каталог</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     <?php endif; ?>
 <?php endif; ?>

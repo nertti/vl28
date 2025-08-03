@@ -281,6 +281,8 @@ use Bitrix\Main\Page\Asset;
                         </div>
                     </div>
                     <input type="submit" class="main-btn" value="Подписаться на наши новости">
+                    <span style="display: none" data-hystmodal="#thanksModal" id="openThanksModal"></span>
+
                 </form>
                 <script>
                     document.addEventListener('DOMContentLoaded', function () {
