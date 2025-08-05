@@ -6,14 +6,14 @@ class RememberAuth
 
     public static function OnAfterUserAuthorize($arArgs)
     {
-        extract($arArgs);
+        extract($arArgs['user_fields']);
+        file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/local/log.txt', print_r($ID, 1), FILE_APPEND);
 
         if (true)
         {
             $cookieTime = time() + self::COOKIE_LIFETIME;
             $cookieValue = json_encode([
-                "LOGIN" => $LOGIN,
-                "CHECKWORD" => md5($PASSWORD),
+                "ID" => $ID,
                 "TIME" => $cookieTime
             ]);
             SetCookie(

@@ -14,8 +14,7 @@ if ($cookieValue) {
 if ($time > time()) {
     // Cookie ещё действителен
     // Здесь можно выполнить авторизацию
-    $USER->Login($login, $cookieData['CHECKWORD'], "Y");
-
+    $USER->Authorize($cookieData['ID']); // авторизуем
 } else {
     // Cookie просрочен
     // Здесь можно удалить cookie
