@@ -28,13 +28,13 @@ $aMenuLinks = array(
         array(),
         ""
     ),
-    array(
-        "Выйти из аккаунта",
-        "/?logout=yes&". bitrix_sessid_get(),
-        array(),
-        array(),
-        ""
-    )
+//    array(
+//        "Выйти из аккаунта",
+//        "/?logout=yes&". bitrix_sessid_get(),
+//        array(),
+//        array(),
+//        ""
+//    )
 );
 
 

@@ -2,6 +2,7 @@
 if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
     die();
 }
+
 use Bitrix\Main\Page\Asset;
 
 /** @var \CMain $APPLICATION */
@@ -12,86 +13,86 @@ use Bitrix\Main\Page\Asset;
     <div class="footer__main">
         <nav class="footer__nav">
             <ul class="footer__list">
-                <?php $APPLICATION->IncludeComponent("bitrix:menu", "bottom", Array(
-                    "ALLOW_MULTI_SELECT" => "N",	// Разрешить несколько активных пунктов одновременно
-                    "CHILD_MENU_TYPE" => "left",	// Тип меню для остальных уровней
+                <?php $APPLICATION->IncludeComponent("bitrix:menu", "bottom", array(
+                    "ALLOW_MULTI_SELECT" => "N",    // Разрешить несколько активных пунктов одновременно
+                    "CHILD_MENU_TYPE" => "left",    // Тип меню для остальных уровней
                     "COMPONENT_TEMPLATE" => "bottom",
-                    "DELAY" => "N",	// Откладывать выполнение шаблона меню
-                    "MAX_LEVEL" => "1",	// Уровень вложенности меню
-                    "MENU_CACHE_GET_VARS" => "",	// Значимые переменные запроса
-                    "MENU_CACHE_TIME" => "3600",	// Время кеширования (сек.)
-                    "MENU_CACHE_TYPE" => "Y",	// Тип кеширования
-                    "MENU_CACHE_USE_GROUPS" => "Y",	// Учитывать права доступа
-                    "ROOT_MENU_TYPE" => "bottom",	// Тип меню для первого уровня
-                    "USE_EXT" => "N",	// Подключать файлы с именами вида .тип_меню.menu_ext.php
+                    "DELAY" => "N",    // Откладывать выполнение шаблона меню
+                    "MAX_LEVEL" => "1",    // Уровень вложенности меню
+                    "MENU_CACHE_GET_VARS" => "",    // Значимые переменные запроса
+                    "MENU_CACHE_TIME" => "3600",    // Время кеширования (сек.)
+                    "MENU_CACHE_TYPE" => "Y",    // Тип кеширования
+                    "MENU_CACHE_USE_GROUPS" => "Y",    // Учитывать права доступа
+                    "ROOT_MENU_TYPE" => "bottom",    // Тип меню для первого уровня
+                    "USE_EXT" => "N",    // Подключать файлы с именами вида .тип_меню.menu_ext.php
                 ),
                     false
                 ); ?>
             </ul>
             <ul class="footer__list">
-                <?php $APPLICATION->IncludeComponent("bitrix:menu", "bottom", Array(
-                    "ALLOW_MULTI_SELECT" => "N",	// Разрешить несколько активных пунктов одновременно
-                    "CHILD_MENU_TYPE" => "left",	// Тип меню для остальных уровней
+                <?php $APPLICATION->IncludeComponent("bitrix:menu", "bottom", array(
+                    "ALLOW_MULTI_SELECT" => "N",    // Разрешить несколько активных пунктов одновременно
+                    "CHILD_MENU_TYPE" => "left",    // Тип меню для остальных уровней
                     "COMPONENT_TEMPLATE" => "bottom",
-                    "DELAY" => "N",	// Откладывать выполнение шаблона меню
-                    "MAX_LEVEL" => "1",	// Уровень вложенности меню
-                    "MENU_CACHE_GET_VARS" => "",	// Значимые переменные запроса
-                    "MENU_CACHE_TIME" => "3600",	// Время кеширования (сек.)
-                    "MENU_CACHE_TYPE" => "Y",	// Тип кеширования
-                    "MENU_CACHE_USE_GROUPS" => "Y",	// Учитывать права доступа
-                    "ROOT_MENU_TYPE" => "bottom1",	// Тип меню для первого уровня
-                    "USE_EXT" => "N",	// Подключать файлы с именами вида .тип_меню.menu_ext.php
+                    "DELAY" => "N",    // Откладывать выполнение шаблона меню
+                    "MAX_LEVEL" => "1",    // Уровень вложенности меню
+                    "MENU_CACHE_GET_VARS" => "",    // Значимые переменные запроса
+                    "MENU_CACHE_TIME" => "3600",    // Время кеширования (сек.)
+                    "MENU_CACHE_TYPE" => "Y",    // Тип кеширования
+                    "MENU_CACHE_USE_GROUPS" => "Y",    // Учитывать права доступа
+                    "ROOT_MENU_TYPE" => "bottom1",    // Тип меню для первого уровня
+                    "USE_EXT" => "N",    // Подключать файлы с именами вида .тип_меню.menu_ext.php
                 ),
                     false
                 ); ?>
             </ul>
             <ul class="footer__list">
-                <?php $APPLICATION->IncludeComponent("bitrix:menu", "bottom", Array(
-                    "ALLOW_MULTI_SELECT" => "N",	// Разрешить несколько активных пунктов одновременно
-                    "CHILD_MENU_TYPE" => "left",	// Тип меню для остальных уровней
+                <?php $APPLICATION->IncludeComponent("bitrix:menu", "bottom", array(
+                    "ALLOW_MULTI_SELECT" => "N",    // Разрешить несколько активных пунктов одновременно
+                    "CHILD_MENU_TYPE" => "left",    // Тип меню для остальных уровней
                     "COMPONENT_TEMPLATE" => "bottom",
-                    "DELAY" => "N",	// Откладывать выполнение шаблона меню
-                    "MAX_LEVEL" => "1",	// Уровень вложенности меню
-                    "MENU_CACHE_GET_VARS" => "",	// Значимые переменные запроса
-                    "MENU_CACHE_TIME" => "3600",	// Время кеширования (сек.)
-                    "MENU_CACHE_TYPE" => "Y",	// Тип кеширования
-                    "MENU_CACHE_USE_GROUPS" => "Y",	// Учитывать права доступа
-                    "ROOT_MENU_TYPE" => "bottom2",	// Тип меню для первого уровня
-                    "USE_EXT" => "N",	// Подключать файлы с именами вида .тип_меню.menu_ext.php
+                    "DELAY" => "N",    // Откладывать выполнение шаблона меню
+                    "MAX_LEVEL" => "1",    // Уровень вложенности меню
+                    "MENU_CACHE_GET_VARS" => "",    // Значимые переменные запроса
+                    "MENU_CACHE_TIME" => "3600",    // Время кеширования (сек.)
+                    "MENU_CACHE_TYPE" => "Y",    // Тип кеширования
+                    "MENU_CACHE_USE_GROUPS" => "Y",    // Учитывать права доступа
+                    "ROOT_MENU_TYPE" => "bottom2",    // Тип меню для первого уровня
+                    "USE_EXT" => "N",    // Подключать файлы с именами вида .тип_меню.menu_ext.php
                 ),
                     false
                 ); ?>
             </ul>
             <ul class="footer__list">
-                <?php $APPLICATION->IncludeComponent("bitrix:menu", "bottom", Array(
-                    "ALLOW_MULTI_SELECT" => "N",	// Разрешить несколько активных пунктов одновременно
-                    "CHILD_MENU_TYPE" => "left",	// Тип меню для остальных уровней
+                <?php $APPLICATION->IncludeComponent("bitrix:menu", "bottom", array(
+                    "ALLOW_MULTI_SELECT" => "N",    // Разрешить несколько активных пунктов одновременно
+                    "CHILD_MENU_TYPE" => "left",    // Тип меню для остальных уровней
                     "COMPONENT_TEMPLATE" => "bottom",
-                    "DELAY" => "N",	// Откладывать выполнение шаблона меню
-                    "MAX_LEVEL" => "1",	// Уровень вложенности меню
-                    "MENU_CACHE_GET_VARS" => "",	// Значимые переменные запроса
-                    "MENU_CACHE_TIME" => "3600",	// Время кеширования (сек.)
-                    "MENU_CACHE_TYPE" => "Y",	// Тип кеширования
-                    "MENU_CACHE_USE_GROUPS" => "Y",	// Учитывать права доступа
-                    "ROOT_MENU_TYPE" => "bottom3",	// Тип меню для первого уровня
-                    "USE_EXT" => "N",	// Подключать файлы с именами вида .тип_меню.menu_ext.php
+                    "DELAY" => "N",    // Откладывать выполнение шаблона меню
+                    "MAX_LEVEL" => "1",    // Уровень вложенности меню
+                    "MENU_CACHE_GET_VARS" => "",    // Значимые переменные запроса
+                    "MENU_CACHE_TIME" => "3600",    // Время кеширования (сек.)
+                    "MENU_CACHE_TYPE" => "Y",    // Тип кеширования
+                    "MENU_CACHE_USE_GROUPS" => "Y",    // Учитывать права доступа
+                    "ROOT_MENU_TYPE" => "bottom3",    // Тип меню для первого уровня
+                    "USE_EXT" => "N",    // Подключать файлы с именами вида .тип_меню.menu_ext.php
                 ),
                     false
                 ); ?>
             </ul>
             <ul class="footer__list">
-                <?php $APPLICATION->IncludeComponent("bitrix:menu", "bottom", Array(
-                    "ALLOW_MULTI_SELECT" => "N",	// Разрешить несколько активных пунктов одновременно
-                    "CHILD_MENU_TYPE" => "left",	// Тип меню для остальных уровней
+                <?php $APPLICATION->IncludeComponent("bitrix:menu", "bottom", array(
+                    "ALLOW_MULTI_SELECT" => "N",    // Разрешить несколько активных пунктов одновременно
+                    "CHILD_MENU_TYPE" => "left",    // Тип меню для остальных уровней
                     "COMPONENT_TEMPLATE" => "bottom",
-                    "DELAY" => "N",	// Откладывать выполнение шаблона меню
-                    "MAX_LEVEL" => "1",	// Уровень вложенности меню
-                    "MENU_CACHE_GET_VARS" => "",	// Значимые переменные запроса
-                    "MENU_CACHE_TIME" => "3600",	// Время кеширования (сек.)
-                    "MENU_CACHE_TYPE" => "Y",	// Тип кеширования
-                    "MENU_CACHE_USE_GROUPS" => "Y",	// Учитывать права доступа
-                    "ROOT_MENU_TYPE" => "bottom4",	// Тип меню для первого уровня
-                    "USE_EXT" => "N",	// Подключать файлы с именами вида .тип_меню.menu_ext.php
+                    "DELAY" => "N",    // Откладывать выполнение шаблона меню
+                    "MAX_LEVEL" => "1",    // Уровень вложенности меню
+                    "MENU_CACHE_GET_VARS" => "",    // Значимые переменные запроса
+                    "MENU_CACHE_TIME" => "3600",    // Время кеширования (сек.)
+                    "MENU_CACHE_TYPE" => "Y",    // Тип кеширования
+                    "MENU_CACHE_USE_GROUPS" => "Y",    // Учитывать права доступа
+                    "ROOT_MENU_TYPE" => "bottom4",    // Тип меню для первого уровня
+                    "USE_EXT" => "N",    // Подключать файлы с именами вида .тип_меню.menu_ext.php
                 ),
                     false
                 ); ?>
@@ -104,9 +105,9 @@ use Bitrix\Main\Page\Asset;
     </div>
     <div class="footer__bottom">
         <a href="/" class="footer__logo logo">
-            <img src="<?=SITE_TEMPLATE_PATH?>/assets/img/logo.svg" alt="VL28" class="logo__img">
+            <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/logo.svg" alt="VL28" class="logo__img">
         </a>
-        <span>© VL28, <?=date('Y')?>. Все права защищены</span>
+        <span>© VL28, <?= date('Y') ?>. Все права защищены</span>
     </div>
 </footer>
 <div class="hystmodal" id="loyalModal" aria-hidden="true">
@@ -119,23 +120,23 @@ use Bitrix\Main\Page\Asset;
                     <div class="loyal__row">
                         <div class="loyal__item">Вид карты</div>
                         <div class="loyal__item">
-                            <img src="<?=SITE_TEMPLATE_PATH?>/assets/img/card1.svg" alt="Карта">
+                            <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/card1.svg" alt="Карта">
                             Light
                         </div>
                         <div class="loyal__item">
-                            <img src="<?=SITE_TEMPLATE_PATH?>/assets/img/card2.svg" alt="Карта">
+                            <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/card2.svg" alt="Карта">
                             Highlight
                         </div>
                         <div class="loyal__item">
-                            <img src="<?=SITE_TEMPLATE_PATH?>/assets/img/card3.svg" alt="Карта">
+                            <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/card3.svg" alt="Карта">
                             Luxury
                         </div>
                     </div>
                     <div class="loyal__row">
                         <div class="loyal__item">Условия получения</div>
                         <div class="loyal__item">Бесплатно при оформлении заявки</div>
-                        <div class="loyal__item">При сумме покупок от  75 000 ₽</div>
-                        <div class="loyal__item">При сумме покупок от  150 000 ₽</div>
+                        <div class="loyal__item">При сумме покупок от 75 000 ₽</div>
+                        <div class="loyal__item">При сумме покупок от 150 000 ₽</div>
                     </div>
                     <div class="loyal__row">
                         <div class="loyal__item">Срок действия</div>
@@ -204,7 +205,7 @@ use Bitrix\Main\Page\Asset;
                         <div class="loyal__tab" style="display: none;">
                             <div class="loyal__row">
                                 <p>Условия получения</p>
-                                <p>При сумме покупок от  75 000 ₽</p>
+                                <p>При сумме покупок от 75 000 ₽</p>
                             </div>
                             <div class="loyal__row">
                                 <p>Срок действия</p>
@@ -230,7 +231,7 @@ use Bitrix\Main\Page\Asset;
                         <div class="loyal__tab" style="display: none;">
                             <div class="loyal__row">
                                 <p>Условия получения</p>
-                                <p>При сумме покупок от  150 000 ₽</p>
+                                <p>При сумме покупок от 150 000 ₽</p>
                             </div>
                             <div class="loyal__row">
                                 <p>Срок действия</p>
@@ -256,7 +257,7 @@ use Bitrix\Main\Page\Asset;
                     </div>
                 </div>
                 <p class="loyal__small">* - На один заказ за 7 дней до и 7 дней после дня рождения </p>
-<!--                <a href="#" class="loyal__link">Регламент использования</a>-->
+                <!--                <a href="#" class="loyal__link">Регламент использования</a>-->
             </div>
         </div>
     </div>
@@ -382,7 +383,8 @@ use Bitrix\Main\Page\Asset;
             <div class="search-modal">
                 <p class="search-modal__title">Поиск</p>
                 <form action="#" role="search" method="get" class="search-form">
-                    <input type="search" class="search-form__input" placeholder="Введите что вы хотите найти?" value="" name="s">
+                    <input type="search" class="search-form__input" placeholder="Введите что вы хотите найти?" value=""
+                           name="s">
                     <input type="submit" class="main-btn" value="Найти">
                 </form>
                 <button data-hystclose class="hystmodal__close">Закрыть</button>
@@ -407,28 +409,32 @@ use Bitrix\Main\Page\Asset;
                         <div class="search-modal__swiper swiper">
                             <div class="swiper-wrapper">
                                 <a href="#" class="swiper-slide product">
-                                    <img src="assets/img/export/product1.webp" alt="T-SHIRT DENSE BLACK 100" class="product__img">
+                                    <img src="assets/img/export/product1.webp" alt="T-SHIRT DENSE BLACK 100"
+                                         class="product__img">
                                     <div class="product__inner">
                                         <p class="product__title">T-SHIRT DENSE BLACK 100</p>
                                         <p class="product__price">8 900 ₽</p>
                                     </div>
                                 </a>
                                 <a href="#" class="swiper-slide product">
-                                    <img src="assets/img/export/product1.webp" alt="T-SHIRT DENSE BLACK 100" class="product__img">
+                                    <img src="assets/img/export/product1.webp" alt="T-SHIRT DENSE BLACK 100"
+                                         class="product__img">
                                     <div class="product__inner">
                                         <p class="product__title">T-SHIRT DENSE BLACK 100</p>
                                         <p class="product__price">8 900 ₽</p>
                                     </div>
                                 </a>
                                 <a href="#" class="swiper-slide product">
-                                    <img src="assets/img/export/product1.webp" alt="T-SHIRT DENSE BLACK 100" class="product__img">
+                                    <img src="assets/img/export/product1.webp" alt="T-SHIRT DENSE BLACK 100"
+                                         class="product__img">
                                     <div class="product__inner">
                                         <p class="product__title">T-SHIRT DENSE BLACK 100</p>
                                         <p class="product__price">8 900 ₽</p>
                                     </div>
                                 </a>
                                 <a href="#" class="swiper-slide product">
-                                    <img src="assets/img/export/product1.webp" alt="T-SHIRT DENSE BLACK 100" class="product__img">
+                                    <img src="assets/img/export/product1.webp" alt="T-SHIRT DENSE BLACK 100"
+                                         class="product__img">
                                     <div class="product__inner">
                                         <p class="product__title">T-SHIRT DENSE BLACK 100</p>
                                         <p class="product__price">8 900 ₽</p>
@@ -443,6 +449,20 @@ use Bitrix\Main\Page\Asset;
         </div>
     </div>
 </div>
+<div class="hystmodal" id="exitModal" aria-hidden="true">
+    <div class="hystmodal__wrap">
+        <div class="hystmodal__window hystmodal__window_subscribe" role="dialog" aria-modal="true">
+            <button data-hystclose="" class="hystmodal__close"></button>
+            <div class="thanks" style="flex-direction: column">
+                <p class="h3">Вы уверены, что хотите выйти?</p>
+                <div class="" style="display: flex; justify-content: space-around;width: 100%;max-width: 250px;">
+                    <a href="/?logout=yes&<?=bitrix_sessid_get()?>" class="account__link account__link_out">Выйти из аккаунта</a>
+                    <a href="" data-hystclose="" class="account__link account__link_out">Отмена</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <?php $APPLICATION->IncludeFile(
     "/include/footer/flat-cart.php",
     array(),
@@ -451,13 +471,13 @@ use Bitrix\Main\Page\Asset;
     )
 ); ?>
 <?php
-Asset::getInstance()->addJs(SITE_TEMPLATE_PATH.'/assets/js/jquery-3.7.1.min.js');
-Asset::getInstance()->addJs(SITE_TEMPLATE_PATH.'/assets/js/hystmodal.min.js');
-Asset::getInstance()->addJs(SITE_TEMPLATE_PATH.'/assets/js/swiper-bundle.min.js');
-Asset::getInstance()->addJs(SITE_TEMPLATE_PATH.'/assets/js/mask.js');
-Asset::getInstance()->addJs(SITE_TEMPLATE_PATH.'/assets/js/main.min.js');
+Asset::getInstance()->addJs(SITE_TEMPLATE_PATH . '/assets/js/jquery-3.7.1.min.js');
+Asset::getInstance()->addJs(SITE_TEMPLATE_PATH . '/assets/js/hystmodal.min.js');
+Asset::getInstance()->addJs(SITE_TEMPLATE_PATH . '/assets/js/swiper-bundle.min.js');
+Asset::getInstance()->addJs(SITE_TEMPLATE_PATH . '/assets/js/mask.js');
+Asset::getInstance()->addJs(SITE_TEMPLATE_PATH . '/assets/js/main.min.js');
 
-Asset::getInstance()->addJs(SITE_TEMPLATE_PATH.'/include/footer/script.js');
+Asset::getInstance()->addJs(SITE_TEMPLATE_PATH . '/include/footer/script.js');
 ?>
 <script src="/include/footer/script.js"></script>
 <!--<button class="hystmodal__shadow"></button>-->

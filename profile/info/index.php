@@ -169,8 +169,9 @@ CJSCore::Init(array('popup', 'date'));
                         })
                         ;
                     </script>
-                    <a href="/?logout=yes&<?= bitrix_sessid_get() ?>" class="account__link account__link_out">Выйти из
-                        аккаунта</a>
+                    <span data-hystmodal="#exitModal" class="account__link account__link_out pointer">Выйти из
+                        аккаунта</span>
+
                 </div>
             </div>
         </div>
