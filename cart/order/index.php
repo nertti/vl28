@@ -609,6 +609,7 @@ if ($USER->isAuthorized()) {
             </form>
         </div>
 </section>
+<?php require($_SERVER["DOCUMENT_ROOT"] . "/include/profile/sale.php"); ?>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         function calculateMaxPointsToSpend(total, bonus) {
@@ -626,19 +627,19 @@ if ($USER->isAuthorized()) {
             if (total <= 0) {
                 return 0;
             }
-            let uf_card = <?=$arUser['UF_CARD'] ?? 0?>;
-            if (uf_card == 10) {
+            let uf_card = <?=$discountPercent ?? 0?>;
+            if (uf_card === 5) {
                 // Вычисляем 5% от суммы заказа
                 return Math.round(total * 0.05);
-            } else if (uf_card == 11) {
+            } else if (uf_card === 10) {
                 // Вычисляем 10% от суммы заказа
                 return Math.round(total * 0.10);
-            } else if (uf_card == 12) {
+            } else if (uf_card === 15) {
                 // Вычисляем 15% от суммы заказа
                 return Math.round(total * 0.15);
+            } else {
+                return 0;
             }
-
-
         }
 
         let totalPrice = <?=$fullPrice?>;
