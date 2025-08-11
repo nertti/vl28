@@ -343,10 +343,16 @@ foreach ($arFavorites as $favorite) {
                     <?php endif; ?>
                 <?php endif; ?>
 
+                <?php if ($arResult['PROPERTIES']['AVAILABILITY']['VALUE'] !== 'Нет в наличии'): ?>
                 <a class="black-btn <?= $buyButtonClassName ?>" id="<?= $itemIds['BUY_LINK'] ?>"
                    href="javascript:void(0);">
                     <span>Добавить в корзину</span>
                 </a>
+                <?php else:?>
+                    <a class="black-btn <?= $buyButtonClassName ?>" style="background-color: grey; cursor: not-allowed">
+                        <span>Добавить в корзину</span>
+                    </a>
+                <?php endif;?>
                 <!--                <span class="black-btn" id="addToBasket">-->
                 <!--                    <span>Добавить в корзину</span>-->
                 <!--                </span>-->
