@@ -782,7 +782,7 @@ if ($USER->isAuthorized()) {
                 checkedValues.includes('137') ||
                 checkedValues.includes('139')
             const shouldBeMoskow = checkedValues.includes('135')
-            streetBlock.style.display = shouldBeVisible ? 'flex' : 'none';
+            streetBlock.style.display = shouldBeVisible ? 'flex' : 'flex';// если нужно скрыть, то указать none
             if (shouldBeMoskow) {
                 city.value = 'Москва'
                 city.disabled = true;

@@ -104,7 +104,7 @@ $order->setBasket($basket);
 // Доставка
 $shipmentCollection = $order->getShipmentCollection();
 $shipment = $shipmentCollection->createItem();
-$service = Delivery\Services\Manager::getById(Delivery\Services\EmptyDeliveryService::getEmptyDeliveryServiceId());
+$service = Delivery\Services\Manager::getById($request["delivery"]);
 $shipment->setFields([
     'DELIVERY_ID' => $service['ID'],
     'DELIVERY_NAME' => $service['NAME'],
@@ -142,6 +142,30 @@ if ($bonusPointsWithdraw > 0) {
         'SUM' => $order->getPrice(),
     ]);
 }
+
+$propertyCollection = $order->getPropertyCollection();
+
+
+
+$nameProp = $propertyCollection->getItemByOrderPropertyCode('NAME');
+$nameProp->setValue($name);
+$surnameProp = $propertyCollection->getItemByOrderPropertyCode('SURNAME');
+$surnameProp->setValue($surname);
+$phoneProp = $propertyCollection->getItemByOrderPropertyCode('PHONE');
+$phoneProp->setValue($phoneCleaned);
+$cityProp = $propertyCollection->getItemByOrderPropertyCode('CITY');
+$cityProp->setValue($city);
+$streetProp = $propertyCollection->getItemByOrderPropertyCode('STREET');
+$streetProp->setValue($street);
+$domProp = $propertyCollection->getItemByOrderPropertyCode('HOUSE');
+$domProp->setValue($dom);
+$kvartiraProp = $propertyCollection->getItemByOrderPropertyCode('APARTMENT');
+$kvartiraProp->setValue($kvartira);
+$emailProp = $propertyCollection->getItemByOrderPropertyCode('EMAIL');
+$emailProp->setValue($email);
+$bonusProp = $propertyCollection->getItemByOrderPropertyCode('BONUS');
+$bonusProp->setValue($bonusPoints);
+
 
 // Сохраняем заказ
 $order->doFinalAction(true);
@@ -225,7 +249,6 @@ if ($result->isSuccess()) {
 
     header('Content-Type: application/json');
 
-    $propertyCollection = $order->getPropertyCollection();
 
     $linkPayProp = $propertyCollection->getItemByOrderPropertyCode('LINK_PAY');
     $linkPayProp->setValue($payUrl);
@@ -235,25 +258,6 @@ if ($result->isSuccess()) {
     $linkPayProp->setValue($paymentId);
     $linkPayProp = $propertyCollection->getItemByOrderPropertyCode('TOKEN');
     $linkPayProp->setValue($token);
-
-    $nameProp = $propertyCollection->getItemByOrderPropertyCode('NAME');
-    $nameProp->setValue($name);
-    $surnameProp = $propertyCollection->getItemByOrderPropertyCode('SURNAME');
-    $surnameProp->setValue($surname);
-    $phoneProp = $propertyCollection->getItemByOrderPropertyCode('PHONE');
-    $phoneProp->setValue($phoneCleaned);
-    $cityProp = $propertyCollection->getItemByOrderPropertyCode('CITY');
-    $cityProp->setValue($city);
-    $streetProp = $propertyCollection->getItemByOrderPropertyCode('STREET');
-    $streetProp->setValue($street);
-    $domProp = $propertyCollection->getItemByOrderPropertyCode('HOUSE');
-    $domProp->setValue($dom);
-    $kvartiraProp = $propertyCollection->getItemByOrderPropertyCode('APARTMENT');
-    $kvartiraProp->setValue($kvartira);
-    $emailProp = $propertyCollection->getItemByOrderPropertyCode('EMAIL');
-    $emailProp->setValue($email);
-    $bonusProp = $propertyCollection->getItemByOrderPropertyCode('BONUS');
-    $bonusProp->setValue($bonusPoints);
 
     $order->save(); // Обновляем заказ
 
