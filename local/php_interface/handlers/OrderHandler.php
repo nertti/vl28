@@ -31,3 +31,71 @@ function onOrderPaid($order_id, &$arFields)
     }
 }
 
+function onOrderCreate(Bitrix\Main\Event $event)
+{
+    $telegramToken = "8332872680:AAG1OtqE-zZKpCXghJFjPQAzKuFWvMzlV4U";
+    $chatId = "-1002635999993";
+    $adminOrderUrl = "http://vl26908655.nichost.ru/bitrix/admin/sale_order_view.php?ID=";
+
+    $order = $event->getParameter("ENTITY");
+    $isNew = $event->getParameter("IS_NEW");
+
+    if (!$isNew) {
+        return; // только при создании
+    }
+
+    Loader::includeModule("sale");
+
+    $orderId = $order->getId();
+    $price = $order->getPrice();
+    $currency = $order->getCurrency();
+    $userId = $order->getUserId();
+
+    // Данные пользователя
+    $user = \Bitrix\Main\UserTable::getById($userId)->fetch();
+    $userName = trim($user["NAME"] . " " . $user["LAST_NAME"]);
+    $userEmail = $user["EMAIL"];
+
+    // Список товаров
+    $basket = $order->getBasket();
+    $items = [];
+    foreach ($basket as $basketItem) {
+        $items[] = $basketItem->getField("NAME") . " x" . $basketItem->getQuantity();
+    }
+    $itemsList = implode("\n", $items);
+
+    // Сообщение
+    $message = "🆕 Новый заказ #$orderId\n"
+        . "👤 Клиент: {$userName}\n"
+        . "📧 Email: {$userEmail}\n"
+        . "💰 Сумма: {$price} {$currency}\n"
+        . "📦 Товары:\n{$itemsList}";
+
+    // Кнопка для открытия заказа
+    $keyboard = [
+        "inline_keyboard" => [
+            [
+                ["text" => "Открыть заказ в админке", "url" => $adminOrderUrl . $orderId]
+            ]
+        ]
+    ];
+
+    // Отправка в Telegram
+    $url = "https://api.telegram.org/bot{$telegramToken}/sendMessage";
+    $postFields = [
+        "chat_id" => $chatId,
+        "text" => $message,
+        "parse_mode" => "HTML",
+        "reply_markup" => json_encode($keyboard, JSON_UNESCAPED_UNICODE)
+    ];
+
+    $ch = curl_init();
+    curl_setopt_array($ch, [
+        CURLOPT_URL => $url,
+        CURLOPT_POST => true,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POSTFIELDS => $postFields,
+    ]);
+    $response = curl_exec($ch);
+    curl_close($ch);
+}
