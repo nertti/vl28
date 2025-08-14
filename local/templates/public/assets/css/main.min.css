@@ -732,7 +732,8 @@ section {
   flex-direction:column;
   width:33.3333333333%;
   position:relative;
-  background-color:#d5d5d5
+  /*background-color:#d5d5d5*/
+  background:linear-gradient(to top, #d5d5d5, #fff);
 }
 .product__inner {
   padding-left:40px;
@@ -1588,7 +1589,8 @@ section {
 .tovar__left {
   position:relative;
   -ms-flex-item-align:start;
-  align-self:flex-start
+  align-self:flex-start;
+  background: linear-gradient(to top, #d5d5d5, #fff);
 }
 .tovar__left .swiper-slide {
   display:-webkit-box;
