@@ -67,8 +67,9 @@ $isOrderPage = $APPLICATION->GetCurPage(false) === '/cart/order/';
                             <?php foreach ($basket as $basketItem): ?>
                                 <?php
                                 $product = getProductInfo($basketItem->getField('PRODUCT_ID'));
+                                $product2 = getProductInfo($basketItem->getField('PRODUCT_XML_ID'));
                                 $propertySize = getElementProperties($product['IBLOCK_ID'], $product['ID'], 'SIZE');
-                                $propertyColor = getElementProperties($product['IBLOCK_ID'], $product['ID'], 'COLOR');
+                                $propertyColor = getElementProperties(2, $product2['ID'], 'COLOR');
                                 ?>
                                 <div class="cart-modal__item" id="<?= $basketItem->getField('ID') ?>">
                                     <div class="cart-modal__left">
@@ -79,7 +80,12 @@ $isOrderPage = $APPLICATION->GetCurPage(false) === '/cart/order/';
                                         <p class="cart-modal__title"><?= $product['NAME'] ?></p>
                                         <div class="cart-modal__param">
                                             <p class="cart-modal__name">Цвет</p>
-                                            <p class="cart-modal__value"><?= $propertyColor['VALUE_ENUM'] ?></p>
+                                            <p class="cart-modal__value">
+                                            <div class="cart__color">
+                                                <span style="background: <?= $propertyColor['VALUE'] ?>;"></span>
+                                            </div>
+
+                                            </p>
                                         </div>
                                         <div class="cart-modal__param">
                                             <p class="cart-modal__name">Размер</p>

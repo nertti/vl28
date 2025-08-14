@@ -63,9 +63,11 @@ $basket = Bitrix\Sale\Basket::loadItemsForFUser($fUserId, $siteId);
                     <?php foreach ($basket as $basketItem): ?>
                         <div class="cart__item" id="<?= $basketItem->getField('ID') ?>">
                             <?php
+
                             $product = getProductInfo($basketItem->getField('PRODUCT_ID'));
+                            $product2 = getProductInfo($basketItem->getField('PRODUCT_XML_ID'));
                             $propertySize = getElementProperties($product['IBLOCK_ID'], $product['ID'], 'SIZE');
-                            $propertyColor = getElementProperties($product['IBLOCK_ID'], $product['ID'], 'COLOR');
+                            $propertyColor = getElementProperties(2, $product2['ID'], 'COLOR');
                             ?>
                             <?php
                             $active = false;
@@ -85,7 +87,7 @@ $basket = Bitrix\Sale\Basket::loadItemsForFUser($fUserId, $siteId);
                                     <p class="cart__value"><?= $propertySize['VALUE_ENUM'] ?></p>
                                     <p class="cart__value"><?= $basketItem->getQuantity() ?> шт</p>
                                     <div class="cart__color">
-                                        <span style="background: <?= $propertyColor['VALUE_XML_ID'] ?>;"></span>
+                                        <span style="background: <?= $propertyColor['VALUE'] ?>;"></span>
                                     </div>
                                 </div>
                                 <p class="cart__price"><?= number_format($basketItem->getFinalPrice(), 0, '', ' ') ?>
