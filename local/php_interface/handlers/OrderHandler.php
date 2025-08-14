@@ -2,6 +2,8 @@
 
 use Bitrix\Main\Loader;
 use Bitrix\Sale;
+use Bitrix\Sale\Delivery;
+
 
 function onOrderPaid($order_id, &$arFields)
 {
@@ -48,27 +50,45 @@ function onOrderCreate(Bitrix\Main\Event $event)
 
     $orderId = $order->getId();
     $price = $order->getPrice();
+    $discount = $order->getDiscountPrice();
     $currency = $order->getCurrency();
     $userId = $order->getUserId();
+    $propertyCollection = $order->getPropertyCollection();
 
     // Данные пользователя
     $user = \Bitrix\Main\UserTable::getById($userId)->fetch();
     $userName = trim($user["NAME"] . " " . $user["LAST_NAME"]);
     $userEmail = $user["EMAIL"];
+    $userPhone = $user["PERSONAL_PHONE"];
 
     // Список товаров
     $basket = $order->getBasket();
     $items = [];
-    foreach ($basket as $basketItem) {
-        $items[] = $basketItem->getField("NAME") . " x" . $basketItem->getQuantity();
+    foreach ($basket->getListOfFormatText() as $basketItem) {
+        $items[] = html_entity_decode($basketItem);
     }
     $itemsList = implode("\n", $items);
 
+    // Доставка
+    $service = Delivery\Services\Manager::getById($order->getDeliverySystemId()[0]);
+    // Адрес доставки
+    $propertyCollection = $order->getPropertyCollection();
+    $city = $propertyCollection->getItemByOrderPropertyId(17)->getValue();
+    $street = $propertyCollection->getItemByOrderPropertyId(18)->getValue();
+    $home = $propertyCollection->getItemByOrderPropertyId(19)->getValue();
+    $apartment = $propertyCollection->getItemByOrderPropertyId(20)->getValue();
+
+    $address = $city .', '. $street.', ' . $home.', '. $apartment;
     // Сообщение
-    $message = "🆕 Новый заказ #$orderId\n"
+    $message = "🆕 Заказ #$orderId\n"
+        . "Заказ не оплачен\n\n"
+        . "Доставка: {$service['NAME']}\n"
+        . "Адрес доставки: {$address}\n\n"
         . "👤 Клиент: {$userName}\n"
         . "📧 Email: {$userEmail}\n"
-        . "💰 Сумма: {$price} {$currency}\n"
+        . "Телефон: {$userPhone}\n"
+        . "💰 Сумма: {$price} {$currency}\n\n"
+        //. "💰 Скидка: {$discount} {$currency}\n"
         . "📦 Товары:\n{$itemsList}";
 
     // Кнопка для открытия заказа
