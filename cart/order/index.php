@@ -258,6 +258,7 @@ if ($USER->isAuthorized()) {
                     <div class="checkout__label checkout__label_radios">
                         <p class="checkout__name">Способ доставки</p>
                         <div class="checkout__inputs">
+                            <p class="error-text delivery" style="display: none;">Пожалуйста, выберите способ доставки.</p>
                             <?php foreach ($deliveriesList as $delivery): ?>
                                 <label class="checkout__radio export">
                                     <input type="radio" name="delivery" value="<?= $delivery['ID'] ?>">
@@ -457,6 +458,8 @@ if ($USER->isAuthorized()) {
                                     let errorPhoneError = document.querySelector('.error-text.phone');
                                     let errorPhoneInput = document.querySelector('.form-input.phone');
 
+                                    let errorDeliveryError = document.querySelector('.error-text.delivery');
+
                                     let errorCityError = document.querySelector('.error-text.city');
                                     let errorCityInput = document.querySelector('.form-input.city');
 
@@ -482,6 +485,8 @@ if ($USER->isAuthorized()) {
 
                                         errorPhoneInput.classList.remove('error');
                                         errorPhoneError.style.display = 'none';
+
+                                        errorDeliveryError.style.display = 'none';
 
                                         errorCityInput.classList.remove('error');
                                         errorCityError.style.display = 'none';
@@ -517,6 +522,11 @@ if ($USER->isAuthorized()) {
                                             errorPhoneInput.classList.add('error');
                                             errorPhoneError.style.display = 'block';
                                             errorPhoneError.innerHTML = data.message.phone;
+                                        }
+
+                                        if (data.message.delivery) {
+                                            errorDeliveryError.style.display = 'block';
+                                            errorDeliveryError.innerHTML = data.message.delivery;
                                         }
 
                                         if (data.message.city) {

@@ -33,7 +33,10 @@ if (empty($request['surname'])) {
 if (empty($request['phone'])) {
     $errors['phone'] = "Пожалуйста, введите свой телефон.";
 }
-if ($request['delivery'] == 1 || $request['delivery'] == 3) {
+if (empty($request['delivery'])) {
+    $errors['delivery'] = "Пожалуйста, выберите способ доставки.";
+}
+if ($request['delivery'] == 1 || $request['delivery'] == 2 || $request['delivery'] == 3 || $request['delivery'] == 4) {
     if (empty($request['city'])) $errors['city'] = "Укажите населённый пункт.";
     if (empty($request['street'])) $errors['street'] = "Укажите улицу.";
     if (empty($request['dom'])) $errors['dom'] = "Укажите номер дома.";

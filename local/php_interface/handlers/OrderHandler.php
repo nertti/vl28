@@ -42,22 +42,25 @@ function onOrderCreate(Bitrix\Main\Event $event)
     $order = $event->getParameter("ENTITY");
     $isNew = $event->getParameter("IS_NEW");
 
+    \Bitrix\Main\Loader::includeModule("sale");
+
+    // Условие: новый заказ или обновление, но заказ оплачен
     if (!$isNew && !$order->isPaid()) {
-        return; // выходим, если это просто обновление и заказ не оплачен
+        return;
     }
 
     Loader::includeModule("sale");
 
-    $orderId = $order->getId();
-    $price = $order->getPrice();
-    $discount = $order->getDiscountPrice();
-    $currency = $order->getCurrency();
-    $userId = $order->getUserId();
+    $orderId   = $order->getId();
+    $price     = $order->getPrice();
+    $discount  = $order->getDiscountPrice();
+    $currency  = $order->getCurrency();
+    $userId    = $order->getUserId();
     $propertyCollection = $order->getPropertyCollection();
 
     // Данные пользователя
     $user = \Bitrix\Main\UserTable::getById($userId)->fetch();
-    $userName = trim($user["NAME"] . " " . $user["LAST_NAME"]);
+    $userName  = trim($user["NAME"] . " " . $user["LAST_NAME"]);
     $userEmail = $user["EMAIL"];
     $userPhone = $user["PERSONAL_PHONE"];
 
@@ -70,28 +73,43 @@ function onOrderCreate(Bitrix\Main\Event $event)
     $itemsList = implode("\n", $items);
 
     // Доставка
-    $service = Delivery\Services\Manager::getById($order->getDeliverySystemId()[0]);
+    $deliveryIds = $order->getDeliverySystemId();
+    $service = null;
+    if (is_array($deliveryIds) && count($deliveryIds) > 0) {
+        $service = \Bitrix\Sale\Delivery\Services\Manager::getById($deliveryIds[0]);
+    }
+
     // Адрес доставки
-    $propertyCollection = $order->getPropertyCollection();
     $city = $propertyCollection->getItemByOrderPropertyId(17)->getValue();
     $street = $propertyCollection->getItemByOrderPropertyId(18)->getValue();
     $home = $propertyCollection->getItemByOrderPropertyId(19)->getValue();
     $apartment = $propertyCollection->getItemByOrderPropertyId(20)->getValue();
+    $address = $city . ', ' . $street . ', ' . $home . ', ' . $apartment;
 
-    $address = $city .', '. $street.', ' . $home.', '. $apartment;
-    // Проверка оплаты
+    // Статус оплаты
     $payStatus = $order->isPaid() ? "✅ Заказ оплачен" : "❌ Заказ не оплачен";
 
+    // --- СКИДКИ ---
+    $discountsText = "";
+    $discounts = $order->getDiscount()->getApplyResult(false);
+
+    if (!empty($discounts["DISCOUNT_LIST"])) {
+        $discountsList = array_shift($discounts['PRICES']['BASKET']);
+        $discountsText .= "💸 Итоговая скидка: {$discountsList['DISCOUNT']} {$currency}\n";
+    } else {
+        $discountsText = "Нет применённых скидок\n";
+    }
+
     // Сообщение
-    $message = "🆕 Заказ #$orderId\n"
+    $message = ($isNew ? "🆕 Новый заказ #$orderId\n" : "💳 Оплата заказа #$orderId\n")
         . "{$payStatus}\n\n"
-        . "🚚 Доставка: {$service['NAME']}\n"
+        . "🚚 Доставка: " . ($service ? $service['NAME'] : "Неизвестно") . "\n"
         . "🏠 Адрес доставки: {$address}\n\n"
         . "👤 Клиент: {$userName}\n"
         . "📧 Email: {$userEmail}\n"
-        . "📞 Телефон: {$userPhone}\n"
-        . "💰 Сумма: {$price} {$currency}\n\n"
-        //. "💰 Скидка: {$discount} {$currency}\n"
+        . "📞 Телефон: {$userPhone}\n\n"
+        . "💰 Сумма: {$price} {$currency}\n"
+        . "{$discountsText}\n"
         . "📦 Товары:\n{$itemsList}";
 
     // Кнопка для открытия заказа
