@@ -42,8 +42,8 @@ function onOrderCreate(Bitrix\Main\Event $event)
     $order = $event->getParameter("ENTITY");
     $isNew = $event->getParameter("IS_NEW");
 
-    if (!$isNew) {
-        return; // только при создании
+    if (!$isNew && !$order->isPaid()) {
+        return; // выходим, если это просто обновление и заказ не оплачен
     }
 
     Loader::includeModule("sale");
@@ -79,14 +79,17 @@ function onOrderCreate(Bitrix\Main\Event $event)
     $apartment = $propertyCollection->getItemByOrderPropertyId(20)->getValue();
 
     $address = $city .', '. $street.', ' . $home.', '. $apartment;
+    // Проверка оплаты
+    $payStatus = $order->isPaid() ? "✅ Заказ оплачен" : "❌ Заказ не оплачен";
+
     // Сообщение
     $message = "🆕 Заказ #$orderId\n"
-        . "Заказ не оплачен\n\n"
-        . "Доставка: {$service['NAME']}\n"
-        . "Адрес доставки: {$address}\n\n"
+        . "{$payStatus}\n\n"
+        . "🚚 Доставка: {$service['NAME']}\n"
+        . "🏠 Адрес доставки: {$address}\n\n"
         . "👤 Клиент: {$userName}\n"
         . "📧 Email: {$userEmail}\n"
-        . "Телефон: {$userPhone}\n"
+        . "📞 Телефон: {$userPhone}\n"
         . "💰 Сумма: {$price} {$currency}\n\n"
         //. "💰 Скидка: {$discount} {$currency}\n"
         . "📦 Товары:\n{$itemsList}";
