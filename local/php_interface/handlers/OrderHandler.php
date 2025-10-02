@@ -44,26 +44,46 @@ function onOrderCreate(Bitrix\Main\Event $event)
 
     \Bitrix\Main\Loader::includeModule("sale");
 
-    // Условие: новый заказ или обновление, но заказ оплачен
-    if (!$isNew && !$order->isPaid()) {
-        return;
-    }
-
-    Loader::includeModule("sale");
-
     $orderId = $order->getId();
-    $price = $order->getPrice();
-    $discount = $order->getDiscountPrice();
-    $currency = $order->getCurrency();
-    $userId = $order->getUserId();
     $propertyCollection = $order->getPropertyCollection();
 
-    // Данные пользователя
-    $userName = $propertyCollection->getItemByOrderPropertyId(13)->getValue() . " " . $propertyCollection->getItemByOrderPropertyId(14)->getValue() ;
+// Проверяем свойство SEND_TELEGRAM
+    $sendTelegramProp = $propertyCollection->getItemByOrderPropertyId(29); // Вставь ID свойства SEND_TELEGRAM
+    if ($sendTelegramProp && $sendTelegramProp->getValue() === 'Y') {
+        return; // Уже отправляли
+    }
+
+// Доставка
+    $deliveryIds = $order->getDeliverySystemId();
+    $deliveryId = is_array($deliveryIds) && count($deliveryIds) > 0 ? $deliveryIds[0] : null;
+    $service = null;
+    if ($deliveryId) {
+        $service = \Bitrix\Sale\Delivery\Services\Manager::getById($deliveryId);
+    }
+
+// Способ оплаты
+    $paymentCollection = $order->getPaymentCollection();
+    $payment = $paymentCollection->current();
+    $paySystemId = $payment ? $payment->getPaymentSystemId() : null;
+
+// Основное условие отправки
+    $sendTelegram = false;
+    if ($paySystemId != 7 && !$order->isPaid()) {
+        $sendTelegram = true;
+    } elseif ($paySystemId == 7 && $order->isPaid() ) {
+        $sendTelegram = true;
+    }
+
+    if (!$sendTelegram) {
+        return; // Не отправлять
+    }
+
+// Данные пользователя
+    $userName = $propertyCollection->getItemByOrderPropertyId(13)->getValue() . " " . $propertyCollection->getItemByOrderPropertyId(14)->getValue();
     $userEmail = $propertyCollection->getItemByOrderPropertyId(12)->getValue();
     $userPhone = $propertyCollection->getItemByOrderPropertyId(15)->getValue();
 
-    // Список товаров
+// Список товаров
     $basket = $order->getBasket();
     $items = [];
     foreach ($basket->getListOfFormatText() as $basketItem) {
@@ -71,27 +91,21 @@ function onOrderCreate(Bitrix\Main\Event $event)
     }
     $itemsList = implode("\n", $items);
 
-    // Доставка
-    $deliveryIds = $order->getDeliverySystemId();
-    $service = null;
-    if (is_array($deliveryIds) && count($deliveryIds) > 0) {
-        $service = \Bitrix\Sale\Delivery\Services\Manager::getById($deliveryIds[0]);
-    }
-
-    // Адрес доставки
+// Адрес доставки
     $city = $propertyCollection->getItemByOrderPropertyId(17)->getValue();
     $street = $propertyCollection->getItemByOrderPropertyId(18)->getValue();
     $home = $propertyCollection->getItemByOrderPropertyId(19)->getValue();
     $apartment = $propertyCollection->getItemByOrderPropertyId(20)->getValue();
-    $address = $city . ', ' . $street . ', ' . $home . ', ' . $apartment;
+    $parts = array_filter([$city, $street, $home, $apartment]);
+    $address = implode(', ', $parts);
 
-    // Статус оплаты
+// Статус оплаты
     $payStatus = $order->isPaid() ? "✅ Заказ оплачен" : "❌ Заказ не оплачен";
+    $payMethod = $order->isPaid() ? "Оплата онлайн" : "Оплата при получении";
 
-    // --- СКИДКИ ---
+// Скидки
     $discountsText = "";
     $discounts = $order->getDiscount()->getApplyResult(false);
-
     if (!empty($discounts["DISCOUNT_LIST"])) {
         $discountsList = array_shift($discounts['PRICES']['BASKET']);
         $discountsText .= "💸 Итоговая скидка: {$discountsList['DISCOUNT']} {$currency}\n";
@@ -99,19 +113,20 @@ function onOrderCreate(Bitrix\Main\Event $event)
         $discountsText = "Нет применённых скидок\n";
     }
 
-    // Сообщение
+// Сообщение
     $message = ($isNew ? "🆕 Новый заказ #$orderId\n" : "💳 Оплата заказа #$orderId\n")
         . "{$payStatus}\n\n"
         . "🚚 Доставка: " . ($service ? $service['NAME'] : "Неизвестно") . "\n"
         . "🏠 Адрес доставки: {$address}\n\n"
         . "👤 Клиент: {$userName}\n"
         . "📧 Email: {$userEmail}\n"
-        . "📞 Телефон: {$userPhone}\n\n"
-        . "💰 Сумма: {$price} {$currency}\n"
+        . "📞 Телефон: +{$userPhone}\n\n"
+        . "💰 Сумма: {$order->getPrice()} {$order->getCurrency()}\n"
         . "{$discountsText}\n"
+        . "💰 Способ оплаты: {$payMethod}\n"
         . "📦 Товары:\n{$itemsList}";
 
-    // Кнопка для открытия заказа
+// Кнопка для открытия заказа
     $keyboard = [
         "inline_keyboard" => [
             [
@@ -119,26 +134,32 @@ function onOrderCreate(Bitrix\Main\Event $event)
             ]
         ]
     ];
-    //file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/local/log.txt', print_r($message, 1), FILE_APPEND);
 
-    // Отправка в Telegram
-//    $url = "https://api.telegram.org/bot{$telegramToken}/sendMessage";
-//    $postFields = [
-//        "chat_id" => $chatId,
-//        "text" => $message,
-//        "parse_mode" => "HTML",
-//        "reply_markup" => json_encode($keyboard, JSON_UNESCAPED_UNICODE)
-//    ];
-//
-//    $ch = curl_init();
-//    curl_setopt_array($ch, [
-//        CURLOPT_URL => $url,
-//        CURLOPT_POST => true,
-//        CURLOPT_RETURNTRANSFER => true,
-//        CURLOPT_POSTFIELDS => $postFields,
-//    ]);
-//    $response = curl_exec($ch);
-//    curl_close($ch);
+// Отправка в Telegram
+    $url = "https://api.telegram.org/bot{$telegramToken}/sendMessage";
+    $postFields = [
+        "chat_id" => $chatId,
+        "text" => $message,
+        "parse_mode" => "HTML",
+        "reply_markup" => json_encode($keyboard, JSON_UNESCAPED_UNICODE)
+    ];
+
+    $ch = curl_init();
+    curl_setopt_array($ch, [
+        CURLOPT_URL => $url,
+        CURLOPT_POST => true,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POSTFIELDS => $postFields,
+    ]);
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+// После успешной отправки ставим SEND_TELEGRAM = Y
+    if ($response) {
+        $sendTelegramProp->setValue('Y');
+        $order->save();
+    }
+
 }
 
 function onOrderPaidHandler($order_id, &$arFields)

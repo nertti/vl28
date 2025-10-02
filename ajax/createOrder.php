@@ -41,7 +41,7 @@ if ($request['delivery'] == 1 || $request['delivery'] == 2 || $request['delivery
     if (empty($request['street'])) $errors['street'] = "Укажите улицу.";
     if (empty($request['dom'])) $errors['dom'] = "Укажите номер дома.";
     if (empty($request['kvartira'])) $errors['kvartira'] = "Укажите номер квартиры.";
-} elseif ($request['delivery'] == 5){
+} elseif ($request['delivery'] == 5) {
     if (empty($request['street'])) $errors['street'] = "Укажите улицу.";
     if (empty($request['dom'])) $errors['dom'] = "Укажите номер дома.";
     if (empty($request['kvartira'])) $errors['kvartira'] = "Укажите номер квартиры.";
@@ -115,7 +115,11 @@ $shipment->setFields([
 
 // Оплата
 $paymentCollection = $order->getPaymentCollection();
-$paySystemService = PaySystem\Manager::getObjectById(7); // ID Т-Банка в Bitrix
+if ($request["payment"] == 'card_moskoy') {
+    $paySystemService = PaySystem\Manager::getObjectById(1); // карти при получении
+} else {
+    $paySystemService = PaySystem\Manager::getObjectById(7); // ID Т-Банка в Bitrix
+}
 
 if ($bonusPointsWithdraw > 0) {
     // Первый платеж - бонусные баллы
@@ -149,7 +153,6 @@ if ($bonusPointsWithdraw > 0) {
 $propertyCollection = $order->getPropertyCollection();
 
 
-
 $nameProp = $propertyCollection->getItemByOrderPropertyCode('NAME');
 $nameProp->setValue($name);
 $surnameProp = $propertyCollection->getItemByOrderPropertyCode('SURNAME');
@@ -177,90 +180,92 @@ $orderId = $order->getId();
 $price = $order->getPrice() - $order->getSumPaid();
 
 if ($result->isSuccess()) {
-    // === Отправка на оплату в Т-Банк ===
-      $apiUrl = 'https://securepay.tinkoff.ru/v2/Init';
+    if ($request["payment"] != 'card_moskoy') {
+
+        // === Отправка на оплату в Т-Банк ===
+        $apiUrl = 'https://securepay.tinkoff.ru/v2/Init';
 //    $apiUrl = 'https://rest-api-test.tinkoff.ru/v2/Init';
 
-    require_once $_SERVER["DOCUMENT_ROOT"] . '/local/php_interface/include/t_auth.php';
+        require_once $_SERVER["DOCUMENT_ROOT"] . '/local/php_interface/include/t_auth.php';
 
-    /** @var $terminalKey */
-    /** @var $secretKey */
+        /** @var $terminalKey */
+        /** @var $secretKey */
 
-    $amount = intval(round($price * 100));
-    $description = 'Оплата заказа №' . $orderId;
+        $amount = intval(round($price * 100));
+        $description = 'Оплата заказа №' . $orderId;
 
-    // Формируем токен по инструкции
-    $tokenFields = [
-        'TerminalKey' => $terminalKey,
-        'Amount' => $amount,
-        'OrderId' => $orderId,
-        'Description' => $description,
-        'Password' => $secretKey
-    ];
-    ksort($tokenFields);
-    $token = hash('sha256', implode('', $tokenFields));
-
-    // Тело запроса
-    $requestData = [
-        'TerminalKey' => $terminalKey,
-        'Amount' => $amount,
-        'OrderId' => $orderId,
-        'Description' => $description,
-        'Token' => $token,
-        'DATA' => [
-            'Phone' => '+' . $phoneCleaned,
-            'Email' => $email,
-        ],
-        'Receipt' => [
-            'Email' => $email,
-            'Phone' => '+' . $phoneCleaned,
-            'Taxation' => 'osn',
-            'Items' => [],
-        ],
-    ];
-
-    foreach ($basket as $key => $basketItem) {
-        $itemPrice = intval(round($basketItem->getPrice() * 100));
-        if ($key == 0 && $bonusPointsWithdraw > 0) {
-            $itemPrice -= $bonusPointsWithdraw * 100;
-        }
-        $itemQuantity = $basketItem->getQuantity();
-        $requestData['Receipt']['Items'][] = [
-            'Name' => $basketItem->getField('NAME'),
-            'Price' => $itemPrice,
-            'Quantity' => $itemQuantity,
-            'Amount' => $itemPrice * $itemQuantity,
-            'Tax' => 'vat10',
+        // Формируем токен по инструкции
+        $tokenFields = [
+            'TerminalKey' => $terminalKey,
+            'Amount' => $amount,
+            'OrderId' => $orderId,
+            'Description' => $description,
+            'Password' => $secretKey
         ];
-    }
+        ksort($tokenFields);
+        $token = hash('sha256', implode('', $tokenFields));
 
-    // CURL-запрос
-    $curl = curl_init($apiUrl);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($curl, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-    curl_setopt($curl, CURLOPT_POST, true);
-    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($requestData));
-    $response = curl_exec($curl);
-    curl_close($curl);
+        // Тело запроса
+        $requestData = [
+            'TerminalKey' => $terminalKey,
+            'Amount' => $amount,
+            'OrderId' => $orderId,
+            'Description' => $description,
+            'Token' => $token,
+            'DATA' => [
+                'Phone' => '+' . $phoneCleaned,
+                'Email' => $email,
+            ],
+            'Receipt' => [
+                'Email' => $email,
+                'Phone' => '+' . $phoneCleaned,
+                'Taxation' => 'osn',
+                'Items' => [],
+            ],
+        ];
 
-    $resultData = json_decode($response, true);
-    //file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/local/log.txt', print_r($curl, 1), FILE_APPEND);
+        foreach ($basket as $key => $basketItem) {
+            $itemPrice = intval(round($basketItem->getPrice() * 100));
+            if ($key == 0 && $bonusPointsWithdraw > 0) {
+                $itemPrice -= $bonusPointsWithdraw * 100;
+            }
+            $itemQuantity = $basketItem->getQuantity();
+            $requestData['Receipt']['Items'][] = [
+                'Name' => $basketItem->getField('NAME'),
+                'Price' => $itemPrice,
+                'Quantity' => $itemQuantity,
+                'Amount' => $itemPrice * $itemQuantity,
+                'Tax' => 'vat10',
+            ];
+        }
 
-    $payUrl = $resultData['PaymentURL'] ?? null;
-    $paymentId = $resultData['PaymentId'] ?? null;
-    $terminalKey = $resultData['TerminalKey'] ?? null;
+        // CURL-запрос
+        $curl = curl_init($apiUrl);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($requestData));
+        $response = curl_exec($curl);
+        curl_close($curl);
 
-    header('Content-Type: application/json');
+        $resultData = json_decode($response, true);
+        //file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/local/log.txt', print_r($curl, 1), FILE_APPEND);
 
+        $payUrl = $resultData['PaymentURL'] ?? null;
+        $paymentId = $resultData['PaymentId'] ?? null;
+        $terminalKey = $resultData['TerminalKey'] ?? null;
 
-    $linkPayProp = $propertyCollection->getItemByOrderPropertyCode('LINK_PAY');
-    $linkPayProp->setValue($payUrl);
+        header('Content-Type: application/json');
+
+        $linkPayProp = $propertyCollection->getItemByOrderPropertyCode('LINK_PAY');
+        $linkPayProp->setValue($payUrl);
     $linkPayProp = $propertyCollection->getItemByOrderPropertyCode('TERMINAL_KEY');
     $linkPayProp->setValue($terminalKey);
     $linkPayProp = $propertyCollection->getItemByOrderPropertyCode('PAYMENT_ID');
     $linkPayProp->setValue($paymentId);
     $linkPayProp = $propertyCollection->getItemByOrderPropertyCode('TOKEN');
     $linkPayProp->setValue($token);
+    }
 
     $order->save(); // Обновляем заказ
 
@@ -269,7 +274,7 @@ if ($result->isSuccess()) {
         'message' => 'Заказ успешно оформлен',
         'price' => $price,
         'order_id' => $orderId,
-        'pay_url' => $payUrl,
+        'pay_url' => $payUrl ?? '',
     ]);
 } else {
     header('Content-Type: application/json');

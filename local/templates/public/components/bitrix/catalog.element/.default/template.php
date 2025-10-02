@@ -268,7 +268,7 @@ foreach ($arFavorites as $favorite) {
                                 <label class="tovar__color-item">
                                     <a href="<?= $value['LINK'] ?>" class="tovar__color-circle <?php if($APPLICATION->GetCurPage() == $value['LINK']):?>active<?php endif;?>"
                                        title="<?= $value['ANCHOR'] ?>">
-                                        <span style="background: <?= $value['COLOR'] ?>;"></span>
+                                        <span style="background: #<?= $value['COLOR'] ?>;"></span>
                                     </a>
                                 </label>
                             <?php endforeach; ?>
@@ -277,7 +277,7 @@ foreach ($arFavorites as $favorite) {
                         <div class="tovar__colors">
                             <label class="tovar__color-item">
                                 <span class="tovar__color-circle">
-                                    <span style="background: <?= $arResult['CURRENT_COLOR_XML'] ?>;"></span>
+                                    <span style="background: #<?= $arResult['CURRENT_COLOR_XML'] ?>;"></span>
                                 </span>
                             </label>
                         </div>

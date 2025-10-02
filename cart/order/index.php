@@ -164,22 +164,24 @@ foreach ($basket as $basketItem) {
     //echo $basketItem->getField('NAME') . $basketItem->getField('PRODUCT_ID') . ' - ' . $basketItem->getQuantity() . '<br />';
 }
 
+// узнаём есть ли у него система лояльности и скидочная карта
 $fullPrice = $basket->getBasePrice();
 $salePrice = 0;
 if ($USER->isAuthorized()) {
     $userId = $USER->GetID();
     $rsUser = CUser::GetByID($userId);
     $arUser = $rsUser->Fetch();
-
-    if ($arUser['UF_CARD'] == 10) {
-        $fullPrice = floor($fullPrice * 0.95);
-        $salePrice = floor($fullPrice * 0.05);
-    } elseif ($arUser['UF_CARD'] == 11) {
-        $fullPrice = floor($fullPrice * 0.90);
-        $salePrice = floor($fullPrice * 0.10);
-    } elseif ($arUser['UF_CARD'] == 12) {
-        $fullPrice = floor($fullPrice * 0.85);
-        $salePrice = floor($fullPrice * 0.15);
+    if ($arUser['UF_BID'] == '1') {
+        if ($arUser['UF_CARD'] == 10) {
+            $fullPrice = floor($fullPrice * 0.95);
+            $salePrice = floor($fullPrice * 0.05);
+        } elseif ($arUser['UF_CARD'] == 11) {
+            $fullPrice = floor($fullPrice * 0.90);
+            $salePrice = floor($fullPrice * 0.10);
+        } elseif ($arUser['UF_CARD'] == 12) {
+            $fullPrice = floor($fullPrice * 0.85);
+            $salePrice = floor($fullPrice * 0.15);
+        }
     }
 }
 ?>
@@ -258,7 +260,8 @@ if ($USER->isAuthorized()) {
                     <div class="checkout__label checkout__label_radios">
                         <p class="checkout__name">Способ доставки</p>
                         <div class="checkout__inputs">
-                            <p class="error-text delivery" style="display: none;">Пожалуйста, выберите способ доставки.</p>
+                            <p class="error-text delivery" style="display: none;">Пожалуйста, выберите способ
+                                доставки.</p>
                             <?php foreach ($deliveriesList as $delivery): ?>
                                 <label class="checkout__radio export">
                                     <input type="radio" name="delivery" value="<?= $delivery['ID'] ?>">
@@ -365,8 +368,9 @@ if ($USER->isAuthorized()) {
                             </div>
                         <?php endif; ?>
 
-                        <!-- Если юзер авторизован -->
-                        <div class="checkout__param-item" <?php if (!$USER->isAuthorized()): ?> style="display: none" <?php endif; ?>>
+                        <!-- Если юзер состоит в программе лояльности -->
+                        <div class="checkout__param-item" <?php if ($arUser['UF_BID'] !== '1'): ?>
+                            style="display: none" <?php endif; ?>>
                             <p>Баллов начислится:</p>
                             <p class="bonusPoints"></p>
                             <input class="bonusPointsValue" type="hidden" name="bonusPoints" value="">
@@ -376,16 +380,15 @@ if ($USER->isAuthorized()) {
                             <strong><?= $fullPrice; ?> ₽</strong>
                         </div>
                     </div>
-
                     <!-- Если юзер авторизован -->
-                    <div class="promo" <?php if (!$USER->isAuthorized()): ?> style="display: none" <?php endif; ?>>
+                    <div class="promo" <?php if ($arUser['UF_BID'] !== '1'): ?> style="display: none" <?php endif; ?>>
                         <!-- Если юзер тратит баллы -->
                         <div id="applyBonusBlock" class="checkout__param-item checkout__param-item_sale"
                              style="display: none">
                             <p>Программа лояльности</p>
                             <p id="applyBonusText">-0 ₽</p>
                         </div>
-                        <?php if ($userBonus > 0): ?>
+                        <?php if ($arUser['UF_BID'] !== '1' && $userBonus > 0): ?>
                             <div class="promo__activate">
                                 <p>Программа лояльности: <strong><?= $userBonus ?> баллов</strong></p>
                                 <div class="promo__btn" <?php if ($userBonus <= 0): ?> style="display: none" <?php endif; ?>>
@@ -406,8 +409,8 @@ if ($USER->isAuthorized()) {
 
                     <button id="saveBtn" type="submit" class="black-btn">Оформить заказ</button>
                     <p class="checkout__small">
-                        Нажимая на&nbsp;кнопку «Оформить заказ», я&nbsp;принимаю условия&nbsp;<a href="#">публичной
-                            оферты</a>&nbsp;и&nbsp;<a href="#">политики конфиденциальности</a>
+                        Нажимая на&nbsp;кнопку «Оформить заказ», я&nbsp;принимаю условия&nbsp;<a href="/oferta/">публичной
+                            оферты</a>&nbsp;и&nbsp;<a href="/personal/">политики конфиденциальности</a>
                     </p>
                 </div>
                 <script>
@@ -435,7 +438,7 @@ if ($USER->isAuthorized()) {
                             event.preventDefault();
                             saveBtn.innerHTML = `
                               <span class='spinner-grow spinner-grow-sm' aria-hidden='true'></span>
-                              <span role='status'>Переходим на оплату...</span>
+                              <span role='status'>Оформляем заказ...</span>
                             `;
                             const formData = new FormData(form);
                             fetch(form.action, {
@@ -444,7 +447,7 @@ if ($USER->isAuthorized()) {
                             })
                                 .then(response => response.json())
                                 .then(data => {
-                                    saveBtn.innerHTML = `Оплатить`;
+                                    saveBtn.innerHTML = `Оформить заказ`;
 
                                     let errorEmailError = document.querySelector('.error-text.email');
                                     let errorEmailInput = document.querySelector('.form-input.email');
@@ -559,8 +562,10 @@ if ($USER->isAuthorized()) {
                                         });
                                     } else {
                                         document.querySelector('#alertModal .alertText .h2').textContent = data.message
-                                        document.querySelector('#alertModal .alertText .text').textContent = 'Перейти к оплате'
-                                        document.querySelector('#alertModal .alertText .text').href = data.pay_url
+                                        if (data.pay_url != '') {
+                                            document.querySelector('#alertModal .alertText .text').textContent = 'Перейти к оплате'
+                                            document.querySelector('#alertModal .alertText .text').href = data.pay_url
+                                        }
                                         myModalSuccessOrder.open('#alertModal');
                                     }
                                 })
@@ -753,6 +758,7 @@ if ($USER->isAuthorized()) {
     });
 </script>
 <script>
+    // поведение элементов на странице
     document.addEventListener('DOMContentLoaded', function () {
         // в зависимости от города скрываем способ оплаты
         const inputCity = document.querySelector('#city');
