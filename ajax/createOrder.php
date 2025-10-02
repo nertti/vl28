@@ -259,12 +259,14 @@ if ($result->isSuccess()) {
 
         $linkPayProp = $propertyCollection->getItemByOrderPropertyCode('LINK_PAY');
         $linkPayProp->setValue($payUrl);
-    $linkPayProp = $propertyCollection->getItemByOrderPropertyCode('TERMINAL_KEY');
-    $linkPayProp->setValue($terminalKey);
-    $linkPayProp = $propertyCollection->getItemByOrderPropertyCode('PAYMENT_ID');
-    $linkPayProp->setValue($paymentId);
-    $linkPayProp = $propertyCollection->getItemByOrderPropertyCode('TOKEN');
-    $linkPayProp->setValue($token);
+        $linkPayProp = $propertyCollection->getItemByOrderPropertyCode('TERMINAL_KEY');
+        $linkPayProp->setValue($terminalKey);
+        $linkPayProp = $propertyCollection->getItemByOrderPropertyCode('PAYMENT_ID');
+        $linkPayProp->setValue($paymentId);
+        $linkPayProp = $propertyCollection->getItemByOrderPropertyCode('TOKEN');
+        $linkPayProp->setValue($token);
+    } else{
+        $order->setField('STATUS_ID', 'D'); // Устанавливаем статус "D"
     }
 
     $order->save(); // Обновляем заказ

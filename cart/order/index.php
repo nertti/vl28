@@ -563,8 +563,11 @@ if ($USER->isAuthorized()) {
                                     } else {
                                         document.querySelector('#alertModal .alertText .h2').textContent = data.message
                                         if (data.pay_url != '') {
+                                            window.location = data.pay_url;
                                             document.querySelector('#alertModal .alertText .text').textContent = 'Перейти к оплате'
                                             document.querySelector('#alertModal .alertText .text').href = data.pay_url
+                                        } else {
+                                            document.querySelector('.info').style.display = 'none';
                                         }
                                         myModalSuccessOrder.open('#alertModal');
                                     }
