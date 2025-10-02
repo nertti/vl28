@@ -78,7 +78,7 @@ $fUserId = $request['fUserId'];
 $siteId = $request['siteId'];
 $basket = Basket::loadItemsForFUser($fUserId, $siteId);
 $userId = $USER->GetID();
-
+/*
 if (!$USER->isAuthorized()) {
     $rsUsers = CUser::GetList(array(), 'sort', ['PERSONAL_PHONE' => $phoneCleaned]);
     if ($rsUsers->SelectedRowsCount() <= 0) {
@@ -95,7 +95,7 @@ if (!$USER->isAuthorized()) {
     }
     $USER->Logout();
 }
-
+*/
 // Создаём заказ
 $order = Order::create($siteId, $USER->isAuthorized() ? $USER->GetID() : $userId);
 $order->setPersonTypeId(1);

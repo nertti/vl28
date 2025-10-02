@@ -4,9 +4,11 @@
 .product-item-scu-item-text-container{
 	margin-right: 35px;
 	cursor: pointer;
+	padding: 10px;
 }
 .product-item-scu-item-text-container.selected{
 	font-weight: 500;
+	border: 1px solid black;
 }
 .swiper .swiper-slide{
 	height: auto;

@@ -1730,7 +1730,6 @@ section {
   width:25px;
   height:25px;
   border-radius:50%;
-  border:1px solid #000;
   background:#fff;
   display:-webkit-box;
   display:-ms-flexbox;
@@ -1742,6 +1741,9 @@ section {
   -ms-flex-pack:center;
   justify-content:center;
   position:relative
+}
+.tovar__color-circle.active{
+  border:1px solid #000;
 }
 .tovar__color-circle span {
   width:19px;

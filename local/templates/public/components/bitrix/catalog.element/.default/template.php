@@ -266,7 +266,7 @@ foreach ($arFavorites as $favorite) {
                         <div class="tovar__colors">
                             <?php foreach ($arResult['OTHER_COLORS'] as $value): ?>
                                 <label class="tovar__color-item">
-                                    <a href="<?= $value['LINK'] ?>" class="tovar__color-circle"
+                                    <a href="<?= $value['LINK'] ?>" class="tovar__color-circle <?php if($APPLICATION->GetCurPage() == $value['LINK']):?>active<?php endif;?>"
                                        title="<?= $value['ANCHOR'] ?>">
                                         <span style="background: <?= $value['COLOR'] ?>;"></span>
                                     </a>
@@ -1179,8 +1179,8 @@ foreach ($arFavorites as $favorite) {
             <div class="hystmodal__window" role="dialog" aria-modal="true">
                 <button data-hystclose="" class="hystmodal__close"></button>
                 <div class="sizes">
-                    <?php if(!empty($arResult['PROPERTIES']['DETERMINE']['DEFAULT_VALUE']['TEXT'])):?>
-                        <?=$arResult['PROPERTIES']['DETERMINE']['DEFAULT_VALUE']['TEXT']?>
+                    <?php if(!empty($arResult['PROPERTIES']['DETERMINE']['VALUE']['TEXT'])):?>
+                        <?=html_entity_decode($arResult['PROPERTIES']['DETERMINE']['VALUE']['TEXT'])?>
                     <?php else:?>
                         <?= $arResult['SECTION']['DESCRIPTION'] ?>
                     <?php endif;?>

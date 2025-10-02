@@ -280,7 +280,7 @@ if ($USER->isAuthorized()) {
                                        placeholder="Населённый пункт">
                             </div>
                         </div>
-                        <div class="checkout__label">
+                        <div class="checkout__label address_more">
                             <p class="checkout__name">Улица</p>
                             <div class="checkout__inputs">
                                 <p class="error-text street" style="display: none;">Пожалуйста, введите свою улицу.</p>
@@ -308,7 +308,7 @@ if ($USER->isAuthorized()) {
                     <div class="checkout__label checkout__label_radios">
                         <p class="checkout__name">Способ оплаты</p>
                         <div class="checkout__inputs">
-                            <label class="checkout__radio">
+                            <label class="checkout__radio" id="otherCity">
                                 <input type="radio" name="payment" value="card" checked="">
                                 <div class="checkmark"></div>
                                 <span>
@@ -404,9 +404,9 @@ if ($USER->isAuthorized()) {
                         </div>
                     </div>
 
-                    <button id="saveBtn" type="submit" class="black-btn">Оплатить заказ</button>
+                    <button id="saveBtn" type="submit" class="black-btn">Оформить заказ</button>
                     <p class="checkout__small">
-                        Нажимая на&nbsp;кнопку «оплатить заказ», я&nbsp;принимаю условия&nbsp;<a href="#">публичной
+                        Нажимая на&nbsp;кнопку «Оформить заказ», я&nbsp;принимаю условия&nbsp;<a href="#">публичной
                             оферты</a>&nbsp;и&nbsp;<a href="#">политики конфиденциальности</a>
                     </p>
                 </div>
@@ -762,6 +762,7 @@ if ($USER->isAuthorized()) {
                 document.querySelector('#moskva').style.color = 'grey';
                 document.querySelector('#moskva .checkmark').style.border = '1px solid grey';
                 document.querySelector('#moskva input').disabled = true;
+                document.querySelector('#otherCity input').checked = true;
             } else {
                 document.querySelector('#moskva').style.color = 'black';
                 document.querySelector('#moskva .checkmark').style.border = '1px solid black';
@@ -780,6 +781,7 @@ if ($USER->isAuthorized()) {
         // в зависимости от выбранной доставки выводим блоки (Адрес или выбор ПВЗ города)
         const selectExport = document.querySelectorAll('input[name="delivery"]');
         const streetBlock = document.querySelector('.address');
+        const address_more = document.querySelector('.address_more');
         const city = document.querySelector('#city');
 
         function updateBlockVisibility() {
@@ -788,16 +790,17 @@ if ($USER->isAuthorized()) {
                 .map(cb => cb.value);
 
             const shouldBeVisible =
-                checkedValues.includes('135') ||
                 checkedValues.includes('137') ||
                 checkedValues.includes('139')
             const shouldBeMoskow = checkedValues.includes('135')
-            streetBlock.style.display = shouldBeVisible ? 'flex' : 'flex';// если нужно скрыть, то указать none
+            address_more.style.display = shouldBeVisible ? 'none' : 'flex';// если нужно скрыть, то указать none
             if (shouldBeMoskow) {
                 city.value = 'Москва'
                 city.disabled = true;
+                updateMoskvaInput(city.value)
             } else {
                 city.disabled = false;
+                updateMoskvaInput(city.value)
             }
         }
 

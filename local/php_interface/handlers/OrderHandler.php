@@ -51,18 +51,17 @@ function onOrderCreate(Bitrix\Main\Event $event)
 
     Loader::includeModule("sale");
 
-    $orderId   = $order->getId();
-    $price     = $order->getPrice();
-    $discount  = $order->getDiscountPrice();
-    $currency  = $order->getCurrency();
-    $userId    = $order->getUserId();
+    $orderId = $order->getId();
+    $price = $order->getPrice();
+    $discount = $order->getDiscountPrice();
+    $currency = $order->getCurrency();
+    $userId = $order->getUserId();
     $propertyCollection = $order->getPropertyCollection();
 
     // Данные пользователя
-    $user = \Bitrix\Main\UserTable::getById($userId)->fetch();
-    $userName  = trim($user["NAME"] . " " . $user["LAST_NAME"]);
-    $userEmail = $user["EMAIL"];
-    $userPhone = $user["PERSONAL_PHONE"];
+    $userName = $propertyCollection->getItemByOrderPropertyId(13)->getValue() . " " . $propertyCollection->getItemByOrderPropertyId(14)->getValue() ;
+    $userEmail = $propertyCollection->getItemByOrderPropertyId(12)->getValue();
+    $userPhone = $propertyCollection->getItemByOrderPropertyId(15)->getValue();
 
     // Список товаров
     $basket = $order->getBasket();
@@ -120,23 +119,32 @@ function onOrderCreate(Bitrix\Main\Event $event)
             ]
         ]
     ];
+    //file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/local/log.txt', print_r($message, 1), FILE_APPEND);
 
     // Отправка в Telegram
-    $url = "https://api.telegram.org/bot{$telegramToken}/sendMessage";
-    $postFields = [
-        "chat_id" => $chatId,
-        "text" => $message,
-        "parse_mode" => "HTML",
-        "reply_markup" => json_encode($keyboard, JSON_UNESCAPED_UNICODE)
-    ];
+//    $url = "https://api.telegram.org/bot{$telegramToken}/sendMessage";
+//    $postFields = [
+//        "chat_id" => $chatId,
+//        "text" => $message,
+//        "parse_mode" => "HTML",
+//        "reply_markup" => json_encode($keyboard, JSON_UNESCAPED_UNICODE)
+//    ];
+//
+//    $ch = curl_init();
+//    curl_setopt_array($ch, [
+//        CURLOPT_URL => $url,
+//        CURLOPT_POST => true,
+//        CURLOPT_RETURNTRANSFER => true,
+//        CURLOPT_POSTFIELDS => $postFields,
+//    ]);
+//    $response = curl_exec($ch);
+//    curl_close($ch);
+}
 
-    $ch = curl_init();
-    curl_setopt_array($ch, [
-        CURLOPT_URL => $url,
-        CURLOPT_POST => true,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_POSTFIELDS => $postFields,
-    ]);
-    $response = curl_exec($ch);
-    curl_close($ch);
+function onOrderPaidHandler($order_id, &$arFields)
+{
+    if ($arFields['PAYED'] == 'Y') {
+        $userId = $arFields['USER_ID'];
+        recalculateUserSummaryPay($userId);
+    }
 }
