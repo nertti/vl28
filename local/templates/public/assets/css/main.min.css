@@ -1727,6 +1727,7 @@ section {
   opacity:0
 }
 .tovar__color-circle {
+  border:1px solid #888;
   width:25px;
   height:25px;
   border-radius:50%;

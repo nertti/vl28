@@ -42,7 +42,7 @@ $this->setFrameMode(true);
                                                        <?php if ($value['CHECKED'] == 'Y'): ?>checked<?php endif; ?>>
                                                 <span class="checkmark">
                                                     <span class="checkmark__color"
-                                                          style="background: <?= $value['URL_ID'] ?>; border: 1px solid #CCC;"></span>
+                                                          style="background: #<?= $value['URL_ID'] ?>; border: 1px solid #CCC;"></span>
                                                 </span>
                                                 <span><?= $value['VALUE'] ?></span>
                                             </label>

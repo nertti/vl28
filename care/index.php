@@ -87,5 +87,13 @@ $APPLICATION->SetTitle("Уход за изделиями");
                 Мы рекомендуем относиться аккуратно с липучками и другими элементами экипировки, которые могут оставлять зацепки на термобелье.
             </strong>
         </p>
-    </div>
-<br><?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
+
+<div class="how__icons">
+                        <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/how1.svg" alt="icon">
+                        <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/how2.svg" alt="icon">
+                        <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/how3.svg" alt="icon">
+                        <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/how4.svg" alt="icon">
+                        <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/how5.svg" alt="icon">
+                        <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/how6.svg" alt="icon">
+                    </div>
+    </div><?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
