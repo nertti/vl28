@@ -47,30 +47,26 @@ $APPLICATION->SetTitle("Карта лояльности");
             <div class="account__right">
                 <div class="account__default">
                     <div class="account__card">
-                        <?php if ($arUser['UF_BID'] == '1'): ?>
-                            <p>Ваша карта</p>
-                            <div class="account__card-wrap">
-                                <a href="#" data-hystmodal="#loyalModal" class="account__card-img"
-                                   data-type="<?= $discountCard ?>">
-                                    <span class="account__card-type"><?= $discountCard ?></span>
-                                    <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/card1.svg" alt="Карта">
-                                    <span class="account__card-count"><?= $userBonus ?> баллов</span>
-                                </a>
-                                <div class="account__card-params">
-                                    <p>Уровень карты: <strong><?= $discountCard ?></strong></p>
-                                    <p>Доступные бонусы: <strong><?= $userBonus ?> баллов</strong></p>
-                                    <?php if ($totalPaid < 75000): ?>
-                                        <p>До следующего уровня (Highlight) осталось: <strong><?= -$totalPaid + 75000 ?>
-                                                ₽</strong></p>
-                                    <?php elseif ($totalPaid > 75000 && $totalPaid < 149999): ?>
-                                        <p>До следующего уровня (Luxury) осталось: <strong><?= -$totalPaid + 150000 ?>
-                                                ₽</strong></p>
-                                    <?php endif; ?>
-                                </div>
+                        <p>Ваша карта</p>
+                        <div class="account__card-wrap">
+                            <a href="#" data-hystmodal="#loyalModal" class="account__card-img"
+                               data-type="<?= $discountCard ?>">
+                                <span class="account__card-type"><?= $discountCard ?></span>
+                                <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/card1.svg" alt="Карта">
+                                <span class="account__card-count"><?= $userBonus ?> баллов</span>
+                            </a>
+                            <div class="account__card-params">
+                                <p>Уровень карты: <strong><?= $discountCard ?></strong></p>
+                                <p>Доступные бонусы: <strong><?= $userBonus ?> баллов</strong></p>
+                                <?php if ($totalPaid < 75000): ?>
+                                    <p>До следующего уровня (Highlight) осталось: <strong><?= -$totalPaid + 75000 ?>
+                                            ₽</strong></p>
+                                <?php elseif ($totalPaid > 75000 && $totalPaid < 149999): ?>
+                                    <p>До следующего уровня (Luxury) осталось: <strong><?= -$totalPaid + 150000 ?>
+                                            ₽</strong></p>
+                                <?php endif; ?>
                             </div>
-                        <?php else:?>
-                            <?php pr('тут будет форма заявки на вступление в программу лояльности' , true);?>
-                        <?php endif; ?>
+                        </div>
                         <div class="account__card-footer">
                             <p>
                                 <?= $discountPercent ?>% от стоимости покупки возвращается на Вашу карту лояльности на

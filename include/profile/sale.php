@@ -16,7 +16,6 @@ $dbRes = Sale\Order::getList([
     'filter' => [
         'USER_ID' => $userId,
         'PAYED' => 'Y',
-        'STATUS_ID' => 'F' // Опционально: учитывать только завершённые
     ],
     'select' => ['PRICE']
 ]);

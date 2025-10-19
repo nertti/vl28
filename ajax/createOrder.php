@@ -52,10 +52,19 @@ $comment = $request["comment"];
 if ($request["setBonus"] == 'Y') {
     $bonusPointsWithdraw = $request["bonus"];
 }
+$bonusPoints = $request["bonusPoints"];
+if ($request["delivery"] == 135) {
+    $city = "Москва";
+} else {
+    $city = $request["city"];
+}
+$street = $request["street"];
+$dom = $request["dom"];
+$kvartira = $request["kvartira"];
 $siteId = $request['siteId'];
 $fUserId = $request['fUserId'];
 $basket = Basket::loadItemsForFUser($fUserId, $siteId);
-$totalPrice = $basket->getPrice();
+$totalPrice = $basket->getPrice() - (float)$bonusPointsWithdraw;
 
 
 // =========================================
@@ -138,6 +147,12 @@ if ($request["payment"] === 'card') {
             'comment' => $comment,
             'siteId' => $siteId,
             'fUserId' => $fUserId,
+            'delivery' => $request['delivery'],
+            'city' => $request["city"],
+            'street' => $request["street"],
+            'dom' => $request["dom"],
+            'kvartira' => $request["kvartira"],
+            'bonusPoints' => empty($bonusPointsWithdraw) ? $bonusPoints : 0,
         ]
     ];
 
@@ -147,7 +162,7 @@ if ($request["payment"] === 'card') {
         'message' => $payUrl ? 'Перенаправление на оплату' : 'Ошибка инициализации платежа',
         'pay_url' => $payUrl,
         'tmp_order_id' => $orderTempId,
-        'resultData' => $resultData,
+        'requestData' => $requestData,
     ]);
     exit();
 }
@@ -173,13 +188,35 @@ $shipment->setFields([
 
 // Оплата
 $paymentCollection = $order->getPaymentCollection();
-$payment = $paymentCollection->createItem();
-$paySystemService = PaySystem\Manager::getObjectById(2); // "при получении"
-$payment->setFields([
-    'PAY_SYSTEM_ID' => $paySystemService->getField("PAY_SYSTEM_ID"),
-    'PAY_SYSTEM_NAME' => $paySystemService->getField("NAME"),
-    'SUM' => $order->getPrice(),
-]);
+$paySystemService = PaySystem\Manager::getObjectById(7); // ID Т-Банка в Bitrix
+if ($bonusPointsWithdraw > 0) {
+    // Первый платеж - бонусные баллы
+    $payment = $paymentCollection->createItem();
+    $payment->setFields([
+        'PAY_SYSTEM_ID' => 6,
+        'PAY_SYSTEM_NAME' => PaySystem\Manager::getObjectById(6)->getField("NAME"),
+        'SUM' => $bonusPointsWithdraw,
+    ]);
+    $payment->setField('PAID', 'Y');
+    // Второй платеж
+    $remainingSum = $order->getPrice() - $bonusPointsWithdraw;
+    if ($remainingSum > 0) {
+        $newPayment = $paymentCollection->createItem();
+        $newPayment->setFields([
+            'PAY_SYSTEM_ID' => $paySystemService->getField("PAY_SYSTEM_ID"),
+            'PAY_SYSTEM_NAME' => $paySystemService->getField("NAME"),
+            'SUM' => $remainingSum,
+        ]);
+    }
+} else {
+    // Единый платеж
+    $payment = $paymentCollection->createItem();
+    $payment->setFields([
+        'PAY_SYSTEM_ID' => $paySystemService->getField("PAY_SYSTEM_ID"),
+        'PAY_SYSTEM_NAME' => $paySystemService->getField("NAME"),
+        'SUM' => $order->getPrice(),
+    ]);
+}
 
 // Заполняем свойства
 $propertyCollection = $order->getPropertyCollection();
@@ -187,6 +224,11 @@ $propertyCollection->getItemByOrderPropertyCode('EMAIL')->setValue($email);
 $propertyCollection->getItemByOrderPropertyCode('PHONE')->setValue($phone);
 $propertyCollection->getItemByOrderPropertyCode('NAME')->setValue($name);
 $propertyCollection->getItemByOrderPropertyCode('SURNAME')->setValue($surname);
+$propertyCollection->getItemByOrderPropertyCode('CITY')->setValue($city);
+$propertyCollection->getItemByOrderPropertyCode('STREET')->setValue($street);
+$propertyCollection->getItemByOrderPropertyCode('HOUSE')->setValue($dom);
+$propertyCollection->getItemByOrderPropertyCode('APARTMENT')->setValue($kvartira);
+$propertyCollection->getItemByOrderPropertyCode('BONUS')->setValue(empty($bonusPointsWithdraw) ? $bonusPoints : 0);
 
 $order->doFinalAction(true);
 $result = $order->save();

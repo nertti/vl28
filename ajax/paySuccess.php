@@ -14,11 +14,9 @@ Loader::includeModule('catalog');
 session_start();
 $orderId = $_GET['OrderId'];
 $paymentId = $_GET['PaymentId'];
-$amount = $_GET['Amount'];
+$amount = $_GET['Amount']/100;
 $success = $_GET['Success'] === 'true' || $_GET['Success'] === '1';
 $phoneCleaned = $_SESSION['PENDING_ORDER'][$orderId]['FIELDS']['phone'];
-
-require_once $_SERVER["DOCUMENT_ROOT"] . '/local/php_interface/include/t_auth.php';
 
 if ($success) {
     // === Заказа нет — создаём новый ===
@@ -39,6 +37,7 @@ if ($success) {
     }
 
     $order = Order::create($siteId, $USER->isAuthorized() ? $USER->GetID() : $userId);
+    $order->setPersonTypeId(1);
     // === Создаём заказ ===
     $order->setField('USER_DESCRIPTION', $fields['comment']);
     $order->setBasket($basket);
@@ -55,13 +54,34 @@ if ($success) {
     // === Добавляем оплату (Тиньков) ===
     $paymentCollection = $order->getPaymentCollection();
     $payment = $paymentCollection->createItem();
-    $paySystemService = PaySystem\Manager::getObjectById(7); // ID твоей платёжной системы "Тиньков"
-    $payment->setFields([
-        'PAY_SYSTEM_ID' => $paySystemService->getField("PAY_SYSTEM_ID"),
-        'PAY_SYSTEM_NAME' => $paySystemService->getField("NAME"),
-        'SUM' => $order->getPrice(),
-        'PAID' => 'Y',
-    ]);
+    $paySystemService = PaySystem\Manager::getObjectById(7); // "Тиньков"
+    if ($amount < $order->getPrice()) {
+        // Первый платеж - бонусные баллы
+        $payment = $paymentCollection->createItem();
+        $payment->setFields([
+            'PAY_SYSTEM_ID' => 6,
+            'PAY_SYSTEM_NAME' => PaySystem\Manager::getObjectById(6)->getField("NAME"),
+            'SUM' => (float)$order->getPrice() - (float)$amount,
+        ]);
+        $payment->setField('PAID', 'Y');
+        // Второй платеж
+        $newPayment = $paymentCollection->createItem();
+        $newPayment->setFields([
+            'PAY_SYSTEM_ID' => $paySystemService->getField("PAY_SYSTEM_ID"),
+            'PAY_SYSTEM_NAME' => $paySystemService->getField("NAME"),
+            'SUM' => $amount,
+            'PAID' => 'Y',
+        ]);
+    } else {
+        // Единый платеж
+        $payment = $paymentCollection->createItem();
+        $payment->setFields([
+            'PAY_SYSTEM_ID' => $paySystemService->getField("PAY_SYSTEM_ID"),
+            'PAY_SYSTEM_NAME' => $paySystemService->getField("NAME"),
+            'SUM' => $order->getPrice(),
+            'PAID' => 'Y',
+        ]);
+    }
 
     // === Заполняем свойства ===
     $propertyCollection = $order->getPropertyCollection();
@@ -69,6 +89,11 @@ if ($success) {
     $propertyCollection->getItemByOrderPropertyCode('PHONE')->setValue($fields['phone']);
     $propertyCollection->getItemByOrderPropertyCode('NAME')->setValue($fields['name']);
     $propertyCollection->getItemByOrderPropertyCode('SURNAME')->setValue($fields['surname']);
+    $propertyCollection->getItemByOrderPropertyCode('CITY')->setValue($fields['city']);
+    $propertyCollection->getItemByOrderPropertyCode('STREET')->setValue($fields['street']);
+    $propertyCollection->getItemByOrderPropertyCode('HOUSE')->setValue($fields['dom']);
+    $propertyCollection->getItemByOrderPropertyCode('APARTMENT')->setValue($fields['kvartira']);
+    $propertyCollection->getItemByOrderPropertyCode('BONUS')->setValue($fields['bonusPoints']);
 
     // === Сохраняем заказ ===
     $order->doFinalAction(true);
@@ -76,27 +101,6 @@ if ($success) {
 
     unset($_SESSION['PENDING_ORDER'][$orderId]); // очищаем временные данные
 }
-
-// === Если заказ найден и Success ===
-if ($order && $success) {
-    $paymentCollection = $order->getPaymentCollection();
-    foreach ($paymentCollection as $payment) {
-        $payment->setPaid('Y');
-    }
-
-    $order->setField('STATUS_ID', 'P'); // например, статус "Оплачен"
-    $order->save();
-
-    // бонусы, если нужно
-    $propertyCollection = $order->getPropertyCollection();
-    $bonusProp = $propertyCollection->getItemByOrderPropertyCode('BONUS');
-    if ($bonusProp) $bonusProp->setValue(0);
-    $bonusCreditedProp = $propertyCollection->getItemByOrderPropertyCode('BONUS_CREDITED');
-    if ($bonusCreditedProp) $bonusCreditedProp->setValue('Y');
-
-    $order->save();
-}
-
 ?>
 
 <style>
@@ -189,7 +193,7 @@ if ($order && $success) {
             </div>
             <div class="details-item">
                 <span class="details-label">Сумма:</span>
-                <span class="details-value"><?= number_format($amount / 100, 2, ',', ' ') ?> ₽</span>
+                <span class="details-value"><?= number_format($amount, 2, ',', ' ') ?> ₽</span>
             </div>
         </div>
     <?php endif; ?>

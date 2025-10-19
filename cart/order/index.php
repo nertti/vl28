@@ -351,10 +351,10 @@ if ($USER->isAuthorized()) {
                     </div>
 
                     <div class="checkout__param">
-                        <div class="checkout__param-item">
-                            <p>Доставка:</p>
-                            <p>0 ₽</p>
-                        </div>
+<!--                        <div class="checkout__param-item">-->
+<!--                            <p>Доставка:</p>-->
+<!--                            <p>0 ₽</p>-->
+<!--                        </div>-->
                         <div class="checkout__param-item">
                             <p>Скидка по промокоду:</p>
                             <p>0 ₽</p>
@@ -368,8 +368,8 @@ if ($USER->isAuthorized()) {
                             </div>
                         <?php endif; ?>
 
-                        <!-- Если юзер состоит в программе лояльности -->
-                        <div class="checkout__param-item" <?php if ($arUser['UF_BID'] !== '1'): ?>
+                        <!-- Если юзер авторизован -->
+                        <div class="checkout__param-item" <?php if (!$USER->isAuthorized()): ?>
                             style="display: none" <?php endif; ?>>
                             <p>Баллов начислится:</p>
                             <p class="bonusPoints"></p>
@@ -381,14 +381,14 @@ if ($USER->isAuthorized()) {
                         </div>
                     </div>
                     <!-- Если юзер авторизован -->
-                    <div class="promo" <?php if ($arUser['UF_BID'] !== '1'): ?> style="display: none" <?php endif; ?>>
+                    <div class="promo" <?php if (!$USER->isAuthorized()): ?> style="display: none" <?php endif; ?>>
                         <!-- Если юзер тратит баллы -->
                         <div id="applyBonusBlock" class="checkout__param-item checkout__param-item_sale"
                              style="display: none">
                             <p>Программа лояльности</p>
                             <p id="applyBonusText">-0 ₽</p>
                         </div>
-                        <?php if ($arUser['UF_BID'] !== '1' && $userBonus > 0): ?>
+                        <?php if ($USER->isAuthorized() && $userBonus > 0): ?>
                             <div class="promo__activate">
                                 <p>Программа лояльности: <strong><?= $userBonus ?> баллов</strong></p>
                                 <div class="promo__btn" <?php if ($userBonus <= 0): ?> style="display: none" <?php endif; ?>>
@@ -574,7 +574,8 @@ if ($USER->isAuthorized()) {
                                         });
                                     } else {
                                         document.querySelector('#alertModal .alertText .h2').textContent = data.message
-                                        myModalSuccessOrder.open('#alertModal');
+                                        //myModalSuccessOrder.open('#alertModal');
+                                        window.location.href = data.pay_url;
                                     }
                                 })
                                 .catch(error => {
