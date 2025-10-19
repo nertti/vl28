@@ -315,15 +315,15 @@ if ($USER->isAuthorized()) {
                                 <input type="radio" name="payment" value="card" checked="">
                                 <div class="checkmark"></div>
                                 <span>
-                      Оплата картой онлайн
-                    </span>
+                                  Оплата картой онлайн
+                                </span>
                             </label>
                             <label class="checkout__radio" id="moskva">
                                 <input type="radio" name="payment" value="card_moskoy">
                                 <div class="checkmark"></div>
                                 <span>
-                      Картой при получении (для Москвы)
-                    </span>
+                                  Картой при получении (для Москвы)
+                                </span>
                             </label>
                         </div>
                     </div>
@@ -407,7 +407,7 @@ if ($USER->isAuthorized()) {
                         </div>
                     </div>
 
-                    <button id="saveBtn" type="submit" class="black-btn">Оформить заказ</button>
+                    <button id="saveBtn" type="submit" class="black-btn">Оплатить заказ</button>
                     <p class="checkout__small">
                         Нажимая на&nbsp;кнопку «Оформить заказ», я&nbsp;принимаю условия&nbsp;<a href="/oferta/">публичной
                             оферты</a>&nbsp;и&nbsp;<a href="/personal/">политики конфиденциальности</a>
@@ -436,19 +436,31 @@ if ($USER->isAuthorized()) {
 
                         function handleFormSubmit(event) {
                             event.preventDefault();
-                            saveBtn.innerHTML = `
+                            const formData = new FormData(form);
+                            const payment = formData.get('payment');
+                            if (payment === 'card') {
+                                saveBtn.innerHTML = `
+                              <span class='spinner-grow spinner-grow-sm' aria-hidden='true'></span>
+                              <span role='status'>Нужно оплатить заказ...</span>
+                            `;
+                            } else {
+                                saveBtn.innerHTML = `
                               <span class='spinner-grow spinner-grow-sm' aria-hidden='true'></span>
                               <span role='status'>Оформляем заказ...</span>
                             `;
-                            const formData = new FormData(form);
+                            }
+
                             fetch(form.action, {
                                 method: 'POST',
                                 body: formData
                             })
                                 .then(response => response.json())
                                 .then(data => {
-                                    saveBtn.innerHTML = `Оформить заказ`;
-
+                                    if (payment === 'card') {
+                                        saveBtn.innerHTML = `Оплатить заказ`;
+                                    } else {
+                                        saveBtn.innerHTML = `Оформить заказ`;
+                                    }
                                     let errorEmailError = document.querySelector('.error-text.email');
                                     let errorEmailInput = document.querySelector('.form-input.email');
 
@@ -563,7 +575,6 @@ if ($USER->isAuthorized()) {
                                     } else {
                                         document.querySelector('#alertModal .alertText .h2').textContent = data.message
                                         if (data.pay_url != '') {
-                                            window.location = data.pay_url;
                                             document.querySelector('#alertModal .alertText .text').textContent = 'Перейти к оплате'
                                             document.querySelector('#alertModal .alertText .text').href = data.pay_url
                                         } else {
@@ -575,6 +586,7 @@ if ($USER->isAuthorized()) {
                                 .catch(error => {
                                     console.error('Ошибка при отправке формы:', error);
                                 });
+
                         }
                     });
                     document.addEventListener('DOMContentLoaded', function () {
@@ -815,6 +827,28 @@ if ($USER->isAuthorized()) {
 
         selectExport.forEach(checkbox => {
             checkbox.addEventListener('change', updateBlockVisibility);
+        });
+
+
+        const selectPayment = document.querySelectorAll('input[name="payment"]');
+
+        function updateBtn() {
+            const checkedValues = Array.from(selectPayment)
+                .filter(cb => cb.checked)
+                .map(cb => cb.value);
+
+            const shouldBeCard = checkedValues.includes('card')
+            const saveBtn = document.querySelector('#saveBtn');
+            if (shouldBeCard) {
+                saveBtn.innerHTML = `Оплатить заказ`;
+            } else {
+                saveBtn.innerHTML = `Оформить заказ`;
+            }
+
+        }
+
+        selectPayment.forEach(checkbox => {
+            checkbox.addEventListener('change', updateBtn);
         });
 
         // Промокод...

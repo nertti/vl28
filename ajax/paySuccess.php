@@ -1,35 +1,115 @@
 <?php
-//require($_SERVER["DOCUMENT_ROOT"] . '/bitrix/modules/main/include/prolog_before.php');
-require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
+require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
 
+use Bitrix\Main\Loader;
 use Bitrix\Sale;
+use Bitrix\Sale\Basket;
+use Bitrix\Sale\Order;
+use Bitrix\Sale\Delivery;
+use Bitrix\Sale\PaySystem;
 
-if (CModule::IncludeModule('sale')) {
+Loader::includeModule('sale');
+Loader::includeModule('catalog');
 
-// нужно перевести статус в "оплачено"
-// проставить оплату заказа
+session_start();
+$orderId = $_GET['OrderId'];
+$paymentId = $_GET['PaymentId'];
+$amount = $_GET['Amount'];
+$success = $_GET['Success'] === 'true' || $_GET['Success'] === '1';
+$phoneCleaned = $_SESSION['PENDING_ORDER'][$orderId]['FIELDS']['phone'];
 
-    if ($_GET['Success']) {
-        $orderId = $_GET['OrderId'];
+require_once $_SERVER["DOCUMENT_ROOT"] . '/local/php_interface/include/t_auth.php';
 
-        $order = Sale\Order::load($orderId);
-        $paymentCollection = $order->getPaymentCollection();
-        foreach ($paymentCollection as $payment) {
-            $payment->setPaid('Y');
-        }
-        $order->setField('STATUS_ID', 'P'); // статус
-        $order->save();
-
-        $propertyCollection = $order->getPropertyCollection();
-        $bonusProp = $propertyCollection->getItemByOrderPropertyCode('BONUS');
-        $bonusProp->setValue(0);
-        $bonusCreditedProp = $propertyCollection->getItemByOrderPropertyCode('BONUS_CREDITED');
-        $bonusCreditedProp->setValue('Y');
-
-        $order->save();
-
+if ($success) {
+    // === Заказа нет — создаём новый ===
+    if (!isset($_SESSION['PENDING_ORDER'][$orderId])) {
+        echo "<h2 style='text-align:center;color:red'>Ошибка: данные заказа не найдены.</h2>";
+        require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/footer.php");
+        exit;
     }
+
+    $fields = $_SESSION['PENDING_ORDER'][$orderId]['FIELDS'];
+    $siteId = $fields['siteId'];
+    $fUserId = $fields['fUserId'];
+
+    // === Загружаем корзину покупателя ===
+    $basket = Basket::loadItemsForFUser($fUserId, $siteId);
+    if (!$USER->isAuthorized()) {
+        $rsUsers = CUser::GetList(array(), 'sort', ['PERSONAL_PHONE' => $phoneCleaned]);
+        if ($rsUsers->SelectedRowsCount() <= 0) {
+            $arResult = $USER->Register($phoneCleaned, "", "", $phoneCleaned, $phoneCleaned, $phoneCleaned . "@vl28.ru");
+            if ($arResult['TYPE'] == 'OK') {
+                $fields = ["PERSONAL_PHONE" => $phoneCleaned];
+                $USER->Update($arResult['ID'], $fields);
+                $userId = $USER->GetID();
+            }
+        } else {
+            $rsUser = CUser::GetByLogin($phoneCleaned);
+            $arUser = $rsUser->Fetch();
+            $userId = $arUser['ID'];
+        }
+        $USER->Logout();
+    }
+
+    $order = Order::create($siteId, $USER->isAuthorized() ? $USER->GetID() : $userId);
+    // === Создаём заказ ===
+    $order->setField('USER_DESCRIPTION', $fields['comment']);
+    $order->setBasket($basket);
+
+    // === Добавляем доставку ===
+    $shipmentCollection = $order->getShipmentCollection();
+    $shipment = $shipmentCollection->createItem();
+    $service = Delivery\Services\Manager::getById($fields['delivery'] ?? 1);
+    $shipment->setFields([
+        'DELIVERY_ID' => $service['ID'],
+        'DELIVERY_NAME' => $service['NAME'],
+    ]);
+
+    // === Добавляем оплату (Тиньков) ===
+    $paymentCollection = $order->getPaymentCollection();
+    $payment = $paymentCollection->createItem();
+    $paySystemService = PaySystem\Manager::getObjectById(7); // ID твоей платёжной системы "Тиньков"
+    $payment->setFields([
+        'PAY_SYSTEM_ID' => $paySystemService->getField("PAY_SYSTEM_ID"),
+        'PAY_SYSTEM_NAME' => $paySystemService->getField("NAME"),
+        'SUM' => $order->getPrice(),
+        'PAID' => 'Y',
+    ]);
+
+    // === Заполняем свойства ===
+    $propertyCollection = $order->getPropertyCollection();
+    $propertyCollection->getItemByOrderPropertyCode('EMAIL')->setValue($fields['email']);
+    $propertyCollection->getItemByOrderPropertyCode('PHONE')->setValue($fields['phone']);
+    $propertyCollection->getItemByOrderPropertyCode('NAME')->setValue($fields['name']);
+    $propertyCollection->getItemByOrderPropertyCode('SURNAME')->setValue($fields['surname']);
+
+    // === Сохраняем заказ ===
+    $order->doFinalAction(true);
+    $order->save();
+
+    unset($_SESSION['PENDING_ORDER'][$orderId]); // очищаем временные данные
 }
+
+// === Если заказ найден и Success ===
+if ($order && $success) {
+    $paymentCollection = $order->getPaymentCollection();
+    foreach ($paymentCollection as $payment) {
+        $payment->setPaid('Y');
+    }
+
+    $order->setField('STATUS_ID', 'P'); // например, статус "Оплачен"
+    $order->save();
+
+    // бонусы, если нужно
+    $propertyCollection = $order->getPropertyCollection();
+    $bonusProp = $propertyCollection->getItemByOrderPropertyCode('BONUS');
+    if ($bonusProp) $bonusProp->setValue(0);
+    $bonusCreditedProp = $propertyCollection->getItemByOrderPropertyCode('BONUS_CREDITED');
+    if ($bonusCreditedProp) $bonusCreditedProp->setValue('Y');
+
+    $order->save();
+}
+
 ?>
 
 <style>
@@ -51,12 +131,6 @@ if (CModule::IncludeModule('sale')) {
         text-align: center;
         max-width: 600px;
         width: 90%;
-    }
-
-    .success-icon {
-        font-size: 72px;
-        color: #000000;
-        margin-bottom: 20px;
     }
 
     .success-title {
@@ -112,6 +186,7 @@ if (CModule::IncludeModule('sale')) {
         background-color: #000000;
     }
 </style>
+
 <div class="success-container">
     <h1 class="success-title">Спасибо за ваш заказ!</h1>
     <p class="success-message">
@@ -119,22 +194,24 @@ if (CModule::IncludeModule('sale')) {
         Мы отправили детали вашего заказа на ваш email.
     </p>
 
-    <div class="order-details">
-        <div class="details-item">
-            <span class="details-label">Номер заказа:</span>
-            <span class="details-value">#<?=$orderId?></span>
+    <?php if ($order): ?>
+        <div class="order-details">
+            <div class="details-item">
+                <span class="details-label">Номер заказа:</span>
+                <span class="details-value">#<?= $order->getId() ?></span>
+            </div>
+            <div class="details-item">
+                <span class="details-label">Сумма:</span>
+                <span class="details-value"><?= number_format($amount / 100, 2, ',', ' ') ?> ₽</span>
+            </div>
         </div>
-        <div class="details-item">
-            <span class="details-label">Сумма:</span>
-            <span class="details-value"><?=number_format($_GET['Amount'] / 100, 2, ',', ' ')?> ₽</span>
-        </div>
-    </div>
+    <?php endif; ?>
 
-    <button class="continue-button" onclick="window.location.href='/catalog'">
+    <button class="continue-button" onclick="window.location.href='/catalog/'">
         Вернуться в магазин
     </button>
 </div>
 
 <?php
-require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");
+require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/footer.php");
 ?>

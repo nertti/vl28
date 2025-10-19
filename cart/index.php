@@ -87,7 +87,7 @@ $basket = Bitrix\Sale\Basket::loadItemsForFUser($fUserId, $siteId);
                                     <p class="cart__value"><?= $propertySize['VALUE_ENUM'] ?></p>
                                     <p class="cart__value"><?= $basketItem->getQuantity() ?> шт</p>
                                     <div class="cart__color">
-                                        <span style="background: <?= $propertyColor['VALUE'] ?>;"></span>
+                                        <span style="background: #<?= $propertyColor['VALUE'] ?>;"></span>
                                     </div>
                                 </div>
                                 <p class="cart__price"><?= number_format($basketItem->getFinalPrice(), 0, '', ' ') ?>
