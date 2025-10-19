@@ -35,20 +35,7 @@ if ($success) {
     // === Загружаем корзину покупателя ===
     $basket = Basket::loadItemsForFUser($fUserId, $siteId);
     if (!$USER->isAuthorized()) {
-        $rsUsers = CUser::GetList(array(), 'sort', ['PERSONAL_PHONE' => $phoneCleaned]);
-        if ($rsUsers->SelectedRowsCount() <= 0) {
-            $arResult = $USER->Register($phoneCleaned, "", "", $phoneCleaned, $phoneCleaned, $phoneCleaned . "@vl28.ru");
-            if ($arResult['TYPE'] == 'OK') {
-                $fields = ["PERSONAL_PHONE" => $phoneCleaned];
-                $USER->Update($arResult['ID'], $fields);
-                $userId = $USER->GetID();
-            }
-        } else {
-            $rsUser = CUser::GetByLogin($phoneCleaned);
-            $arUser = $rsUser->Fetch();
-            $userId = $arUser['ID'];
-        }
-        $USER->Logout();
+        $userId = 44;
     }
 
     $order = Order::create($siteId, $USER->isAuthorized() ? $USER->GetID() : $userId);
