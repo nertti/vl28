@@ -9,27 +9,44 @@ function onOrderPaid($order_id, &$arFields)
 {
     if ($arFields['PAYED'] == 'Y' && $arFields['ORDER_PROP'][23] != 'Y') {
 
-        $bonus = $arFields['ORDER_PROP'][21];
-        $userId = $arFields['USER_ID'];
+        $bonus = (int)$arFields['ORDER_PROP'][21]; // сумма бонусов
+        $userId = (int)$arFields['USER_ID'];
 
-        // Проверяем существование внутреннего счета пользователя
+        // Проверяем внутренний счёт пользователя
         $userBalance = CSaleUserAccount::GetByUserID($userId, "RUB");
 
         if (!$userBalance) {
-            $arFieldsAcc = array(
+            $arFieldsAcc = [
                 "USER_ID" => $userId,
                 "CURRENCY" => "RUB",
                 "CURRENT_BUDGET" => $bonus
-            );
+            ];
             $accountID = CSaleUserAccount::Add($arFieldsAcc);
         } else {
-            $arFieldsAcc = array(
+            $arFieldsAcc = [
                 "USER_ID" => $userId,
                 "CURRENCY" => "RUB",
-                "CURRENT_BUDGET" => $userBalance['CURRENT_BUDGET'] + $bonus,
-            );
+                "CURRENT_BUDGET" => (float)$userBalance['CURRENT_BUDGET'] + (float)$bonus,
+            ];
             $accountID = CSaleUserAccount::Update($userBalance['ID'], $arFieldsAcc);
         }
+
+        // Проставляем отметку "начислено"
+        $db_props = CSaleOrderPropsValue::GetList([], ["ORDER_ID" => $order_id]);
+        while ($prop = $db_props->Fetch()) {
+            // Ищем свойство с ID = 23
+            if ($prop["ORDER_PROPS_ID"] == 23) {
+                CSaleOrderPropsValue::Update($prop["ID"], ["VALUE" => "Y"]);
+                break;
+            }
+        }
+
+        // Добавляем запись в историю заказа (опционально)
+        CSaleOrderChange::AddRecord(
+            $order_id,
+            "COMMENT",
+            ["COMMENT" => "Начислены бонусы пользователю ID {$userId}: +{$bonus} руб."]
+        );
     }
 }
 

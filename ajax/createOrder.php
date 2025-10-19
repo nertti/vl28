@@ -171,10 +171,10 @@ $shipment->setFields([
     'DELIVERY_NAME' => $service['NAME'],
 ]);
 
-// Оплата (например, наложенный платёж)
+// Оплата
 $paymentCollection = $order->getPaymentCollection();
 $payment = $paymentCollection->createItem();
-$paySystemService = PaySystem\Manager::getObjectById(1); // например, "при получении"
+$paySystemService = PaySystem\Manager::getObjectById(2); // "при получении"
 $payment->setFields([
     'PAY_SYSTEM_ID' => $paySystemService->getField("PAY_SYSTEM_ID"),
     'PAY_SYSTEM_NAME' => $paySystemService->getField("NAME"),

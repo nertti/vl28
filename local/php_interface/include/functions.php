@@ -3,6 +3,7 @@
 use Bitrix\Main\Loader;
 use Bitrix\Sale;
 use Bitrix\Main\UserTable;
+use Bitrix\Main\UserGroupTable;
 
 function pr($o, $show = false, $die = false, $fullBackTrace = false)
 {
@@ -61,14 +62,16 @@ function recalculateUserSummaryPay($userId)
         return false;
     }
 
-    // Проверяем флаг UF_BID
-    $user = UserTable::getRow([
-        'filter' => ['=ID' => $userId],
-        'select' => ['ID', 'UF_BID']
-    ]);
+    $userGroups = \Bitrix\Main\UserGroupTable::getList([
+        'filter' => [
+            '=USER_ID' => $userId,
+            '=GROUP_ID' => 6,
+        ],
+        'select' => ['USER_ID']
+    ])->fetch();
 
-    if (!$user || $user['UF_BID'] != 1) {
-        // Если поле UF_BID = Нет, то ничего не делаем
+    if (!$userGroups) {
+        // Если пользователь не состоит в группе ID = 6 — ничего не делаем
         return false;
     }
 
@@ -111,20 +114,8 @@ function onAfterUserUpdateHandler(&$arFields)
     if (!isset($arFields['ID']) || (int)$arFields['ID'] <= 0) {
         return;
     }
-
     $userId = (int)$arFields['ID'];
+    // Пересчёт суммы заказов и обновление UF_SUMMARY_PAY + UF_CARD
+    RecalculateUserSummaryPay($userId);
 
-    // Если поле UF_BID = Да
-    if (isset($arFields['UF_BID']) && $arFields['UF_BID'] == 1) {
-
-        // Пересчёт суммы заказов и обновление UF_SUMMARY_PAY + UF_CARD
-        RecalculateUserSummaryPay($userId);
-
-        // Добавляем в группу с id=7
-        $userGroups = CUser::GetUserGroup($userId);
-        if (!in_array(7, $userGroups)) {
-            $userGroups[] = 7;
-            CUser::SetUserGroup($userId, $userGroups);
-        }
-    }
 }
