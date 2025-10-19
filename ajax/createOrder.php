@@ -172,7 +172,7 @@ if ($request["payment"] === 'card') {
 // === Вариант 2: Другие оплаты (создаём заказ сразу) ===
 // =========================================
 
-$order = Order::create($siteId, $USER->GetID() ?: 1);
+$order = Order::create($siteId, $USER->GetID() ?: 44);
 $order->setPersonTypeId(1);
 $order->setField('USER_DESCRIPTION', $comment);
 $order->setBasket($basket);
