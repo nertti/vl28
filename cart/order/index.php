@@ -3,6 +3,7 @@
 /** @var \CMain $APPLICATION */
 /** @var \CMain $USER */
 /** @global  $userBonus */
+/** @global  $discountCard */
 
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
 $APPLICATION->SetTitle("Оформление заказа");
@@ -17,6 +18,8 @@ $deliveriesList = Manager::getActiveList();
 array_shift($deliveriesList); // убираем бесплатную
 //pr($deliveriesList, true);
 require_once($_SERVER["DOCUMENT_ROOT"] . "/include/order/bonus.php");
+require($_SERVER["DOCUMENT_ROOT"] . "/include/profile/sale.php");
+
 $userBonus = str_replace(' ', '', $userBonus);
 function calculateMaxPointsToSpend($total, $bonus)
 {
@@ -60,96 +63,6 @@ function getElementProperties($iblockId, $elementId)
 
 ?>
 
-<?php /*
-$APPLICATION->IncludeComponent("bitrix:sale.order.ajax", "order", Array(
-	"ADDITIONAL_PICT_PROP_8" => "-",
-		"ALLOW_AUTO_REGISTER" => "N",	// Оформлять заказ с автоматической регистрацией пользователя
-		"ALLOW_NEW_PROFILE" => "Y",	// Разрешить множество профилей покупателей
-		"ALLOW_USER_PROFILES" => "Y",	// Разрешить использование профилей покупателей
-		"BASKET_IMAGES_SCALING" => "standard",	// Режим отображения изображений товаров
-		"BASKET_POSITION" => "after",	// Расположение списка товаров
-		"COMPATIBLE_MODE" => "Y",	// Режим совместимости для предыдущего шаблона
-		"DELIVERIES_PER_PAGE" => "8",	// Количество доставок на странице
-		"DELIVERY_FADE_EXTRA_SERVICES" => "Y",	// Дополнительные услуги, которые будут показаны в пройденном (свернутом) блоке
-		"DELIVERY_NO_AJAX" => "Y",	// Когда рассчитывать доставки с внешними системами расчета
-		"DELIVERY_NO_SESSION" => "Y",	// Проверять сессию при оформлении заказа
-		"DELIVERY_TO_PAYSYSTEM" => "d2p",	// Последовательность оформления
-		"DISABLE_BASKET_REDIRECT" => "N",	// Оставаться на странице оформления заказа, если список товаров пуст
-		"MESS_DELIVERY_CALC_ERROR_TEXT" => "Вы можете продолжить оформление заказа, а чуть позже менеджер магазина  свяжется с вами и уточнит информацию по доставке.",	// Текст ошибки расчета доставки
-		"MESS_DELIVERY_CALC_ERROR_TITLE" => "Не удалось рассчитать стоимость доставки.",	// Заголовок ошибки расчета доставки
-		"MESS_FAIL_PRELOAD_TEXT" => "Вы заказывали в нашем интернет-магазине, поэтому мы заполнили все данные автоматически. Обратите внимание на развернутый блок с информацией о заказе. Здесь вы можете внести необходимые изменения или оставить как есть и нажать кнопку \"#ORDER_BUTTON#\".",	// Текст уведомления о неудачной загрузке данных заказа
-		"MESS_SUCCESS_PRELOAD_TEXT" => "Вы заказывали в нашем интернет-магазине, поэтому мы заполнили все данные автоматически. Если все заполнено верно, нажмите кнопку \"#ORDER_BUTTON#\".",	// Текст уведомления о корректной загрузке данных заказа
-		"ONLY_FULL_PAY_FROM_ACCOUNT" => "N",	// Разрешить оплату с внутреннего счета только в полном объеме
-		"PATH_TO_AUTH" => "/auth/",	// Путь к странице авторизации
-		"PATH_TO_BASKET" => "basket.php",	// Путь к странице корзины
-		"PATH_TO_PAYMENT" => "payment.php",	// Страница подключения платежной системы
-		"PATH_TO_PERSONAL" => "index.php",	// Путь к странице персонального раздела
-		"PAY_FROM_ACCOUNT" => "Y",	// Разрешить оплату с внутреннего счета
-		"PAY_SYSTEMS_PER_PAGE" => "8",	// Количество платежных систем на странице
-		"PICKUPS_PER_PAGE" => "5",	// Количество пунктов самовывоза на странице
-		"PRODUCT_COLUMNS_HIDDEN" => array(	// Свойства товаров отображаемые в свернутом виде в списке товаров
-			0 => "PROPERTY_MATERIAL",
-		),
-		"PRODUCT_COLUMNS_VISIBLE" => array(	// Выбранные колонки таблицы списка товаров
-			0 => "PREVIEW_PICTURE",
-			1 => "PROPS",
-		),
-		"PROPS_FADE_LIST_1" => array(
-			0 => "17",
-			1 => "19",
-		),
-		"SEND_NEW_USER_NOTIFY" => "Y",	// Отправлять пользователю письмо, что он зарегистрирован на сайте
-		"SERVICES_IMAGES_SCALING" => "standard",	// Режим отображения вспомагательных изображений
-		"SET_TITLE" => "Y",	// Устанавливать заголовок страницы
-		"SHOW_BASKET_HEADERS" => "N",	// Показывать заголовки колонок списка товаров
-		"SHOW_COUPONS" => "Y",	// Отображать поля ввода купонов
-		"SHOW_COUPONS_BASKET" => "Y",	// Показывать поле ввода купонов в блоке списка товаров
-		"SHOW_COUPONS_DELIVERY" => "Y",	// Показывать поле ввода купонов в блоке доставки
-		"SHOW_COUPONS_PAY_SYSTEM" => "Y",	// Показывать поле ввода купонов в блоке оплаты
-		"SHOW_DELIVERY_INFO_NAME" => "Y",	// Отображать название в блоке информации по доставке
-		"SHOW_DELIVERY_LIST_NAMES" => "Y",	// Отображать названия в списке доставок
-		"SHOW_DELIVERY_PARENT_NAMES" => "Y",	// Показывать название родительской доставки
-		"SHOW_MAP_IN_PROPS" => "N",	// Показывать карту в блоке свойств заказа
-		"SHOW_NEAREST_PICKUP" => "N",	// Показывать ближайшие пункты самовывоза
-		"SHOW_NOT_CALCULATED_DELIVERIES" => "L",	// Отображение доставок с ошибками расчета
-		"SHOW_ORDER_BUTTON" => "always",	// Отображать кнопку оформления заказа (для неавторизованных пользователей)
-		"SHOW_PAY_SYSTEM_INFO_NAME" => "Y",	// Отображать название в блоке информации по платежной системе
-		"SHOW_PAY_SYSTEM_LIST_NAMES" => "Y",	// Отображать названия в списке платежных систем
-		"SHOW_STORES_IMAGES" => "Y",	// Показывать изображения складов в окне выбора пункта выдачи
-		"SHOW_TOTAL_ORDER_BUTTON" => "Y",	// Отображать дополнительную кнопку оформления заказа
-		"SHOW_VAT_PRICE" => "Y",	// Отображать значение НДС
-		"SKIP_USELESS_BLOCK" => "Y",	// Пропускать шаги, в которых один элемент для выбора
-		"TEMPLATE_LOCATION" => "popup",	// Визуальный вид контрола выбора местоположений
-		"TEMPLATE_THEME" => "blue",	// Цветовая тема
-		"USE_CUSTOM_ADDITIONAL_MESSAGES" => "N",	// Заменить стандартные фразы на свои
-		"USE_CUSTOM_ERROR_MESSAGES" => "Y",	// Заменить стандартные фразы на свои
-		"USE_CUSTOM_MAIN_MESSAGES" => "N",	// Заменить стандартные фразы на свои
-		"USE_PREPAYMENT" => "N",	// Использовать предавторизацию для оформления заказа (PayPal Express Checkout)
-		"USE_YM_GOALS" => "N",	// Использовать цели счетчика Яндекс.Метрики
-		"USER_CONSENT" => "Y",	// Запрашивать согласие
-		"USER_CONSENT_ID" => "0",	// Соглашение
-		"USER_CONSENT_IS_CHECKED" => "Y",	// Галка по умолчанию проставлена
-		"USER_CONSENT_IS_LOADED" => "N",	// Загружать текст сразу
-		"COMPONENT_TEMPLATE" => ".default",
-		"ALLOW_APPEND_ORDER" => "Y",	// Разрешить оформлять заказ на существующего пользователя
-		"SPOT_LOCATION_BY_GEOIP" => "Y",	// Определять местоположение покупателя по IP-адресу
-		"USE_PRELOAD" => "Y",	// Автозаполнение оплаты и доставки по предыдущему заказу
-		"SHOW_PICKUP_MAP" => "Y",	// Показывать карту для доставок с самовывозом
-		"PICKUP_MAP_TYPE" => "yandex",	// Тип используемых карт
-		"ACTION_VARIABLE" => "soa-action",	// Название переменной, в которой передается действие
-		"EMPTY_BASKET_HINT_PATH" => "/",	// Путь к странице для продолжения покупок
-		"USE_PHONE_NORMALIZATION" => "Y",	// Использовать нормализацию номера телефона
-		"ADDITIONAL_PICT_PROP_2" => "-",	// Дополнительная картинка [Каталог]
-		"ADDITIONAL_PICT_PROP_5" => "-",	// Дополнительная картинка [Торговые предложения]
-		"HIDE_ORDER_DESCRIPTION" => "N",	// Скрыть поле комментариев к заказу
-		"USE_ENHANCED_ECOMMERCE" => "N",	// Отправлять данные электронной торговли в Google и Яндекс
-		"MESS_PAY_SYSTEM_PAYABLE_ERROR" => "Вы сможете оплатить заказ после того, как менеджер проверит наличие полного комплекта товаров на складе. Сразу после проверки вы получите письмо с инструкциями по оплате. Оплатить заказ можно будет в персональном разделе сайта.",	// Текст уведомления при статусе заказа, недоступном для оплаты
-	),
-	false
-);
- */
-?>
-
 <?php
 $fUserId = Bitrix\Sale\Fuser::getId();
 $siteId = Bitrix\Main\Context::getCurrent()->getSite();
@@ -158,32 +71,8 @@ $basket = Bitrix\Sale\Basket::loadItemsForFUser($fUserId, $siteId);
 if (empty($basket->getQuantityList())) {
     header('Location: /catalog/');
 }
-
-$basketItems = $basket->getBasketItems(); // массив объектов Sale\BasketItem
-foreach ($basket as $basketItem) {
-    //echo $basketItem->getField('NAME') . $basketItem->getField('PRODUCT_ID') . ' - ' . $basketItem->getQuantity() . '<br />';
-}
-
-// узнаём есть ли у него система лояльности и скидочная карта
 $fullPrice = $basket->getBasePrice();
 $salePrice = 0;
-if ($USER->isAuthorized()) {
-    $userId = $USER->GetID();
-    $rsUser = CUser::GetByID($userId);
-    $arUser = $rsUser->Fetch();
-    if ($arUser['UF_BID'] == '1') {
-        if ($arUser['UF_CARD'] == 10) {
-            $fullPrice = floor($fullPrice * 0.95);
-            $salePrice = floor($fullPrice * 0.05);
-        } elseif ($arUser['UF_CARD'] == 11) {
-            $fullPrice = floor($fullPrice * 0.90);
-            $salePrice = floor($fullPrice * 0.10);
-        } elseif ($arUser['UF_CARD'] == 12) {
-            $fullPrice = floor($fullPrice * 0.85);
-            $salePrice = floor($fullPrice * 0.15);
-        }
-    }
-}
 ?>
 <section class="checkout first-section">
     <div class="container">
@@ -218,6 +107,7 @@ if ($USER->isAuthorized()) {
             <form id="form" action="/ajax/createOrder.php" class="checkout__form">
                 <input id="siteId" type="hidden" name="siteId" value="<?= $siteId ?>">
                 <input id="fUserId" type="hidden" name="fUserId" value="<?= $fUserId ?>">
+                <input id="discountCard" type="hidden" name="discountCard" value="<?= $discountCard ?>">
                 <div class="checkout__form-left">
                     <div class="checkout__label">
                         <p class="checkout__name">E-mail</p>
@@ -351,47 +241,40 @@ if ($USER->isAuthorized()) {
                     </div>
 
                     <div class="checkout__param">
-                        <!--                        <div class="checkout__param-item">-->
-                        <!--                            <p>Доставка:</p>-->
-                        <!--                            <p>0 ₽</p>-->
-                        <!--                        </div>-->
+<!--                        <div class="checkout__param-item">-->
+<!--                            <p>Доставка:</p>-->
+<!--                            <p>0 ₽</p>-->
+<!--                        </div>-->
                         <div class="checkout__param-item">
                             <p>Скидка по промокоду:</p>
                             <p>0 ₽</p>
                         </div>
-
-                        <!-- Если юзер имеет скидку -->
-                        <?php if ($salePrice > 0): ?>
-                            <div class="checkout__param-item checkout__param-item_sale">
-                                <p>Скидка по программе лояльности</p>
-                                <p id="salePrice">-<?= $salePrice ?> ₽</p>
-                            </div>
-                        <?php endif; ?>
-
-                        <!-- Если юзер авторизован -->
-                        <div class="checkout__param-item" <?php if (!$USER->isAuthorized()): ?>
-                            style="display: none" <?php endif; ?>>
+                        <?php if ($USER->isAuthorized()): ?>
+                            <!-- Если юзер авторизован -->
+                        <div class="checkout__param-item">
                             <p>Баллов начислится:</p>
                             <p class="bonusPoints"></p>
                             <input class="bonusPointsValue" type="hidden" name="bonusPoints" value="">
                         </div>
+                        <?php endif; ?>
                         <div class="checkout__param-item totalPrice">
                             <p>Итого:</p>
                             <strong><?= $fullPrice; ?> ₽</strong>
                         </div>
                     </div>
+                    <?php if ($USER->isAuthorized()): ?>
                     <!-- Если юзер авторизован -->
-                    <div class="promo" <?php if (!$USER->isAuthorized()): ?> style="display: none" <?php endif; ?>>
+                    <div class="promo">
                         <!-- Если юзер тратит баллы -->
                         <div id="applyBonusBlock" class="checkout__param-item checkout__param-item_sale"
                              style="display: none">
                             <p>Программа лояльности</p>
                             <p id="applyBonusText">-0 ₽</p>
                         </div>
-                        <?php if ($USER->isAuthorized() && $userBonus > 0): ?>
+                        <?php if ($userBonus > 0): ?>
                             <div class="promo__activate">
                                 <p>Программа лояльности: <strong><?= $userBonus ?> баллов</strong></p>
-                                <div class="promo__btn" <?php if ($userBonus <= 0): ?> style="display: none" <?php endif; ?>>
+                                <div class="promo__btn">
                                     <div class="promo__btn-circle"></div>
                                 </div>
                             </div>
@@ -406,7 +289,7 @@ if ($USER->isAuthorized()) {
                             </div>
                         </div>
                     </div>
-
+                    <?php endif; ?>
                     <button id="saveBtn" type="submit" class="black-btn">Оплатить заказ</button>
                     <p class="checkout__small">
                         Нажимая на&nbsp;кнопку «Оформить заказ», я&nbsp;принимаю условия&nbsp;<a href="/oferta/">публичной
@@ -587,48 +470,287 @@ if ($USER->isAuthorized()) {
 
                         }
                     });
-                    /* бонусы */
-                    document.addEventListener('DOMContentLoaded', function () {
-
-                        const inputBonus = document.getElementById('bonus');
-                        // Обработчик изменения значения
-                        inputBonus.addEventListener('change', function () {
-                            let value = Number(this.value);
-
-                            // Если значение больше максимального, устанавливаем максимальное
-                            if (value > this.max) {
-                                value = Number(this.max);
-                                this.value = value - value * 0.10;
-                            }
-                        });
-                        const applyBonusBtn = document.querySelector('#applyBonus');
-                        if (applyBonusBtn) {
-                            applyBonusBtn.addEventListener('click', handleFormSubmit);
-                        } else {
-                            console.warn('Форма не найдена на странице');
-                        }
-
-                        function handleFormSubmit(event) {
-                            event.preventDefault();
-                            applyBonusBtn.innerHTML = `
-                              <span class='spinner-grow spinner-grow-sm' aria-hidden='true'></span>
-                              <span role='status'>Списываем бонусы</span>
-                            `;
-                            applyBonusBtn.disabled = true;
-                            let totalPrice = document.querySelector('.totalPrice strong').textContent;
-                            totalPrice = totalPrice.replace(/[^\d]/g, '')
-                            const bonus = document.querySelector('#bonus').value;
-                            document.querySelector('#setBonus').value = 'Y';
-                            document.querySelector('.totalPrice strong').textContent = totalPrice - bonus + ' ₽';
-                            document.querySelector('#applyBonusBlock').style.display = 'flex';
-                            document.querySelector('#applyBonusText').textContent = '-' + bonus + ' ₽';
-                        }
-                    });
                 </script>
             </form>
         </div>
 </section>
-<?php require($_SERVER["DOCUMENT_ROOT"] . "/include/profile/sale.php"); ?>
+<script>
+
+    class CheckoutCart {
+        constructor(siteId, fUserId, userBonus) {
+            this.siteId = siteId;
+            this.fUserId = fUserId;
+            this.userBonus = userBonus; // Количество бонусов у пользователя
+            this.items = this.initItems();
+            this.bonusApplied = false;
+            this.bonusAmount = 0;
+            this.currentTotal = 0;
+            this.maxBonus = 0;
+
+            const totalEl = document.querySelector('.totalPrice strong');
+            if (totalEl) {
+                this.currentTotal = parseFloat(totalEl.textContent.replace(/\D/g, '')) || 0;
+                this.updateMaxBonus();
+                this.updateBonusPoints(this.currentTotal);
+            }
+
+            this.initListeners();
+            this.initBonusListeners();
+        }
+
+        initItems() {
+            const items = {};
+            document.querySelectorAll('.checkout__cart-item').forEach(item => {
+                const id = item.id;
+                const count = parseInt(item.querySelector('.countProduct').value);
+                const priceEl = item.querySelector('.checkout__cart-price');
+                items[id] = { id, count, priceEl };
+            });
+            console.log('Корзина инициализирована:', items);
+            return items;
+        }
+
+        initListeners() {
+            document.querySelectorAll('.checkout__cart-quantity').forEach(wrapper => {
+                wrapper.addEventListener('click', e => this.handleCountChange(e));
+            });
+
+            document.querySelectorAll('.checkout__cart-remove').forEach(btn => {
+                btn.addEventListener('click', e => this.handleDelete(e));
+            });
+        }
+
+        initBonusListeners() {
+            const toggleBtn = document.querySelector('.promo__btn');
+            const applyBtn = document.querySelector('#applyBonus');
+            const bonusInput = document.querySelector('.promo__input');
+
+            if (!toggleBtn || !applyBtn || !bonusInput) return;
+
+            // Тогл блока бонусов
+            toggleBtn.addEventListener('click', () => {
+                const block = document.querySelector('.promo__show');
+                toggleBtn.classList.toggle('active');
+
+                if (toggleBtn.classList.contains('active')) {
+                    if (block) block.style.display = 'block';
+                    // Подставляем максимально возможное списание
+                    let value = this.bonusApplied ? this.bonusAmount : this.maxBonus;
+                    bonusInput.max = this.maxBonus;
+                    bonusInput.value = value;
+
+                    console.log(`Бонусы для списания подставлены: ${bonusInput.value} ₽ (макс: ${this.maxBonus})`);
+                } else {
+                    if (block) block.style.display = 'none';
+                    if (this.bonusApplied) {
+                        this.bonusAmount = 0;
+                        this.bonusApplied = false;
+                        if (applyBtn) applyBtn.textContent = 'Применить';
+                        document.querySelector('#setBonus').value = 'N';
+                        this.updateBonusPoints(this.currentTotal);
+                        this.updateTotalWithBonus();
+                        console.log('Списание бонусов отменено через выключение тогл, сумма пересчитана');
+                    }
+                }
+            });
+
+            // Кнопка "Применить/Отменить"
+            applyBtn.addEventListener('click', () => {
+                if (!this.bonusApplied) {
+                    let applyValue = Math.min(bonusInput.value || 0, this.maxBonus);
+                    applyValue = Math.max(applyValue, 0);
+
+                    this.bonusAmount = applyValue;
+                    this.bonusApplied = true;
+
+                    applyBtn.textContent = 'Отменить';
+                    document.querySelector('#setBonus').value = 'Y';
+
+                    console.log(`Применены бонусы: ${this.bonusAmount} ₽`);
+                } else {
+                    this.bonusAmount = 0;
+                    this.bonusApplied = false;
+
+                    applyBtn.textContent = 'Применить';
+                    document.querySelector('#setBonus').value = 'N';
+
+                    console.log(`Списание бонусов отменено`);
+                }
+
+                this.updateBonusPoints(this.currentTotal);
+                this.updateTotalWithBonus();
+            });
+        }
+
+        getTotalPriceWithoutBonus() {
+            return this.currentTotal;
+        }
+
+        updateTotalWithBonus() {
+            const totalEl = document.querySelector('.totalPrice strong');
+            const applyText = document.querySelector('#applyBonusText');
+            const totalAfter = Math.max(this.currentTotal - this.bonusAmount, 0);
+
+            if (totalEl) totalEl.textContent = `${totalAfter} ₽`;
+            if (applyText) applyText.textContent = `-${this.bonusAmount} ₽`;
+            if (this.bonusAmount > 0) {
+                document.querySelector('#applyBonusBlock').style.display = 'flex';
+            } else {
+                document.querySelector('#applyBonusBlock').style.display = 'none';
+            }
+        }
+
+        async handleCountChange(e) {
+            const item = e.target.closest('.checkout__cart-item');
+            if (!item) return;
+
+            const input = item.querySelector('.countProduct');
+            const id = item.id;
+            let value = parseInt(input.value);
+
+            if (e.target.classList.contains('plus')) value++;
+            else if (e.target.classList.contains('minus') && value > 1) value--;
+            else return;
+
+            input.value = value;
+            this.items[id].count = value;
+
+            console.log(`Изменено количество товара ${id}: ${value}`);
+
+            const result = await this.sendRequest('/ajax/orderProduct.php', {
+                id,
+                count: value,
+                siteId: this.siteId,
+                fUserId: this.fUserId,
+            });
+
+            if (result?.status !== 'error') {
+                if (result.price) this.updateItemPrice(id, result.price);
+                if (result.totalPrice) {
+                    this.currentTotal = result.totalPrice;
+                    this.updateTotalPrice(this.currentTotal);
+                    this.updateMaxBonus();
+                    this.updateBonusPoints(this.currentTotal);
+                    if (this.bonusApplied) this.updateTotalWithBonus();
+                }
+            }
+        }
+
+        async handleDelete(e) {
+            const item = e.target.closest('.checkout__cart-item');
+            if (!item) return;
+
+            const id = item.id;
+            delete this.items[id];
+            item.remove();
+
+            console.log(`Товар ${id} удалён из корзины`);
+
+            const result = await this.sendRequest('/ajax/orderProductDelete.php', {
+                id,
+                siteId: this.siteId,
+                fUserId: this.fUserId,
+            });
+
+            if (result?.status !== 'error' && result.totalPrice) {
+                this.currentTotal = result.totalPrice;
+                this.updateTotalPrice(this.currentTotal);
+                this.updateMaxBonus();
+                this.updateBonusPoints(this.currentTotal);
+                if (this.bonusApplied) this.updateTotalWithBonus();
+            }
+        }
+
+        updateMaxBonus() {
+            let maxByTotal = Math.floor(this.currentTotal * 0.9);
+            this.maxBonus = Math.min(maxByTotal, this.userBonus);
+
+            const bonusInput = document.querySelector('.promo__input');
+            if (bonusInput) bonusInput.max = this.maxBonus;
+
+            if (this.bonusApplied && this.bonusAmount > this.maxBonus) {
+                this.bonusAmount = this.maxBonus;
+                this.updateTotalWithBonus();
+                const applyBtn = document.querySelector('#applyBonus');
+                if (applyBtn) applyBtn.textContent = 'Отменить';
+                console.log(`Списанные бонусы уменьшены до нового максимума: ${this.bonusAmount} ₽`);
+            }
+        }
+
+        async sendRequest(url, data) {
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                });
+                const result = await response.json();
+                console.log('Ответ сервера:', result);
+                return result;
+            } catch (error) {
+                console.error('Ошибка запроса:', error);
+            }
+        }
+
+        updateItemPrice(id, newPrice) {
+            const item = this.items[id];
+            if (!item) return;
+            item.priceEl.textContent = `${newPrice} ₽`;
+            console.log(`Цена товара ${id} обновлена: ${newPrice} ₽`);
+        }
+
+        updateTotalPrice(total) {
+            const totalEl = document.querySelector('.totalPrice strong');
+            if (totalEl) totalEl.textContent = `${total} ₽`;
+            console.log(`Общая сумма корзины: ${total} ₽`);
+        }
+
+        updateBonusPoints(totalPrice) {
+            const bonusTextEl = document.querySelector('.bonusPoints');
+            const bonusInputEl = document.querySelector('.bonusPointsValue');
+            const bonusBlockEl = bonusTextEl?.closest('.checkout__param-item');
+
+            if (!bonusTextEl || !bonusInputEl || !bonusBlockEl) return;
+
+            if (this.bonusApplied) {
+                bonusTextEl.textContent = '+0 баллов';
+                bonusInputEl.value = 0;
+                bonusBlockEl.style.display = 'none';
+                console.log('Бонусы списаны, начисление скрыто');
+                return;
+            }
+
+            const loyalCard = document.querySelector('#discountCard').value || '';
+            let points = 0;
+
+            switch (loyalCard) {
+                case 'Light':
+                    points = Math.floor(totalPrice * 0.05);
+                    break;
+                case 'Highlight':
+                    points = Math.floor(totalPrice * 0.10);
+                    break;
+                case 'Luxury':
+                    points = Math.floor(totalPrice * 0.15);
+                    break;
+            }
+
+            bonusTextEl.textContent = `+${points} баллов`;
+            bonusInputEl.value = points;
+            bonusBlockEl.style.display = 'flex';
+
+            console.log(`Начисляемые бонусы: ${points} баллов`);
+        }
+    }
+
+    // --- Инициализация ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const cart = new CheckoutCart('<?=$siteId?>', '<?=$fUserId?>', <?=$userBonus?>);
+    });
+
+</script>
+
+<!--
 <script>
     /* работа с товарами и итоговой стоимостью корзины*/
     document.addEventListener('DOMContentLoaded', function () {
@@ -759,88 +881,67 @@ if ($USER->isAuthorized()) {
         }
     });
 </script>
+-->
 <script>
-    // поведение элементов на странице
-    document.addEventListener('DOMContentLoaded', function () {
-        // в зависимости от города скрываем способ оплаты
-        const inputCity = document.querySelector('#city');
+    document.addEventListener('DOMContentLoaded', () => {
+        const cityInput = document.querySelector('#city');
+        const moskvaBlock = document.querySelector('#moskva');
+        const otherCityInput = document.querySelector('#otherCity input');
+        const deliveryInputs = document.querySelectorAll('input[name="delivery"]');
+        const paymentInputs = document.querySelectorAll('input[name="payment"]');
+        const addressBlock = document.querySelector('.address');
+        const addressMore = document.querySelector('.address_more');
+        const saveBtn = document.querySelector('#saveBtn');
 
-        function updateMoskvaInput(value) {
-            if (value.toLowerCase() !== 'москва') {
-                document.querySelector('#moskva').style.color = 'grey';
-                document.querySelector('#moskva .checkmark').style.border = '1px solid grey';
-                document.querySelector('#moskva input').disabled = true;
-                document.querySelector('#otherCity input').checked = true;
-            } else {
-                document.querySelector('#moskva').style.color = 'black';
-                document.querySelector('#moskva .checkmark').style.border = '1px solid black';
-                document.querySelector('#moskva input').disabled = false;
-            }
+        // ====== Функция обновления состояния оплаты по городу ======
+        function updateMoscowAvailability(value) {
+            const isMoscow = value.trim().toLowerCase() === 'москва';
+            const moskvaInput = moskvaBlock.querySelector('input');
+            const checkmark = moskvaBlock.querySelector('.checkmark');
+
+            moskvaBlock.style.color = isMoscow ? 'black' : 'grey';
+            checkmark.style.border = `1px solid ${isMoscow ? 'black' : 'grey'}`;
+            moskvaInput.disabled = !isMoscow;
+
+            if (!isMoscow) otherCityInput.checked = true;
         }
 
-        // Выполнение при загрузке
-        updateMoskvaInput(inputCity.value);
+        // ====== Функция управления блоками доставки ======
+        function updateDeliveryBlocks() {
+            const selected = document.querySelector('input[name="delivery"]:checked')?.value;
+            const isAddressHidden = ['137', '139'].includes(selected);
+            const isMoscowDelivery = selected === '135';
 
-        // Существующий обработчик события
-        inputCity.addEventListener('input', function (e) {
-            updateMoskvaInput(e.target.value);
-        });
+            addressMore.style.display = isAddressHidden ? 'none' : 'flex';
+            cityInput.disabled = isMoscowDelivery;
 
-        // в зависимости от выбранной доставки выводим блоки (Адрес или выбор ПВЗ города)
-        const selectExport = document.querySelectorAll('input[name="delivery"]');
-        const streetBlock = document.querySelector('.address');
-        const address_more = document.querySelector('.address_more');
-        const city = document.querySelector('#city');
-
-        function updateBlockVisibility() {
-            const checkedValues = Array.from(selectExport)
-                .filter(cb => cb.checked)
-                .map(cb => cb.value);
-
-            const shouldBeVisible =
-                checkedValues.includes('137') ||
-                checkedValues.includes('139')
-            const shouldBeMoskow = checkedValues.includes('135')
-            address_more.style.display = shouldBeVisible ? 'none' : 'flex';// если нужно скрыть, то указать none
-            if (shouldBeMoskow) {
-                city.value = 'Москва'
-                city.disabled = true;
-                updateMoskvaInput(city.value)
-            } else {
-                city.disabled = false;
-                updateMoskvaInput(city.value)
-            }
-        }
-
-        selectExport.forEach(checkbox => {
-            checkbox.addEventListener('change', updateBlockVisibility);
-        });
-
-
-        const selectPayment = document.querySelectorAll('input[name="payment"]');
-
-        function updateBtn() {
-            const checkedValues = Array.from(selectPayment)
-                .filter(cb => cb.checked)
-                .map(cb => cb.value);
-
-            const shouldBeCard = checkedValues.includes('card')
-            const saveBtn = document.querySelector('#saveBtn');
-            if (shouldBeCard) {
-                saveBtn.innerHTML = `Оплатить заказ`;
-            } else {
-                saveBtn.innerHTML = `Оформить заказ`;
+            if (isMoscowDelivery) {
+                cityInput.value = 'Москва';
             }
 
+            updateMoscowAvailability(cityInput.value);
         }
 
-        selectPayment.forEach(checkbox => {
-            checkbox.addEventListener('change', updateBtn);
-        });
+        // ====== Функция обновления кнопки оплаты ======
+        function updatePaymentButton() {
+            const selectedPayment = document.querySelector('input[name="payment"]:checked')?.value;
+            saveBtn.textContent = selectedPayment === 'card'
+                ? 'Оплатить заказ'
+                : 'Оформить заказ';
+        }
 
-        // Промокод...
+        // ====== Инициализация ======
+        updateMoscowAvailability(cityInput.value);
+        updateDeliveryBlocks();
+        updatePaymentButton();
+
+        // ====== Слушатели событий ======
+        cityInput.addEventListener('input', e => updateMoscowAvailability(e.target.value));
+        deliveryInputs.forEach(input => input.addEventListener('change', updateDeliveryBlocks));
+        paymentInputs.forEach(input => input.addEventListener('change', updatePaymentButton));
     });
 </script>
+
 <div class="hystmodal" id="alertModal" aria-hidden="true">
     <div class="hystmodal__wrap">
         <div class="hystmodal__window hystmodal__window_subscribe" role="dialog" aria-modal="true"
