@@ -351,10 +351,10 @@ if ($USER->isAuthorized()) {
                     </div>
 
                     <div class="checkout__param">
-<!--                        <div class="checkout__param-item">-->
-<!--                            <p>Доставка:</p>-->
-<!--                            <p>0 ₽</p>-->
-<!--                        </div>-->
+                        <!--                        <div class="checkout__param-item">-->
+                        <!--                            <p>Доставка:</p>-->
+                        <!--                            <p>0 ₽</p>-->
+                        <!--                        </div>-->
                         <div class="checkout__param-item">
                             <p>Скидка по промокоду:</p>
                             <p>0 ₽</p>
@@ -414,6 +414,7 @@ if ($USER->isAuthorized()) {
                     </p>
                 </div>
                 <script>
+                    /* оформление заказа */
                     document.addEventListener('DOMContentLoaded', function () {
                         const myModalSuccessOrder = new HystModal({
                             linkAttributeName: 'data-hystmodal',
@@ -575,7 +576,9 @@ if ($USER->isAuthorized()) {
                                     } else {
                                         document.querySelector('#alertModal .alertText .h2').textContent = data.message
                                         //myModalSuccessOrder.open('#alertModal');
-                                        window.location.href = data.pay_url;
+                                        if (data.pay_url) {
+                                            window.location.href = data.pay_url;
+                                        }
                                     }
                                 })
                                 .catch(error => {
@@ -584,6 +587,7 @@ if ($USER->isAuthorized()) {
 
                         }
                     });
+                    /* бонусы */
                     document.addEventListener('DOMContentLoaded', function () {
 
                         const inputBonus = document.getElementById('bonus');
@@ -597,16 +601,6 @@ if ($USER->isAuthorized()) {
                                 this.value = value - value * 0.10;
                             }
                         });
-                        inputBonus.addEventListener('input', function () {
-                            let value = Number(this.value);
-
-                            // Если значение больше максимального, устанавливаем максимальное
-                            if (value > this.max) {
-                                value = Number(this.max);
-                                this.value = value - value * 0.10;
-                            }
-                        });
-
                         const applyBonusBtn = document.querySelector('#applyBonus');
                         if (applyBonusBtn) {
                             applyBonusBtn.addEventListener('click', handleFormSubmit);
@@ -636,7 +630,12 @@ if ($USER->isAuthorized()) {
 </section>
 <?php require($_SERVER["DOCUMENT_ROOT"] . "/include/profile/sale.php"); ?>
 <script>
+    /* работа с товарами и итоговой стоимостью корзины*/
     document.addEventListener('DOMContentLoaded', function () {
+        let totalPrice = <?=$fullPrice?>;
+        document.querySelector('.bonusPoints').textContent = '+' + calculateBonusPoints(totalPrice) + ' баллов';
+        document.querySelector('.bonusPointsValue').value = calculateBonusPoints(totalPrice);
+
         function calculateMaxPointsToSpend(total, bonus) {
             // Проверяем корректность входных данных
             if (total <= 0 || bonus < 0) {
@@ -666,10 +665,6 @@ if ($USER->isAuthorized()) {
                 return 0;
             }
         }
-
-        let totalPrice = <?=$fullPrice?>;
-        document.querySelector('.bonusPoints').textContent = '+' + calculateBonusPoints(totalPrice) + ' баллов';
-        document.querySelector('.bonusPointsValue').value = calculateBonusPoints(totalPrice);
 
         const countAria = document.querySelectorAll('.checkout__cart-quantity');
         countAria.forEach(element => {
@@ -714,9 +709,6 @@ if ($USER->isAuthorized()) {
                             }
                             if (data.totalPrice !== '' && data.totalPrice !== 0) {
                                 document.querySelector('.totalPrice strong').textContent = data.totalPrice + ' ₽';
-                            }
-                            if (data.salePrice !== '' && data.salePrice !== 0) {
-                                document.querySelector('#salePrice').textContent = '-' + data.salePrice + ' ₽';
                             }
                         }
                     })
