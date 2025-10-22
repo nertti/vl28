@@ -46,13 +46,13 @@ try {
         $arUser = $rsUser->Fetch();
 
         if ($arUser['UF_CARD'] == 10) {
-            $fullPrice = floor($fullPrice * 0.95);
+            //$fullPrice = floor($fullPrice * 0.95);
             $salePrice = floor($fullPrice * 0.05);
         } elseif ($arUser['UF_CARD'] == 11) {
-            $fullPrice = floor($fullPrice * 0.90);
+            //$fullPrice = floor($fullPrice * 0.90);
             $salePrice = floor($fullPrice * 0.10);
         } elseif ($arUser['UF_CARD'] == 12) {
-            $fullPrice = floor($fullPrice * 0.85);
+            //$fullPrice = floor($fullPrice * 0.85);
             $salePrice = floor($fullPrice * 0.15);
         }
     }

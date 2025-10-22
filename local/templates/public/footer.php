@@ -475,7 +475,7 @@ Asset::getInstance()->addJs(SITE_TEMPLATE_PATH . '/assets/js/jquery-3.7.1.min.js
 Asset::getInstance()->addJs(SITE_TEMPLATE_PATH . '/assets/js/hystmodal.min.js');
 Asset::getInstance()->addJs(SITE_TEMPLATE_PATH . '/assets/js/swiper-bundle.min.js');
 Asset::getInstance()->addJs(SITE_TEMPLATE_PATH . '/assets/js/mask.js');
-Asset::getInstance()->addJs(SITE_TEMPLATE_PATH . '/assets/js/main.min.js');
+Asset::getInstance()->addJs(SITE_TEMPLATE_PATH . '/assets/js/main.js');
 
 Asset::getInstance()->addJs(SITE_TEMPLATE_PATH . '/include/footer/script.js');
 ?>

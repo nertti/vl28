@@ -90,6 +90,7 @@ jQuery(document).ready(function($) {
    });
 
     // Изменение кол-ва продукта
+    /*
   $(document).on('click', '.plus, .minus', function () {
 		var qty = $(this).parent();
 		var val = parseFloat(qty.find('input').val());
@@ -115,7 +116,7 @@ jQuery(document).ready(function($) {
 
       qty.find('input').trigger('change');
 	});
-
+*/
   $('.promo__btn').on('click', function(){
     $(this).toggleClass('active');
     $('.promo__show').toggle(400);

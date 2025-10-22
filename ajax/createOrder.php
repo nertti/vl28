@@ -188,7 +188,7 @@ $shipment->setFields([
 
 // Оплата
 $paymentCollection = $order->getPaymentCollection();
-$paySystemService = PaySystem\Manager::getObjectById(7); // ID Т-Банка в Bitrix
+$paySystemService = PaySystem\Manager::getObjectById(1);
 if ($bonusPointsWithdraw > 0) {
     // Первый платеж - бонусные баллы
     $payment = $paymentCollection->createItem();
@@ -203,8 +203,8 @@ if ($bonusPointsWithdraw > 0) {
     if ($remainingSum > 0) {
         $newPayment = $paymentCollection->createItem();
         $newPayment->setFields([
-            'PAY_SYSTEM_ID' => $paySystemService->getField("PAY_SYSTEM_ID"),
-            'PAY_SYSTEM_NAME' => $paySystemService->getField("NAME"),
+            'PAY_SYSTEM_ID' => 1,
+            'PAY_SYSTEM_NAME' => PaySystem\Manager::getObjectById(1)->getField("NAME"),
             'SUM' => $remainingSum,
         ]);
     }
@@ -212,8 +212,8 @@ if ($bonusPointsWithdraw > 0) {
     // Единый платеж
     $payment = $paymentCollection->createItem();
     $payment->setFields([
-        'PAY_SYSTEM_ID' => $paySystemService->getField("PAY_SYSTEM_ID"),
-        'PAY_SYSTEM_NAME' => $paySystemService->getField("NAME"),
+        'PAY_SYSTEM_ID' => 1,
+        'PAY_SYSTEM_NAME' => PaySystem\Manager::getObjectById(1)->getField("NAME"),
         'SUM' => $order->getPrice(),
     ]);
 }
