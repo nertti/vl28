@@ -64,13 +64,13 @@ function onOrderCreate(Bitrix\Main\Event $event)
     $orderId = $order->getId();
     $propertyCollection = $order->getPropertyCollection();
 
-// Проверяем свойство SEND_TELEGRAM
-    $sendTelegramProp = $propertyCollection->getItemByOrderPropertyId(29); // Вставь ID свойства SEND_TELEGRAM
+    // Проверяем свойство SEND_TELEGRAM
+    $sendTelegramProp = $propertyCollection->getItemByOrderPropertyId(29); // ID свойства SEND_TELEGRAM
     if ($sendTelegramProp && $sendTelegramProp->getValue() === 'Y') {
         return; // Уже отправляли
     }
 
-// Доставка
+    // Доставка
     $deliveryIds = $order->getDeliverySystemId();
     $deliveryId = is_array($deliveryIds) && count($deliveryIds) > 0 ? $deliveryIds[0] : null;
     $service = null;
@@ -78,29 +78,40 @@ function onOrderCreate(Bitrix\Main\Event $event)
         $service = \Bitrix\Sale\Delivery\Services\Manager::getById($deliveryId);
     }
 
-// Способ оплаты
+    // Способ оплаты
     $paymentCollection = $order->getPaymentCollection();
-    $payment = $paymentCollection->current();
-    $paySystemId = $payment ? $payment->getPaymentSystemId() : null;
-
 // Основное условие отправки
     $sendTelegram = false;
-    if ($paySystemId != 7 && !$order->isPaid()) {
-        $sendTelegram = true;
-    } elseif ($paySystemId == 7 && $order->isPaid() ) {
-        $sendTelegram = true;
+    foreach ($paymentCollection as $paymentItem) {
+        $paySystemId = $paymentItem->getPaymentSystemId();
+        if ($paySystemId == 7) {
+            $sendTelegram = true;
+            break; // Достаточно одной оплаты с ID = 7
+        }
+    }
+
+// Если нет платежа с ID = 7 и заказ не оплачен другими способами, тоже отправляем
+    if (!$sendTelegram) {
+        foreach ($paymentCollection as $paymentItem) {
+            $paySystemId = $paymentItem->getPaymentSystemId();
+            if ($paySystemId != 7 && !$paymentItem->isPaid()) {
+                $sendTelegram = true;
+                break;
+            }
+        }
     }
 
     if (!$sendTelegram) {
         return; // Не отправлять
     }
 
-// Данные пользователя
+
+    // Данные пользователя
     $userName = $propertyCollection->getItemByOrderPropertyId(13)->getValue() . " " . $propertyCollection->getItemByOrderPropertyId(14)->getValue();
     $userEmail = $propertyCollection->getItemByOrderPropertyId(12)->getValue();
     $userPhone = $propertyCollection->getItemByOrderPropertyId(15)->getValue();
 
-// Список товаров
+    // Список товаров
     $basket = $order->getBasket();
     $items = [];
     foreach ($basket->getListOfFormatText() as $basketItem) {
@@ -108,7 +119,7 @@ function onOrderCreate(Bitrix\Main\Event $event)
     }
     $itemsList = implode("\n", $items);
 
-// Адрес доставки
+    // Адрес доставки
     $city = $propertyCollection->getItemByOrderPropertyId(17)->getValue();
     $street = $propertyCollection->getItemByOrderPropertyId(18)->getValue();
     $home = $propertyCollection->getItemByOrderPropertyId(19)->getValue();
@@ -116,21 +127,30 @@ function onOrderCreate(Bitrix\Main\Event $event)
     $parts = array_filter([$city, $street, $home, $apartment]);
     $address = implode(', ', $parts);
 
-// Статус оплаты
+    // Проверяем оплату бонусами (ID = 6) и суммируем
+    $bonusPaidAmount = 0;
+    foreach ($paymentCollection as $paymentItem) {
+        if ($paymentItem->getPaymentSystemId() == 6 && $paymentItem->isPaid()) {
+            $bonusPaidAmount += $paymentItem->getSum();
+        }
+    }
+    $amount = $order->getPrice() - $bonusPaidAmount;
+    // Статус оплаты
     $payStatus = $order->isPaid() ? "✅ Заказ оплачен" : "❌ Заказ не оплачен";
     $payMethod = $order->isPaid() ? "Оплата онлайн" : "Оплата при получении";
 
-// Скидки
+    // Скидки
     $discountsText = "";
     $discounts = $order->getDiscount()->getApplyResult(false);
     if (!empty($discounts["DISCOUNT_LIST"])) {
         $discountsList = array_shift($discounts['PRICES']['BASKET']);
+        $currency = $order->getCurrency();
         $discountsText .= "💸 Итоговая скидка: {$discountsList['DISCOUNT']} {$currency}\n";
     } else {
         $discountsText = "Нет применённых скидок\n";
     }
 
-// Сообщение
+    // Сообщение
     $message = ($isNew ? "🆕 Новый заказ #$orderId\n" : "💳 Оплата заказа #$orderId\n")
         . "{$payStatus}\n\n"
         . "🚚 Доставка: " . ($service ? $service['NAME'] : "Неизвестно") . "\n"
@@ -138,12 +158,18 @@ function onOrderCreate(Bitrix\Main\Event $event)
         . "👤 Клиент: {$userName}\n"
         . "📧 Email: {$userEmail}\n"
         . "📞 Телефон: +{$userPhone}\n\n"
-        . "💰 Сумма: {$order->getPrice()} {$order->getCurrency()}\n"
+        . "💰 Сумма: {$amount} {$order->getCurrency()}\n"
         . "{$discountsText}\n"
-        . "💰 Способ оплаты: {$payMethod}\n"
-        . "📦 Товары:\n{$itemsList}";
+        . "💰 Способ оплаты: {$payMethod}\n";
 
-// Кнопка для открытия заказа
+// Если есть оплата бонусами, добавляем отдельную строку
+    if ($bonusPaidAmount > 0) {
+        $message .= "🎁 Оплачено бонусами: {$bonusPaidAmount} {$order->getCurrency()}\n";
+    }
+
+    $message .= "📦 Товары:\n{$itemsList}";
+
+    // Кнопка для открытия заказа
     $keyboard = [
         "inline_keyboard" => [
             [
@@ -152,7 +178,7 @@ function onOrderCreate(Bitrix\Main\Event $event)
         ]
     ];
 
-// Отправка в Telegram
+    // Отправка в Telegram
     $url = "https://api.telegram.org/bot{$telegramToken}/sendMessage";
     $postFields = [
         "chat_id" => $chatId,
@@ -171,12 +197,11 @@ function onOrderCreate(Bitrix\Main\Event $event)
     $response = curl_exec($ch);
     curl_close($ch);
 
-// После успешной отправки ставим SEND_TELEGRAM = Y
+    // После успешной отправки ставим SEND_TELEGRAM = Y
     if ($response) {
         $sendTelegramProp->setValue('Y');
         $order->save();
     }
-
 }
 
 function onOrderPaidHandler($order_id, &$arFields)
