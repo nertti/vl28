@@ -8,6 +8,8 @@ $eventManager->addEventHandler('sale', 'OnOrderUpdate', 'onOrderPaidHandler');
 
 // после регистрации считаем какая карта лояльности и скидка
 $eventManager->addEventHandler("main", "OnAfterUserRegister", "onAfterUserUpdateHandler");
+// при изменении свойств карт лояльности пересчитываем карты у пользователей
+$eventManager->addEventHandler("iblock", "OnAfterIBlockElementUpdate", "OnLoyaltyCardChanged");
 
 AddEventHandler("main", "OnAfterUserAuthorize", Array("RememberAuth", "OnAfterUserAuthorize"));
 AddEventHandler("main", "OnUserLogout", Array("OutUser", "OnAfterUserExit"));

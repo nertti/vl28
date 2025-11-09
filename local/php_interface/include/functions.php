@@ -89,11 +89,26 @@ function recalculateUserSummaryPay($userId)
         $summary += (float)$arOrder['PRICE'];
     }
 
+    $arSelect = Array(
+        'ID',
+        'IBLOCK_ID',
+        'NAME',
+        'PROPERTY_CONDITIONS',
+    );
+    $arFilter = Array("IBLOCK_ID"=>IntVal(21), "ACTIVE"=>"Y");
+    $res = CIBlockElement::GetList(Array(), $arFilter, false, Array(), $arSelect);
+    $arCards = [];
+    while($ob = $res->GetNextElement())
+    {
+        $arFields = $ob->GetFields();
+        $arCards[] = $arFields;
+    }
+
     // Определяем карту по сумме
     $cardId = null;
-    if ($summary < 75000) {
+    if ($summary < $arCards[1]['PROPERTY_CONDITIONS_VALUE']) {
         $cardId = 10;
-    } elseif ($summary >= 75000 && $summary < 150000) {
+    } elseif ($summary >= $arCards[1]['PROPERTY_CONDITIONS_VALUE'] && $summary < $arCards[2]['PROPERTY_CONDITIONS_VALUE']) {
         $cardId = 11;
     } else {
         $cardId = 12;
@@ -118,4 +133,27 @@ function onAfterUserUpdateHandler(&$arFields)
     // Пересчёт суммы заказов и обновление UF_SUMMARY_PAY + UF_CARD
     RecalculateUserSummaryPay($userId);
 
+}
+
+function OnLoyaltyCardChanged(&$arFields)
+{
+    // Проверяем, что событие относится к нужному инфоблоку
+    if (!isset($arFields['IBLOCK_ID']) || (int)$arFields['IBLOCK_ID'] !== 21)
+        return;
+
+    // Получаем всех активных пользователей
+    $rsUsers = CUser::GetList(
+        ($by = "id"),
+        ($order = "asc"),
+        ["ACTIVE" => "Y"],
+        ["FIELDS" => ["ID"]]
+    );
+
+    while ($arUser = $rsUsers->Fetch()) {
+        $userId = (int)$arUser["ID"];
+
+        if ($userId > 0 && function_exists('recalculateUserSummaryPay')) {
+            recalculateUserSummaryPay($userId);
+        }
+    }
 }

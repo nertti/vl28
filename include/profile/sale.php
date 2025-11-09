@@ -25,13 +25,29 @@ while ($order = $dbRes->fetch()) {
 }
 $discountPercent = 0;
 
-if ($totalPaid >= 150000) {
-    $discountPercent = 15;
-    $discountCard = 'Luxury';
-} elseif ($totalPaid >= 75000) {
-    $discountPercent = 10;
-    $discountCard = 'Highlight';
+$arSelect = Array(
+    'ID',
+    'IBLOCK_ID',
+    'NAME',
+    'PROPERTY_CONDITIONS',
+    'PROPERTY_BONUS',
+);
+$arFilter = Array("IBLOCK_ID"=>IntVal(21), "ACTIVE"=>"Y");
+$res = CIBlockElement::GetList(Array(), $arFilter, false, Array(), $arSelect);
+$arCards = [];
+while($ob = $res->GetNextElement())
+{
+    $arFields = $ob->GetFields();
+    $arCards[] = $arFields;
+}
+
+if ($totalPaid >= $arCards[2]['PROPERTY_CONDITIONS_VALUE']) {
+    $discountPercent = $arCards[2]['PROPERTY_BONUS_VALUE'];
+    $discountCard = $arCards[2]['NAME'];
+} elseif ($totalPaid >= $arCards[1]['PROPERTY_CONDITIONS_VALUE']) {
+    $discountPercent = $arCards[1]['PROPERTY_BONUS_VALUE'];
+    $discountCard = $arCards[2]['NAME'];
 } else {
-    $discountPercent = 5;
-    $discountCard = 'Light';
+    $discountPercent = $arCards[0]['PROPERTY_BONUS_VALUE'];
+    $discountCard = $arCards[0]['NAME'];
 }
