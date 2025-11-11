@@ -8,6 +8,9 @@
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
 $APPLICATION->SetTitle("Оформление заказа");
 
+$userId = $USER->GetID();
+$rsUser = CUser::GetByID($userId);
+$arUser = $rsUser->Fetch();
 
 Bitrix\Main\Loader::includeModule("Sale");
 Bitrix\Main\Loader::includeModule("Catalog");
@@ -114,7 +117,7 @@ $salePrice = 0;
                         <div class="checkout__inputs">
                             <p class="error-text email" style="display: none;">Пожалуйста, введите свой email.</p>
                             <input type="text" class="form-input checkout__input email" placeholder="E-mail"
-                                   name="email">
+                                   name="email" value="<?=$arUser['EMAIL']?>">
                             <label class="checkout__checkbox">
                                 <input type="checkbox" name="news">
                                 <div class="checkmark"></div>
@@ -128,7 +131,7 @@ $salePrice = 0;
                         <p class="checkout__name">Имя</p>
                         <div class="checkout__inputs">
                             <p class="error-text name" style="display: none;">Пожалуйста, введите своё имя.</p>
-                            <input type="text" name="name" class="form-input checkout__input name" placeholder="Имя">
+                            <input type="text" name="name" class="form-input checkout__input name" placeholder="Имя" value="<?=$arUser['NAME']?>">
                         </div>
                     </div>
                     <div class="checkout__label">
@@ -136,7 +139,7 @@ $salePrice = 0;
                         <div class="checkout__inputs">
                             <p class="error-text surname" style="display: none;">Пожалуйста, введите свою фамилию.</p>
                             <input type="text" name="surname" class="form-input checkout__input surname"
-                                   placeholder="Фамилия">
+                                   placeholder="Фамилия" value="<?=$arUser['LAST_NAME']?>">
                         </div>
                     </div>
                     <div class="checkout__label">
@@ -144,7 +147,7 @@ $salePrice = 0;
                         <div class="checkout__inputs">
                             <p class="error-text phone" style="display: none;">Пожалуйста, введите свой телефон.</p>
                             <input type="text" name="phone" class="form-input phone-input checkout__input phone"
-                                   placeholder="+7 (___) ___-__-__">
+                                   placeholder="+7 (___) ___-__-__" value="<?=$arUser['PERSONAL_PHONE']?>">
                         </div>
                     </div>
                     <div class="checkout__label checkout__label_radios">
