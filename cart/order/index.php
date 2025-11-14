@@ -4,6 +4,8 @@
 /** @var \CMain $USER */
 /** @global  $userBonus */
 /** @global  $discountCard */
+/** @global  $discountPercent */
+
 
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
 $APPLICATION->SetTitle("Оформление заказа");
@@ -111,6 +113,7 @@ $salePrice = 0;
                 <input id="siteId" type="hidden" name="siteId" value="<?= $siteId ?>">
                 <input id="fUserId" type="hidden" name="fUserId" value="<?= $fUserId ?>">
                 <input id="discountCard" type="hidden" name="discountCard" value="<?= $discountCard ?>">
+                <input id="discountPercent" type="hidden" name="discountPercent" value="<?= $discountPercent ?>">
                 <div class="checkout__form-left">
                     <div class="checkout__label">
                         <p class="checkout__name">E-mail</p>
@@ -282,12 +285,12 @@ $salePrice = 0;
                                 </div>
                             </div>
                         <?php endif; ?>
-                        <div class="promo__show" style="display: none;">
+                        <div class="promo__show">
                             <div class="promo__form">
                                 <input type="hidden" name="setBonus" id="setBonus" value="N">
                                 <input type="number" class="promo__input" name="bonus" id="bonus"
                                        max="<?= calculateMaxPointsToSpend($fullPrice, $userBonus) ?>"
-                                       value="<?= calculateMaxPointsToSpend($fullPrice, $userBonus) ?>">
+                                       value="0">
                                 <button id="applyBonus" type="button" class="border-btn">Применить</button>
                             </div>
                         </div>
@@ -325,6 +328,7 @@ $salePrice = 0;
                             event.preventDefault();
                             const formData = new FormData(form);
                             const payment = formData.get('payment');
+                            console.log(formData);
                             if (payment === 'card') {
                                 saveBtn.innerHTML = `
                               <span class='spinner-grow spinner-grow-sm' aria-hidden='true'></span>
@@ -533,6 +537,7 @@ $salePrice = 0;
             // Тогл блока бонусов
             toggleBtn.addEventListener('click', () => {
                 const block = document.querySelector('.promo__show');
+                block.style.display = 'none';
                 toggleBtn.classList.toggle('active');
 
                 if (toggleBtn.classList.contains('active')) {
@@ -540,7 +545,7 @@ $salePrice = 0;
                     // Подставляем максимально возможное списание
                     let value = this.bonusApplied ? this.bonusAmount : this.maxBonus;
                     bonusInput.max = this.maxBonus;
-                    bonusInput.value = value;
+                    bonusInput.value = this.maxBonus;
 
                     //console.log(`Бонусы для списания подставлены: ${bonusInput.value} ₽ (макс: ${this.maxBonus})`);
                 } else {
@@ -723,19 +728,11 @@ $salePrice = 0;
                 return;
             }
 
-            const loyalCard = document.querySelector('#discountCard').value || '';
+            const discountPercent = document.querySelector('#discountPercent').value || '';
             let points = 0;
 
-            switch (loyalCard) {
-                case 'Light':
-                    points = Math.floor(totalPrice * 0.05);
-                    break;
-                case 'Highlight':
-                    points = Math.floor(totalPrice * 0.10);
-                    break;
-                case 'Luxury':
-                    points = Math.floor(totalPrice * 0.15);
-                    break;
+            if(discountPercent){
+                points = Math.floor(totalPrice * discountPercent * 0.01);
             }
 
             bonusTextEl.textContent = `+${points} баллов`;

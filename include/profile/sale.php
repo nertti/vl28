@@ -41,13 +41,14 @@ while($ob = $res->GetNextElement())
     $arCards[] = $arFields;
 }
 
-if ($totalPaid >= $arCards[2]['PROPERTY_CONDITIONS_VALUE']) {
-    $discountPercent = $arCards[2]['PROPERTY_BONUS_VALUE'];
-    $discountCard = $arCards[2]['NAME'];
-} elseif ($totalPaid >= $arCards[1]['PROPERTY_CONDITIONS_VALUE']) {
-    $discountPercent = $arCards[1]['PROPERTY_BONUS_VALUE'];
-    $discountCard = $arCards[2]['NAME'];
-} else {
+
+if ($totalPaid < $arCards[1]['PROPERTY_CONDITIONS_VALUE']) {
     $discountPercent = $arCards[0]['PROPERTY_BONUS_VALUE'];
     $discountCard = $arCards[0]['NAME'];
+} elseif ($totalPaid < $arCards[2]['PROPERTY_CONDITIONS_VALUE']) {
+    $discountPercent = $arCards[1]['PROPERTY_BONUS_VALUE'];
+    $discountCard = $arCards[1]['NAME'];
+} else {
+    $discountPercent = $arCards[2]['PROPERTY_BONUS_VALUE'];
+    $discountCard = $arCards[2]['NAME'];
 }

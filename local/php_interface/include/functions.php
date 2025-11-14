@@ -108,7 +108,7 @@ function recalculateUserSummaryPay($userId)
     $cardId = null;
     if ($summary < $arCards[1]['PROPERTY_CONDITIONS_VALUE']) {
         $cardId = 10;
-    } elseif ($summary >= $arCards[1]['PROPERTY_CONDITIONS_VALUE'] && $summary < $arCards[2]['PROPERTY_CONDITIONS_VALUE']) {
+    } elseif ($summary < $arCards[2]['PROPERTY_CONDITIONS_VALUE']) {
         $cardId = 11;
     } else {
         $cardId = 12;

@@ -21,7 +21,7 @@ global $USER;
 $userId = $USER->GetID();
 $rsUser = CUser::GetByID($userId);
 $arUser = $rsUser->Fetch();
-//pr($arUser);
+//pr($arCards);
 $APPLICATION->SetTitle("Карта лояльности");
 ?>
     <div class="container">
@@ -58,11 +58,11 @@ $APPLICATION->SetTitle("Карта лояльности");
                             <div class="account__card-params">
                                 <p>Уровень карты: <strong><?= $discountCard ?></strong></p>
                                 <p>Доступные бонусы: <strong><?= $userBonus ?> баллов</strong></p>
-                                <?php if ($totalPaid < 75000): ?>
-                                    <p>До следующего уровня (Highlight) осталось: <strong><?= -$totalPaid + 75000 ?>
+                                <?php if ($totalPaid < $arCards[1]['PROPERTY_CONDITIONS_VALUE']): ?>
+                                    <p>До следующего уровня (Highlight) осталось: <strong><?= -$totalPaid + $arCards[1]['PROPERTY_CONDITIONS_VALUE'] ?>
                                             ₽</strong></p>
-                                <?php elseif ($totalPaid > 75000 && $totalPaid < 149999): ?>
-                                    <p>До следующего уровня (Luxury) осталось: <strong><?= -$totalPaid + 150000 ?>
+                                <?php elseif ($totalPaid < $arCards[2]['PROPERTY_CONDITIONS_VALUE']): ?>
+                                    <p>До следующего уровня (Luxury) осталось: <strong><?= -$totalPaid + $arCards[2]['PROPERTY_CONDITIONS_VALUE'] ?>
                                             ₽</strong></p>
                                 <?php endif; ?>
                             </div>
