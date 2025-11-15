@@ -328,7 +328,6 @@ $salePrice = 0;
                             event.preventDefault();
                             const formData = new FormData(form);
                             const payment = formData.get('payment');
-                            console.log(formData);
                             if (payment === 'card') {
                                 saveBtn.innerHTML = `
                               <span class='spinner-grow spinner-grow-sm' aria-hidden='true'></span>

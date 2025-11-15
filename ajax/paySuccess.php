@@ -12,6 +12,7 @@ Loader::includeModule('sale');
 Loader::includeModule('catalog');
 
 session_start();
+//pr($_SESSION);
 $orderId = $_GET['OrderId'];
 $paymentId = $_GET['PaymentId'];
 $amount = $_GET['Amount']/100;

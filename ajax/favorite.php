@@ -29,7 +29,7 @@ if ($_POST['id']) {
             unset($arElements[$key]);
             $result = 2; // Датчик. Удаляем
         }
-        setcookie("BITRIX_SM_favorites", serialize($arElements), time() + 60 * 60 * 24 * 60, "/", "vl26908655.nichost.ru");
+        setcookie("BITRIX_SM_favorites", serialize($arElements), time() + 60 * 60 * 24 * 60, "/", "vl28.pro");
 //        $cookie = new Cookie("favorites", serialize($arElements), time() + 60 * 60 * 24 * 60);
 //        $cookie->setDomain($context->getServer()->getHttpHost());
 //        $cookie->setHttpOnly(false);

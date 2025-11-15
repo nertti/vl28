@@ -54,7 +54,7 @@ function onOrderCreate(Bitrix\Main\Event $event)
 {
     $telegramToken = "8332872680:AAG1OtqE-zZKpCXghJFjPQAzKuFWvMzlV4U";
     $chatId = "-1002635999993";
-    $adminOrderUrl = "http://vl26908655.nichost.ru/bitrix/admin/sale_order_view.php?ID=";
+    $adminOrderUrl = $_SERVER["DOCUMENT_ROOT"]."/bitrix/admin/sale_order_view.php?ID=";
 
     $order = $event->getParameter("ENTITY");
     $isNew = $event->getParameter("IS_NEW");

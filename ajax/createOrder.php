@@ -85,7 +85,7 @@ if ($request["payment"] === 'card') {
         'OrderId' => $orderTempId,
         'Description' => $description,
         'Password' => $secretKey,
-        'NotificationURL' => 'http://vl26908655.nichost.ru/ajax/paySuccess.php',
+		'NotificationURL' => 'https://vl28.pro/ajax/paySuccess.php',
     ];
     ksort($tokenFields);
     $token = hash('sha256', implode('', $tokenFields));
@@ -97,7 +97,7 @@ if ($request["payment"] === 'card') {
         'OrderId' => $orderTempId,
         'Description' => $description,
         'Token' => $token,
-        'NotificationURL' => 'http://vl26908655.nichost.ru/ajax/paySuccess.php',
+		'NotificationURL' => 'https://vl28.pro/ajax/paySuccess.php',
         'DATA' => [
             'Phone' => '+' . $phone,
             'Email' => $email,
