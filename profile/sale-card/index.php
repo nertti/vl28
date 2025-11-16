@@ -21,7 +21,6 @@ global $USER;
 $userId = $USER->GetID();
 $rsUser = CUser::GetByID($userId);
 $arUser = $rsUser->Fetch();
-//pr($arCards);
 $APPLICATION->SetTitle("Карта лояльности");
 ?>
     <div class="container">

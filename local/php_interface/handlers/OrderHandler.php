@@ -3,7 +3,8 @@
 use Bitrix\Main\Loader;
 use Bitrix\Sale;
 use Bitrix\Sale\Delivery;
-
+use Bitrix\Highloadblock\HighloadBlockTable;
+use Bitrix\Main\Entity;
 
 function onOrderPaid($order_id, &$arFields)
 {
@@ -52,9 +53,34 @@ function onOrderPaid($order_id, &$arFields)
 
 function onOrderCreate(Bitrix\Main\Event $event)
 {
-    $telegramToken = "8332872680:AAG1OtqE-zZKpCXghJFjPQAzKuFWvMzlV4U";
-    $chatId = "-1002635999993";
-    $adminOrderUrl = $_SERVER["DOCUMENT_ROOT"]."/bitrix/admin/sale_order_view.php?ID=";
+//    file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/local/log.txt', print_r($sendTelegram, 1), FILE_APPEND);
+//    $telegramToken = "8332872680:AAG1OtqE-zZKpCXghJFjPQAzKuFWvMzlV4U";
+//    $chatId = "-1002635999993";
+
+    \Bitrix\Main\Loader::includeModule('highloadblock');
+
+// ID хайлоад-блока
+    $hlblockId = 3;
+
+// Получаем данные хайлоада
+    $hlblock = HighloadBlockTable::getById($hlblockId)->fetch();
+    $entity = HighloadBlockTable::compileEntity($hlblock);
+    $dataClass = $entity->getDataClass();
+
+// Получаем первую запись
+    $result = $dataClass::getList([
+        'select' => ['*'],
+        'order'  => ['ID' => 'ASC'],
+        'limit'  => 1
+    ]);
+
+    $firstItem = $result->fetch();
+
+// Подставляем значения
+    $telegramToken = $firstItem['UF_BOT_TOKEN'];
+    $chatId        = $firstItem['UF_ID_CHAT'];
+
+    $adminOrderUrl = "https://vl28.pro/bitrix/admin/sale_order_view.php?ID=";
 
     $order = $event->getParameter("ENTITY");
     $isNew = $event->getParameter("IS_NEW");
@@ -63,6 +89,7 @@ function onOrderCreate(Bitrix\Main\Event $event)
 
     $orderId = $order->getId();
     $propertyCollection = $order->getPropertyCollection();
+
 
     // Проверяем свойство SEND_TELEGRAM
     $sendTelegramProp = $propertyCollection->getItemByOrderPropertyId(29); // ID свойства SEND_TELEGRAM
@@ -90,6 +117,7 @@ function onOrderCreate(Bitrix\Main\Event $event)
         }
     }
 
+
 // Если нет платежа с ID = 7 и заказ не оплачен другими способами, тоже отправляем
     if (!$sendTelegram) {
         foreach ($paymentCollection as $paymentItem) {
@@ -104,7 +132,6 @@ function onOrderCreate(Bitrix\Main\Event $event)
     if (!$sendTelegram) {
         return; // Не отправлять
     }
-
 
     // Данные пользователя
     $userName = $propertyCollection->getItemByOrderPropertyId(13)->getValue() . " " . $propertyCollection->getItemByOrderPropertyId(14)->getValue();
@@ -178,7 +205,7 @@ function onOrderCreate(Bitrix\Main\Event $event)
         ]
     ];
 
-    // Отправка в Telegram
+// Отправка в Telegram с дебагом
     $url = "https://api.telegram.org/bot{$telegramToken}/sendMessage";
     $postFields = [
         "chat_id" => $chatId,
@@ -194,14 +221,47 @@ function onOrderCreate(Bitrix\Main\Event $event)
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_POSTFIELDS => $postFields,
     ]);
+
     $response = curl_exec($ch);
+    $curlErrNo = curl_errno($ch);
+    $curlError = curl_error($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
     curl_close($ch);
 
-    // После успешной отправки ставим SEND_TELEGRAM = Y
+// Логирование
+    $logPath = $_SERVER['DOCUMENT_ROOT'] . '/local/log.txt';
+
+    if ($curlErrNo) {
+        file_put_contents($logPath, "\n[CURL ERROR] №{$curlErrNo}: {$curlError}\n", FILE_APPEND);
+    } else {
+        //file_put_contents($logPath, "\n[TELEGRAM RESPONSE] HTTP {$httpCode}: {$response}\n", FILE_APPEND);
+    }
+
+// Проверяем, что Telegram вернул ok = true
+    $ok = false;
     if ($response) {
+        $decoded = json_decode($response, true);
+        if (!empty($decoded['ok'])) {
+            $ok = true;
+        } else {
+            file_put_contents(
+                $logPath,
+                "\n[TELEGRAM ERROR] Telegram вернул ошибку: " . print_r($decoded, true) . "\n",
+                FILE_APPEND
+            );
+        }
+    }
+
+// Если успех — записываем SEND_TELEGRAM = Y
+    if ($ok) {
         $sendTelegramProp->setValue('Y');
         $order->save();
+        //file_put_contents($logPath, "\n[OK] Флаг SEND_TELEGRAM установлен для заказа {$orderId}\n", FILE_APPEND);
+    } else {
+        file_put_contents($logPath, "\n[FAIL] Сообщение не отправлено в Telegram для заказа {$orderId}\n", FILE_APPEND);
     }
+
 }
 
 function onOrderPaidHandler($order_id, &$arFields)
