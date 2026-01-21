@@ -4722,3 +4722,11 @@ section {
     display:none
   }
 }
+#sms-message-desk a{
+  color: #e6e6e6;
+  margin-bottom: 10px;
+  text-decoration: underline;
+}
+#sms-message-desk a:hover{
+  color: #929292;
+}

@@ -16,6 +16,10 @@ $APPLICATION->SetTitle("Вход или регистрация");
             </form>
 
             <!-- Сообщение о вводе кода (скрыто до отправки SMS) -->
+            <p class="registration__desc" id="sms-message-desk" style="display: none;">
+                Продолжая, вы даете <a href="https://vl28.pro/personal/">согласие</a> на обработку персональных данных.
+            </p>
+            <br>
             <p class="registration__desc" id="sms-message" style="display: none;">
                 Введите код, который мы выслали на номер <span id="user-phone"></span>
             </p>
@@ -60,6 +64,7 @@ $APPLICATION->SetTitle("Вход или регистрация");
 
                             document.getElementById("user-phone").textContent = phone;
                             document.getElementById("sms-message").style.display = "block";
+                            document.getElementById("sms-message-desk").style.display = "block";
                             document.getElementById("code-form").style.display = "block";
                             document.getElementById("phone-form").style.display = "none";
 
