@@ -15,6 +15,7 @@
 }
 .swiper-slide img{
 	object-fit: cover;
+	width: 100%;
 }
 
 .catalog-cart-video{
