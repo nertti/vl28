@@ -35,7 +35,7 @@
 .media-square {
 	position: relative;
 	width: 100%;
-	max-width: 760px;
+	/*max-width: 760px;*/
 	aspect-ratio: 1 / 1;
 	overflow: hidden;
 }

@@ -1615,7 +1615,7 @@ section {
   color:#929292
 }
 .tovar__right {
-  padding-top:95px;
+  /*padding-top:95px;*/
   padding-left:40px;
   padding-right:40px;
   display:-webkit-box;
@@ -1799,7 +1799,7 @@ section {
     display:flex
   }
   .tovar__right {
-    padding-top:45px;
+    /*padding-top:45px;*/
     padding-left:20px;
     padding-right:20px
   }
