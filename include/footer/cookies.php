@@ -7,64 +7,6 @@
     </div>
     <div class="cookies_button">Принять</div>
 </div>
-<style>
-    .cookies {
-        z-index: 99999999;
-        position: fixed;
-        right: 0;
-        bottom: 0;
-        width: 100%;
-        max-width: 425px;
-        padding: 40px;
-        margin: 35px;
-        background-color: white;
-        border: 1px solid black;
-        transition: opacity 0.3s ease, transform 0.3s ease;
-    }
-
-    .cookies--hide {
-        opacity: 0;
-        transform: translateY(20px);
-        pointer-events: none;
-    }
-
-    .cookies .cookies_button {
-        padding: 15px;
-        width: 100%;
-        border: 1px solid black;
-        text-align: center;
-        margin-top: 30px;
-        cursor: pointer;
-    }
-
-    .cookies .cookies_body {
-        text-align: justify;
-        font-size: 14px !important;
-    }
-
-    .cookies .link {
-        padding-bottom: 0;
-    }
-
-    .cookies .hystmodal__close {
-        top: 15px !important;
-        right: 15px !important;
-    }
-
-    @media screen and (max-width: 500px) {
-        .cookies {
-            bottom: 0;
-            max-width: 100%;
-            margin: 0;
-        }
-        .cookies .cookies_body {
-            font-size: 12px !important;
-        }
-        .cookies .link {
-            font-size: 12px !important;
-        }
-    }
-</style>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const cookieBox = document.querySelector('.cookies');

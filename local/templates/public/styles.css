@@ -149,3 +149,118 @@ input[name="city"]:disabled {
     letter-spacing: -.02em;
     margin-bottom: 50px;
 }
+
+/*start preloader*/
+#site-preloader {
+     position: fixed;
+     inset: 0;
+     background: #fff;
+     z-index: 99999;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     transition: opacity 0.6s ease, visibility 0.6s ease;
+ }
+
+#site-preloader.hide {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.preloader-content {
+    text-align: center;
+}
+
+.preloader-logo {
+    width: 120px;
+    margin-bottom: 20px;
+    animation: pulse 1.5s infinite ease-in-out;
+}
+
+/* Пульсация логотипа */
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.7; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Точки загрузки */
+.loader-dots span {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin: 0 4px;
+    background: #000;
+    border-radius: 50%;
+    animation: dots 1.4s infinite both;
+}
+
+.loader-dots span:nth-child(1) { animation-delay: 0s; }
+.loader-dots span:nth-child(2) { animation-delay: 0.2s; }
+.loader-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes dots {
+    0% { opacity: 0.3; }
+    50% { opacity: 1; }
+    100% { opacity: 0.3; }
+}
+/*end preloader*/
+
+/*start cookies*/
+.cookies {
+     z-index: 99999999;
+     position: fixed;
+     right: 0;
+     bottom: 0;
+     width: 100%;
+     max-width: 425px;
+     padding: 40px;
+     margin: 35px;
+     background-color: white;
+     border: 1px solid black;
+     transition: opacity 0.3s ease, transform 0.3s ease;
+ }
+
+.cookies--hide {
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+}
+
+.cookies .cookies_button {
+    padding: 15px;
+    width: 100%;
+    border: 1px solid black;
+    text-align: center;
+    margin-top: 30px;
+    cursor: pointer;
+}
+
+.cookies .cookies_body {
+    text-align: justify;
+    font-size: 14px !important;
+}
+
+.cookies .link {
+    padding-bottom: 0;
+}
+
+.cookies .hystmodal__close {
+    top: 15px !important;
+    right: 15px !important;
+}
+
+@media screen and (max-width: 500px) {
+    .cookies {
+        bottom: 0;
+        max-width: 100%;
+        margin: 0;
+    }
+    .cookies .cookies_body {
+        font-size: 12px !important;
+    }
+    .cookies .link {
+        font-size: 12px !important;
+    }
+}
+/*end cookies*/

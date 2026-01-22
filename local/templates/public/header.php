@@ -40,8 +40,9 @@ if ($isProfilePages && !$isFavoritePage){
 <!doctype html>
 <html lang="ru">
 <head>
+    <link rel="preload" as="image" href="/local/templates/public/assets/img/logo.svg">
     <?php Asset::getInstance()->addString("<meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1'>") ?>
-    <title><?php $APPLICATION->ShowTitle(); ?></title>
+    <title><?php $APPLICATION->ShowTitle(); ?> - vl28.pro</title>
     <?php
     Asset::getInstance()->addCss(SITE_TEMPLATE_PATH . '/assets/css/hystmodal.min.css');
     Asset::getInstance()->addCss(SITE_TEMPLATE_PATH . '/assets/css/swiper-bundle.min.css');
