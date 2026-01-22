@@ -35,6 +35,11 @@ if (!defined('LANGUAGE_ID') || preg_match('/^[a-z]{2}$/i', LANGUAGE_ID) !== 1)
 
 set_time_limit(0);
 
+if (!defined("CATALOG_LOAD_NO_STEP"))
+{
+	define("CATALOG_LOAD_NO_STEP", true);
+}
+
 if (!\Bitrix\Main\Loader::includeModule('catalog'))
 {
 	die('Can\'t include module');
@@ -50,21 +55,23 @@ if ($profile_id <= 0)
 	die('No profile id');
 }
 
-$ar_profile = CCatalogExport::GetByID($profile_id);
+$ar_profile = CCatalogImport::GetByID($profile_id);
 if (!$ar_profile)
 {
 	die('No profile');
 }
 
-$strFile = CATALOG_PATH2EXPORTS.$ar_profile["FILE_NAME"]."_run.php";
+$strFile = CATALOG_PATH2IMPORTS.$ar_profile["FILE_NAME"]."_run.php";
 if (!file_exists($_SERVER["DOCUMENT_ROOT"].$strFile))
 {
-	$strFile = CATALOG_PATH2EXPORTS_DEF.$ar_profile["FILE_NAME"]."_run.php";
+	$strFile = CATALOG_PATH2IMPORTS_DEF.$ar_profile["FILE_NAME"]."_run.php";
 	if (!file_exists($_SERVER["DOCUMENT_ROOT"].$strFile))
 	{
-		die('No export script');
+		die('No import script');
 	}
 }
+
+$bFirstLoadStep = true;
 
 $arSetupVars = array();
 $intSetupVarsCount = 0;
@@ -76,8 +83,6 @@ if ($ar_profile["DEFAULT_PROFILE"] != 'Y')
 		$intSetupVarsCount = extract($arSetupVars, EXTR_SKIP);
 	}
 }
-
-$firstStep = true;
 
 global $arCatalogAvailProdFields;
 $arCatalogAvailProdFields = CCatalogCSVSettings::getSettingsFields(CCatalogCSVSettings::FIELDS_ELEMENT);
@@ -107,7 +112,7 @@ CCatalogDiscountSave::Disable();
 include($_SERVER["DOCUMENT_ROOT"].$strFile);
 CCatalogDiscountSave::Enable();
 
-CCatalogExport::Update(
+CCatalogImport::Update(
 	$profile_id,
 	[
 		"=LAST_USE" => $DB->GetNowFunction(),
