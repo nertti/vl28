@@ -216,23 +216,40 @@ foreach ($arFavorites as $favorite) {
             </div>
             <div class="swiper product-swiper">
                 <div class="swiper-wrapper">
-                    <?php foreach ($arResult['PROPERTIES']['IMAGES']['VALUE'] as $index => $image): ?>
-                        <?php if ($index == 0): ?>
-                            <?php if (!empty($arResult['PROPERTIES']['VIDEO']['VALUE'])): ?>
-                                <div class="swiper-slide">
-                                    <video class="catalog-cart-video"
-                                           autoplay
-                                           muted
-                                           playsinline
-                                           loop
-                                           src="<?= CFile::getPath($arResult['PROPERTIES']['VIDEO']['VALUE']) ?>"
-                                    ></video>
-                                </div>
-                            <?php endif; ?>
+                    <?php foreach ($arResult['PROPERTIES']['IMAGES']['VALUE'] as $index => $imageId): ?>
+
+                        <?php if ($index === 0 && !empty($arResult['PROPERTIES']['VIDEO']['VALUE'])): ?>
+                            <div class="swiper-slide media-square">
+                                <video
+                                        class="catalog-cart-video"
+                                        autoplay
+                                        muted
+                                        playsinline
+                                        loop
+                                        src="<?= CFile::GetPath($arResult['PROPERTIES']['VIDEO']['VALUE']) ?>">
+                                </video>
+                            </div>
                         <?php endif; ?>
-                        <div class="swiper-slide">
-                            <img src="<?= CFile::getPath($image) ?>" alt="Фото">
+
+                        <?php
+                        $file = CFile::ResizeImageGet(
+                            $imageId,
+                            ['width' => 760, 'height' => 760],
+                            BX_RESIZE_IMAGE_EXACT,
+                            true
+                        );
+                        ?>
+
+                        <div class="swiper-slide media-square">
+                            <img
+                                    src="<?= $file['src'] ?>"
+                                    width="<?= $file['width'] ?>"
+                                    height="<?= $file['height'] ?>"
+                                    alt="Фото"
+                                    loading="lazy"
+                            >
                         </div>
+
                     <?php endforeach; ?>
                 </div>
                 <div class="swiper-pagination"></div>
