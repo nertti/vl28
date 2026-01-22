@@ -1,0 +1,5 @@
+@media screen and (min-width: 991px) {
+	main .products .products__list .product:last-child {
+		display: none;
+	}
+}
