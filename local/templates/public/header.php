@@ -254,6 +254,7 @@ if ($isProfilePages && !$isFavoritePage){
         <div class="hystmodal__window" role="dialog" aria-modal="true">
             <div class="modal-menu" style="flex-direction: column">
                 <ul>
+                <li class="h2"><a href="/catalog/">Каталог</a></li>
                     <?php $APPLICATION->IncludeComponent(
                         "bitrix:menu",
                         "top",
@@ -268,7 +269,7 @@ if ($isProfilePages && !$isFavoritePage){
                             "MENU_CACHE_TYPE" => "Y",
                             "MENU_CACHE_USE_GROUPS" => "Y",
                             "ROOT_MENU_TYPE" => "top",
-                            "USE_EXT" => "N"
+                            "USE_EXT" => "Y"
                         ),
                         false
                     ); ?>

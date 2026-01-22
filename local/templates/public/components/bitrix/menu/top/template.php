@@ -4,6 +4,6 @@
 ?>
 <?php if (!empty($arResult)): ?>
     <?php foreach ($arResult as $arItem):?>
-        <li class="h2"><a href="<?= $arItem["LINK"] ?>"><?= $arItem["TEXT"] ?></a></li>
+        <li class="h3"><a href="<?= $arItem["LINK"] ?>"><?= $arItem["TEXT"] ?></a></li>
     <?php endforeach ?>
 <?php endif ?>
