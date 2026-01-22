@@ -27,14 +27,34 @@ $this->setFrameMode(true);
                     <div class="product__swiper swiper" id="product<?= $cell ?>">
                         <div id="swiper-wrapper-<?= $cell ?>" class="swiper-wrapper">
                             <div class="swiper-slide">
-                                <img src="<?= $arElement['DETAIL_PICTURE']['SRC'] ?>" alt="<?= $arElement['NAME'] ?>"
-                                     class="product__img">
+                                <?php
+                                $mainImage = getResponsiveImage($arElement['DETAIL_PICTURE']['ID']);
+                                ?>
+                                <?php if ($mainImage): ?>
+                                    <img
+                                            src="<?= $mainImage['src'] ?>"
+                                            srcset="<?= $mainImage['srcset'] ?>"
+                                            sizes="<?= $mainImage['sizes'] ?>"
+                                            alt="<?= htmlspecialchars($arElement['NAME']) ?>"
+                                            class="product__img"
+                                            loading="lazy"
+                                    >
+                                <?php endif; ?>
                             </div>
-                            <?php foreach ($arElement['PROPERTIES']['IMAGES']['VALUE'] as $image): ?>
-                                <div class="swiper-slide">
-                                    <img src="<?= CFile::GetPath($image); ?>" alt="<?= $arElement['NAME'] ?>"
-                                         class="product__img">
-                                </div>
+                            <?php foreach ($arElement['PROPERTIES']['IMAGES']['VALUE'] as $imageId): ?>
+                                <?php $img = getResponsiveImage($imageId); ?>
+                                <?php if ($img): ?>
+                                    <div class="swiper-slide">
+                                        <img
+                                                src="<?= $img['src'] ?>"
+                                                srcset="<?= $img['srcset'] ?>"
+                                                sizes="<?= $img['sizes'] ?>"
+                                                alt="<?= htmlspecialchars($arElement['NAME']) ?>"
+                                                class="product__img"
+                                                loading="lazy"
+                                        >
+                                    </div>
+                                <?php endif; ?>
                             <?php endforeach; ?>
                         </div>
                         <div class="swiper-button-prev">

@@ -157,3 +157,40 @@ function OnLoyaltyCardChanged(&$arFields)
         }
     }
 }
+
+function getResponsiveImage($fileId)
+{
+    if (!$fileId) return null;
+
+    // 3:4 (W:H)
+    $sizesMap = [
+        300 => 400,
+        450 => 600,
+        600 => 800,
+        750 => 1000,
+    ];
+
+    $srcset = [];
+    $default = null;
+
+    foreach ($sizesMap as $w => $h) {
+        $img = CFile::ResizeImageGet(
+            $fileId,
+            ['width' => $w, 'height' => $h],
+            BX_RESIZE_IMAGE_EXACT,
+            true
+        );
+
+        if (!$default) {
+            $default = $img['src'];
+        }
+
+        $srcset[] = $img['src'] . " {$w}w";
+    }
+
+    return [
+        'src' => $default,
+        'srcset' => implode(', ', $srcset),
+        'sizes' => '(max-width: 768px) 90vw, (max-width: 1200px) 45vw, 450px'
+    ];
+}
