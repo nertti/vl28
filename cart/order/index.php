@@ -103,7 +103,7 @@ $salePrice = 0;
                                    value="<?= $basketItem->getQuantity() ?>">
                             <div class="minus"></div>
                         </div>
-                        <p class="checkout__cart-price"><?= $basketItem->getFinalPrice() ?> ₽</p>
+                        <p class="checkout__cart-price"><?= number_format($basketItem->getFinalPrice(), 0, '', ' ') ?> ₽</p>
                         <span class="checkout__cart-remove pointer"></span>
                     </div>
                 <?php endforeach; ?>
@@ -265,7 +265,7 @@ $salePrice = 0;
                         <?php endif; ?>
                         <div class="checkout__param-item totalPrice">
                             <p>Итого:</p>
-                            <strong><?= $fullPrice; ?> ₽</strong>
+                            <strong><?= number_format($fullPrice, 0, '', ' '); ?> ₽</strong>
                         </div>
                     </div>
                     <?php if ($USER->isAuthorized()): ?>
@@ -598,8 +598,8 @@ $salePrice = 0;
             const applyText = document.querySelector('#applyBonusText');
             const totalAfter = Math.max(this.currentTotal - this.bonusAmount, 0);
 
-            if (totalEl) totalEl.textContent = `${totalAfter} ₽`;
-            if (applyText) applyText.textContent = `-${this.bonusAmount} ₽`;
+            if (totalEl) totalEl.textContent = `${totalAfter.toLocaleString('ru-RU')} ₽`;
+            if (applyText) applyText.textContent = `-${this.bonusAmount.toLocaleString('ru-RU')} ₽`;
             if (this.bonusAmount > 0) {
                 document.querySelector('#applyBonusBlock').style.display = 'flex';
             } else {
@@ -702,13 +702,13 @@ $salePrice = 0;
         updateItemPrice(id, newPrice) {
             const item = this.items[id];
             if (!item) return;
-            item.priceEl.textContent = `${newPrice} ₽`;
+            item.priceEl.textContent = `${newPrice.toLocaleString('ru-RU')} ₽`;
             //console.log(`Цена товара ${id} обновлена: ${newPrice} ₽`);
         }
 
         updateTotalPrice(total) {
             const totalEl = document.querySelector('.totalPrice strong');
-            if (totalEl) totalEl.textContent = `${total} ₽`;
+            if (totalEl) totalEl.textContent = `${total.toLocaleString('ru-RU')} ₽`;
             //console.log(`Общая сумма корзины: ${total} ₽`);
         }
 
@@ -734,7 +734,7 @@ $salePrice = 0;
                 points = Math.floor(totalPrice * discountPercent * 0.01);
             }
 
-            bonusTextEl.textContent = `+${points} баллов`;
+            bonusTextEl.textContent = `+${points.toLocaleString('ru-RU')} баллов`;
             bonusInputEl.value = points;
             bonusBlockEl.style.display = 'flex';
 

@@ -105,7 +105,7 @@ $isOrderPage = $APPLICATION->GetCurPage(false) === '/cart/order/';
                         <div class="cart-modal__footer">
                             <div class="cart-modal__total">
                                 <p>Итого</p>
-                                <p><?= $basket->getPrice() ?> ₽</p>
+                                <p><?= number_format($basket->getPrice(), 0, '', ' ') ?> ₽</p>
                             </div>
                             <a href="/cart/" class="border-btn">Перейти в корзину</a>
                             <a href="/cart/order/" class="black-btn">Оформить заказ</a>
