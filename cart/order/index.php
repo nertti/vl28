@@ -251,7 +251,7 @@ $salePrice = 0;
                                 },
                                 root: 'cdek-map',
                                 apiKey: '0fd446ed-d771-44f9-a488-d51a25655491',
-                                servicePath: '<?=$_SERVER['HTTP_REFERER']?>/ajax/cdek/service.php',
+                                servicePath: '<?=((!empty($_SERVER['HTTPS'])) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST']?>/ajax/cdek/service.php',
                                 defaultLocation: 'Москва',
                                 lang: 'rus',
                                 currency: 'RUB',
@@ -291,7 +291,7 @@ $salePrice = 0;
                     <!--test-->
 
                     <div class="checkout__label checkout__label_radios">
-                        <p class="checkout__name">Сcdek-mapпособ оплаты</p>
+                        <p class="checkout__name">Способ оплаты</p>
                         <div class="checkout__inputs">
                             <label class="checkout__radio" id="otherCity">
                                 <input type="radio" name="payment" value="card" checked="">

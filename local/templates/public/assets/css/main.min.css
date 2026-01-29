@@ -300,7 +300,7 @@ section {
   -ms-flex-pack:justify;
   justify-content:space-between;
   padding:17px 40px;
-  z-index:20;
+  z-index:20000;
   position:fixed;
   width:100%;
   top:0;
