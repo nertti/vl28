@@ -45,7 +45,7 @@ if ($isProfilePages && !$isFavoritePage){
     <?php Asset::getInstance()->addString("<meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1'>") ?>
     <title><?php $APPLICATION->ShowTitle(); ?> - vl28.pro</title>
     <?php if($isOrderPage):?>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@cdek-it/widget@3" charset="utf-8"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@cdek-it/widget@3.11.1/dist/cdek-widget.umd.js" charset="utf-8"></script>
     <?php endif;?>
     <?php
     Asset::getInstance()->addCss(SITE_TEMPLATE_PATH . '/assets/css/hystmodal.min.css');

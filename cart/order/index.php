@@ -9,7 +9,6 @@
 
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
 $APPLICATION->SetTitle("Оформление заказа");
-
 $userId = $USER->GetID();
 $rsUser = CUser::GetByID($userId);
 $arUser = $rsUser->Fetch();
@@ -196,7 +195,7 @@ $salePrice = 0;
                             <?php endforeach; ?>
                         </div>
                     </div>
-                    <div class="address" style="flex-direction: column">
+                    <div class="address address_more" style="flex-direction: column">
                         <div class="checkout__label" style="padding-bottom: 20px">
                             <p class="checkout__name">Населённый пункт</p>
                             <div class="checkout__inputs">
@@ -208,7 +207,7 @@ $salePrice = 0;
                                 </div>
                             </div>
                         </div>
-                        <div class="checkout__label address_more">
+                        <div class="checkout__label ">
                             <p class="checkout__name">Улица</p>
                             <div class="checkout__inputs">
                                 <p class="error-text street" style="display: none;">Пожалуйста, введите свою улицу.</p>
@@ -234,126 +233,64 @@ $salePrice = 0;
                         </div>
                     </div>
                     <!--test-->
-                    <div id="cdek-map" style="width:800px;height:600px"></div>
-                    <script type="text/javascript">
-                        document.addEventListener('DOMContentLoaded', () =>
+                    <div id="cdek-map" style="max-width:1000px;width: 100%;height:600px;display: none"></div>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', () => {
+                            const cart = new CheckoutCart('<?=$siteId?>', '<?=$fUserId?>', <?=$userBonus?>);
+                            cart.deliveryCost = 0; // добавляем поле для стоимости доставки
+
+                            let lastCalculation = {}; // сюда будем сохранять результат onCalculate
+
                             new window.CDEKWidget({
                                 from: {
                                     country_code: 'RU',
                                     city: 'Москва',
+                                    postal_code: 117105,
                                     code: 44,
                                     address: 'Варшавское шоссе, 26 с32',
                                 },
                                 root: 'cdek-map',
                                 apiKey: '0fd446ed-d771-44f9-a488-d51a25655491',
-                                servicePath: 'http://vl26908655.nichost.ru/ajax/cdek/service.php',
+                                servicePath: '<?=$_SERVER['HTTP_REFERER']?>/ajax/cdek/service.php',
                                 defaultLocation: 'Москва',
                                 lang: 'rus',
                                 currency: 'RUB',
-                                tariffs: {
-                                    office: [234, 136, 138],
-                                    door: [233, 137, 139],
-                                },
-                                onReady() {
-                                    alert('Виджет загружен');
-                                },
-                                onCalculate() {
-                                    alert('Расчет стоимости доставки произведен');
-                                },
-                                onChoose() {
-                                    alert('Доставка выбрана');
-                                },
+                                tariffs: { office: [136, 291], door: [137, 294] },
+                                goods: [{ width: 10, height: 10, length: 10, weight: 50 }],
+                                hideDeliveryOptions: { office: false, door: false },
                                 debug: true,
-                                goods: [
-                                    {
-                                        width: 100,
-                                        height: 100,
-                                        length: 100,
-                                        weight: 500,
-                                    },
-                                ],
-                            }));
-                    </script>
-                    <script>
-                        let city = document.querySelector('#city');
-                        let cityCode = document.querySelector('#cityCode');
+                                // При расчете сохраняем цены
+                                onCalculate(result) {
+                                    //console.log('Расчет доставки:', result);
+                                    lastCalculation = result; // сохраняем данные
+                                },
 
-                        function loadRegion(cityName) {
-                            fetch(`/ajax/cdek/region.php?city_name=${cityName}`)
-                                .then(r => r.json())
-                                .then(res => {
-                                    if (!res.success || !res.items.length) {
-                                        hideRegion();
-                                        return;
+                                // При выборе ПВЗ или тарифа выводим только выбранную цену
+                                onChoose(selected) {
+                                    //console.log('Выбранная доставка:', selected);
+                                    if (selected && lastCalculation[selected]) {
+                                        const cost = lastCalculation[selected][0].delivery_sum;
+                                        document.getElementById('cdek-price').innerHTML =
+                                            `${cost} ₽`;
+
+                                        cart.deliveryCost = cost; // сохраняем в корзину
+                                        cart.currentTotalWithoutBonus = cart.getTotalPriceWithoutBonus();
+                                        cart.currentTotal = cart.currentTotalWithoutBonus + cart.deliveryCost;
+                                        cart.updateTotalWithBonus();
+                                    } else {
+                                        cart.deliveryCost = 0;
+                                        document.getElementById('cdek-price').innerHTML = `0 ₽`;
+                                        cart.currentTotal = cart.getTotalPriceWithoutBonus();
+                                        cart.updateTotalWithBonus();
                                     }
-
-                                    renderRegionList(res.items);
-                                })
-                                .catch(() => hideRegion());
-                        }
-
-                        function loadOffice(cityCode) {
-                            fetch(`/ajax/cdek/pvz.php?city_code=${cityCode}`)
-                                .then(r => r.json())
-                                .then(res => {
-                                    if (!res.success || !res.items.length) {
-                                        //hideRegion();
-                                        return;
-                                    }
-
-                                    console.log(res.items);
-                                })
-                        }
-
-                        function calculatePrice(cityCode) {
-                            fetch(`/ajax/cdek/pvz.php?city_code=${cityCode}`)
-                                .then(r => r.json())
-                                .then(res => {
-                                    if (!res.success || !res.items.length) {
-                                        //hideRegion();
-                                        return;
-                                    }
-
-                                    console.log(res.items);
-                                })
-                        }
-
-
-                        function renderRegionList(items) {
-                            const list = document.getElementById('cdek-region-list');
-
-                            list.innerHTML = '';
-
-                            items.forEach(region => {
-                                const el = document.createElement('div');
-                                el.className = 'cdek-region-item';
-                                el.innerHTML = `
-                                    <div data-id="${region.code}">${region.name}</div>
-                                `;
-
-                                el.addEventListener('click', () => {
-                                    selectRegion(region);
-                                });
-
-                                list.appendChild(el);
+                                },
                             });
-                        }
-
-                        function selectRegion(region) {
-                            city.value = region.name
-                            cityCode.value = region.code
-                            loadOffice(region.code)
-                            hideRegion()
-                        }
-
-                        function hideRegion() {
-                            document.getElementById('cdek-region-list').innerHTML = '';
-                        }
+                        });
                     </script>
                     <!--test-->
 
                     <div class="checkout__label checkout__label_radios">
-                        <p class="checkout__name">Способ оплаты</p>
+                        <p class="checkout__name">Сcdek-mapпособ оплаты</p>
                         <div class="checkout__inputs">
                             <label class="checkout__radio" id="otherCity">
                                 <input type="radio" name="payment" value="card" checked="">
@@ -397,7 +334,7 @@ $salePrice = 0;
                     <div class="checkout__param">
                         <div class="checkout__param-item">
                             <p>Доставка:</p>
-                            <p>0 ₽</p>
+                            <p id="cdek-price">0 ₽</p>
                         </div>
                         <div class="checkout__param-item">
                             <p>Скидка по промокоду:</p>
@@ -907,6 +844,7 @@ $salePrice = 0;
         const addressBlock = document.querySelector('.address');
         const addressMore = document.querySelector('.address_more');
         const saveBtn = document.querySelector('#saveBtn');
+        const cdekMap = document.querySelector('#cdek-map');
 
         // ====== Функция обновления состояния оплаты по городу ======
         function updateMoscowAvailability(value) {
@@ -919,16 +857,18 @@ $salePrice = 0;
             moskvaInput.disabled = !isMoscow;
 
             if (!isMoscow) otherCityInput.checked = true;
-            if (value.length > 3) loadRegion(value);
+            //if (value.length > 3) loadRegion(value);
         }
 
         // ====== Функция управления блоками доставки ======
         function updateDeliveryBlocks() {
             const selected = document.querySelector('input[name="delivery"]:checked')?.value;
-            const isAddressHidden = ['137', '139'].includes(selected);
+            //const isAddressHidden = ['137', '139'].includes(selected);
+            const isAddressHidden = ['207'].includes(selected);
             const isMoscowDelivery = selected === '135';
 
             addressMore.style.display = isAddressHidden ? 'none' : 'flex';
+            cdekMap.style.display = isAddressHidden ? 'flex' : 'none';
             cityInput.disabled = isMoscowDelivery;
 
             if (isMoscowDelivery) {
@@ -960,59 +900,6 @@ $salePrice = 0;
         paymentInputs.forEach(input => input.addEventListener('change', updatePaymentButton));
     });
 </script>
-
-<!--
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const cityInput = document.querySelector('#city');
-        const moskvaBlock = document.querySelector('#moskva');
-        const moskvaInput = moskvaBlock.querySelector('input');
-        const moskvaCheckmark = moskvaBlock.querySelector('.checkmark');
-        const otherCityInput = document.querySelector('#otherCity input');
-        const deliveryInputs = document.querySelectorAll('input[name="delivery"]');
-        const paymentInputs = document.querySelectorAll('input[name="payment"]');
-        const addressMore = document.querySelector('.address_more');
-        const saveBtn = document.querySelector('#saveBtn');
-
-        // ====== Функция обновления состояния города ======
-        function updateMoscowAvailability(city) {
-            const isMoscow = city.trim().toLowerCase() === 'москва';
-            moskvaBlock.classList.toggle('disabled', !isMoscow);
-            moskvaInput.disabled = !isMoscow;
-            if (!isMoscow) otherCityInput.checked = true;
-        }
-
-        // ====== Функция управления блоками доставки ======
-        function updateDeliveryBlocks() {
-            const selected = document.querySelector('input[name="delivery"]:checked')?.value;
-            const isAddressHidden = ['137', '139'].includes(selected);
-            const isMoscowDelivery = selected === '135';
-
-            addressMore.style.display = isAddressHidden ? 'none' : 'flex';
-            cityInput.disabled = isMoscowDelivery;
-            if (isMoscowDelivery) cityInput.value = 'Москва';
-
-            updateMoscowAvailability(cityInput.value);
-        }
-
-        // ====== Функция обновления кнопки оплаты ======
-        function updatePaymentButton() {
-            const selectedPayment = document.querySelector('input[name="payment"]:checked')?.value;
-            saveBtn.textContent = selectedPayment === 'card' ? 'Оплатить заказ' : 'Оформить заказ';
-        }
-
-        // ====== Инициализация ======
-        updateDeliveryBlocks();
-        updatePaymentButton();
-
-        // ====== Слушатели событий ======
-        cityInput.addEventListener('input', e => updateMoscowAvailability(e.target.value));
-        deliveryInputs.forEach(input => input.addEventListener('change', updateDeliveryBlocks));
-        paymentInputs.forEach(input => input.addEventListener('change', updatePaymentButton));
-    });
-
-</script>
--->
 <div class="hystmodal" id="alertModal" aria-hidden="true">
     <div class="hystmodal__wrap">
         <div class="hystmodal__window hystmodal__window_subscribe" role="dialog" aria-modal="true"
