@@ -272,6 +272,7 @@ $salePrice = 0;
                                         const cost = lastCalculation[selected][0].delivery_sum;
                                         document.getElementById('cdek-price').innerHTML =
                                             `${cost} ₽`;
+                                        document.getElementById('delivery-price').value = cost
 
                                         cart.deliveryCost = cost; // сохраняем в корзину
                                         cart.currentTotalWithoutBonus = cart.getTotalPriceWithoutBonus();
@@ -335,6 +336,7 @@ $salePrice = 0;
                         <div class="checkout__param-item">
                             <p>Доставка:</p>
                             <p id="cdek-price">0 ₽</p>
+                            <input type="hidden" name="delivery_price" id="delivery-price">
                         </div>
                         <div class="checkout__param-item">
                             <p>Скидка по промокоду:</p>
@@ -864,7 +866,7 @@ $salePrice = 0;
         function updateDeliveryBlocks() {
             const selected = document.querySelector('input[name="delivery"]:checked')?.value;
             //const isAddressHidden = ['137', '139'].includes(selected);
-            const isAddressHidden = ['207'].includes(selected);
+            const isAddressHidden = ['140'].includes(selected);
             const isMoscowDelivery = selected === '135';
 
             addressMore.style.display = isAddressHidden ? 'none' : 'flex';

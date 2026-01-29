@@ -29,15 +29,15 @@ if ($request['delivery'] == 135) {
     if (empty($request['dom'])) $errors['dom'] = "Укажите номер дома.";
     if (empty($request['kvartira'])) $errors['kvartira'] = "Укажите номер квартиры.";
 }
-if ($request['delivery'] == 137 || $request['delivery'] == 139) {
-    if (empty($request['city'])) $errors['city'] = "Укажите населённый пункт.";
-}
-if ($request['delivery'] == 136 || $request['delivery'] == 138) {
-    if (empty($request['city'])) $errors['city'] = "Укажите населённый пункт.";
-    if (empty($request['street'])) $errors['street'] = "Укажите улицу.";
-    if (empty($request['dom'])) $errors['dom'] = "Укажите номер дома.";
-    if (empty($request['kvartira'])) $errors['kvartira'] = "Укажите номер квартиры.";
-}
+//if ($request['delivery'] == 137 || $request['delivery'] == 139) {
+//    if (empty($request['city'])) $errors['city'] = "Укажите населённый пункт.";
+//}
+//if ($request['delivery'] == 136 || $request['delivery'] == 138) {
+//    if (empty($request['city'])) $errors['city'] = "Укажите населённый пункт.";
+//    if (empty($request['street'])) $errors['street'] = "Укажите улицу.";
+//    if (empty($request['dom'])) $errors['dom'] = "Укажите номер дома.";
+//    if (empty($request['kvartira'])) $errors['kvartira'] = "Укажите номер квартиры.";
+//}
 if (!empty($errors)) {
     header('Content-Type: application/json');
     echo json_encode(['status' => 'error', 'message' => $errors]);
@@ -66,7 +66,7 @@ $siteId = $request['siteId'];
 $fUserId = $request['fUserId'];
 $basket = Basket::loadItemsForFUser($fUserId, $siteId);
 $totalPrice = $basket->getPrice() - (float)$bonusPointsWithdraw;
-
+$deliveryPrice = (float)$request['delivery_price'] ?? 300;
 
 // =========================================
 // === Вариант 1: Оплата онлайн (CARD) ===
@@ -185,6 +185,9 @@ $service = Delivery\Services\Manager::getById($request["delivery"]);
 $shipment->setFields([
     'DELIVERY_ID' => $service['ID'],
     'DELIVERY_NAME' => $service['NAME'],
+    'BASE_PRICE_DELIVERY' => $deliveryPrice,
+    'PRICE_DELIVERY' => $deliveryPrice,
+    'CUSTOM_PRICE_DELIVERY' => 'Y',
 ]);
 
 // Оплата
