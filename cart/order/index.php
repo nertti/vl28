@@ -79,6 +79,30 @@ if (empty($basket->getQuantityList())) {
 $fullPrice = $basket->getBasePrice();
 $salePrice = 0;
 ?>
+<style>
+    .cdek-region-wrapper {
+        position: relative;
+    }
+
+    #cdek-region-list {
+        position: absolute;
+        top: 0;
+        background-color: white;
+        z-index: 999;
+    }
+
+    .cdek-region-item {
+        border: 1px solid #bebebe;
+        width: 100%;
+        padding: 10px 20px;
+        color: #222;
+        cursor: pointer;
+    }
+
+    .cdek-region-item:hover {
+        background-color: #bbbbbb;
+    }
+</style>
 <section class="checkout first-section">
     <div class="container">
         <p class="h2">Оформление заказа</p>
@@ -103,7 +127,8 @@ $salePrice = 0;
                                    value="<?= $basketItem->getQuantity() ?>">
                             <div class="minus"></div>
                         </div>
-                        <p class="checkout__cart-price"><?= number_format($basketItem->getFinalPrice(), 0, '', ' ') ?> ₽</p>
+                        <p class="checkout__cart-price"><?= number_format($basketItem->getFinalPrice(), 0, '', ' ') ?>
+                            ₽</p>
                         <span class="checkout__cart-remove pointer"></span>
                     </div>
                 <?php endforeach; ?>
@@ -120,7 +145,7 @@ $salePrice = 0;
                         <div class="checkout__inputs">
                             <p class="error-text email" style="display: none;">Пожалуйста, введите свой email.</p>
                             <input type="text" class="form-input checkout__input email" placeholder="E-mail"
-                                   name="email" value="<?=$arUser['EMAIL']?>">
+                                   name="email" value="<?= $arUser['EMAIL'] ?>">
                             <label class="checkout__checkbox">
                                 <input type="checkbox" name="news">
                                 <div class="checkmark"></div>
@@ -134,7 +159,8 @@ $salePrice = 0;
                         <p class="checkout__name">Имя</p>
                         <div class="checkout__inputs">
                             <p class="error-text name" style="display: none;">Пожалуйста, введите своё имя.</p>
-                            <input type="text" name="name" class="form-input checkout__input name" placeholder="Имя" value="<?=$arUser['NAME']?>">
+                            <input type="text" name="name" class="form-input checkout__input name" placeholder="Имя"
+                                   value="<?= $arUser['NAME'] ?>">
                         </div>
                     </div>
                     <div class="checkout__label">
@@ -142,7 +168,7 @@ $salePrice = 0;
                         <div class="checkout__inputs">
                             <p class="error-text surname" style="display: none;">Пожалуйста, введите свою фамилию.</p>
                             <input type="text" name="surname" class="form-input checkout__input surname"
-                                   placeholder="Фамилия" value="<?=$arUser['LAST_NAME']?>">
+                                   placeholder="Фамилия" value="<?= $arUser['LAST_NAME'] ?>">
                         </div>
                     </div>
                     <div class="checkout__label">
@@ -150,7 +176,7 @@ $salePrice = 0;
                         <div class="checkout__inputs">
                             <p class="error-text phone" style="display: none;">Пожалуйста, введите свой телефон.</p>
                             <input type="text" name="phone" class="form-input phone-input checkout__input phone"
-                                   placeholder="+7 (___) ___-__-__" value="<?=$arUser['PERSONAL_PHONE']?>">
+                                   placeholder="+7 (___) ___-__-__" value="<?= $arUser['PERSONAL_PHONE'] ?>">
                         </div>
                     </div>
                     <div class="checkout__label checkout__label_radios">
@@ -175,8 +201,11 @@ $salePrice = 0;
                             <p class="checkout__name">Населённый пункт</p>
                             <div class="checkout__inputs">
                                 <p class="error-text city" style="display: none;">Пожалуйста, введите свой город.</p>
-                                <input id="city" type="text" name="city" class="form-input checkout__input city"
-                                       placeholder="Населённый пункт">
+                                <input id="city" type="text" name="city" class="form-input checkout__input city">
+                                <input id="cityCode" type="hidden" name="cityCode">
+                                <div class="cdek-region-wrapper">
+                                    <div id="cdek-region-list"></div>
+                                </div>
                             </div>
                         </div>
                         <div class="checkout__label address_more">
@@ -184,26 +213,145 @@ $salePrice = 0;
                             <div class="checkout__inputs">
                                 <p class="error-text street" style="display: none;">Пожалуйста, введите свою улицу.</p>
                                 <input type="text" name="street" class="form-input checkout__input street"
-                                       placeholder="пр-кт Ленинградский">
+                                       placeholder="пр-кт">
                                 <div class="checkout__inputs-inner">
                                     <div class="checkout__inputs-item">
                                         <p class="checkout__name">Дом</p>
                                         <p class="error-text dom" style="display: none;">Пожалуйста, введите свой
                                             дом.</p>
                                         <input type="text" name="dom" class="form-input checkout__input dom"
-                                               placeholder="14 Б">
+                                               placeholder="0">
                                     </div>
                                     <div class="checkout__inputs-item">
                                         <p class="checkout__name">Квартира / офис</p>
                                         <p class="error-text kvartira" style="display: none;">Пожалуйста, введите свою
                                             квартиру.</p>
                                         <input type="text" name="kvartira" class="form-input checkout__input kvartira"
-                                               placeholder="79">
+                                               placeholder="0">
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <!--test-->
+                    <div id="cdek-map" style="width:800px;height:600px"></div>
+                    <script type="text/javascript">
+                        document.addEventListener('DOMContentLoaded', () =>
+                            new window.CDEKWidget({
+                                from: {
+                                    country_code: 'RU',
+                                    city: 'Москва',
+                                    code: 44,
+                                    address: 'Варшавское шоссе, 26 с32',
+                                },
+                                root: 'cdek-map',
+                                apiKey: '0fd446ed-d771-44f9-a488-d51a25655491',
+                                servicePath: 'http://vl26908655.nichost.ru/ajax/cdek/service.php',
+                                defaultLocation: 'Москва',
+                                lang: 'rus',
+                                currency: 'RUB',
+                                tariffs: {
+                                    office: [234, 136, 138],
+                                    door: [233, 137, 139],
+                                },
+                                onReady() {
+                                    alert('Виджет загружен');
+                                },
+                                onCalculate() {
+                                    alert('Расчет стоимости доставки произведен');
+                                },
+                                onChoose() {
+                                    alert('Доставка выбрана');
+                                },
+                                debug: true,
+                                goods: [
+                                    {
+                                        width: 100,
+                                        height: 100,
+                                        length: 100,
+                                        weight: 500,
+                                    },
+                                ],
+                            }));
+                    </script>
+                    <script>
+                        let city = document.querySelector('#city');
+                        let cityCode = document.querySelector('#cityCode');
+
+                        function loadRegion(cityName) {
+                            fetch(`/ajax/cdek/region.php?city_name=${cityName}`)
+                                .then(r => r.json())
+                                .then(res => {
+                                    if (!res.success || !res.items.length) {
+                                        hideRegion();
+                                        return;
+                                    }
+
+                                    renderRegionList(res.items);
+                                })
+                                .catch(() => hideRegion());
+                        }
+
+                        function loadOffice(cityCode) {
+                            fetch(`/ajax/cdek/pvz.php?city_code=${cityCode}`)
+                                .then(r => r.json())
+                                .then(res => {
+                                    if (!res.success || !res.items.length) {
+                                        //hideRegion();
+                                        return;
+                                    }
+
+                                    console.log(res.items);
+                                })
+                        }
+
+                        function calculatePrice(cityCode) {
+                            fetch(`/ajax/cdek/pvz.php?city_code=${cityCode}`)
+                                .then(r => r.json())
+                                .then(res => {
+                                    if (!res.success || !res.items.length) {
+                                        //hideRegion();
+                                        return;
+                                    }
+
+                                    console.log(res.items);
+                                })
+                        }
+
+
+                        function renderRegionList(items) {
+                            const list = document.getElementById('cdek-region-list');
+
+                            list.innerHTML = '';
+
+                            items.forEach(region => {
+                                const el = document.createElement('div');
+                                el.className = 'cdek-region-item';
+                                el.innerHTML = `
+                                    <div data-id="${region.code}">${region.name}</div>
+                                `;
+
+                                el.addEventListener('click', () => {
+                                    selectRegion(region);
+                                });
+
+                                list.appendChild(el);
+                            });
+                        }
+
+                        function selectRegion(region) {
+                            city.value = region.name
+                            cityCode.value = region.code
+                            loadOffice(region.code)
+                            hideRegion()
+                        }
+
+                        function hideRegion() {
+                            document.getElementById('cdek-region-list').innerHTML = '';
+                        }
+                    </script>
+                    <!--test-->
+
                     <div class="checkout__label checkout__label_radios">
                         <p class="checkout__name">Способ оплаты</p>
                         <div class="checkout__inputs">
@@ -247,21 +395,21 @@ $salePrice = 0;
                     </div>
 
                     <div class="checkout__param">
-<!--                        <div class="checkout__param-item">-->
-<!--                            <p>Доставка:</p>-->
-<!--                            <p>0 ₽</p>-->
-<!--                        </div>-->
+                        <div class="checkout__param-item">
+                            <p>Доставка:</p>
+                            <p>0 ₽</p>
+                        </div>
                         <div class="checkout__param-item">
                             <p>Скидка по промокоду:</p>
                             <p>0 ₽</p>
                         </div>
                         <?php if ($USER->isAuthorized()): ?>
                             <!-- Если юзер авторизован -->
-                        <div class="checkout__param-item">
-                            <p>Баллов начислится:</p>
-                            <p class="bonusPoints"></p>
-                            <input class="bonusPointsValue" type="hidden" name="bonusPoints" value="">
-                        </div>
+                            <div class="checkout__param-item">
+                                <p>Баллов начислится:</p>
+                                <p class="bonusPoints"></p>
+                                <input class="bonusPointsValue" type="hidden" name="bonusPoints" value="">
+                            </div>
                         <?php endif; ?>
                         <div class="checkout__param-item totalPrice">
                             <p>Итого:</p>
@@ -269,32 +417,32 @@ $salePrice = 0;
                         </div>
                     </div>
                     <?php if ($USER->isAuthorized()): ?>
-                    <!-- Если юзер авторизован -->
-                    <div class="promo">
-                        <!-- Если юзер тратит баллы -->
-                        <div id="applyBonusBlock" class="checkout__param-item checkout__param-item_sale"
-                             style="display: none">
-                            <p>Программа лояльности</p>
-                            <p id="applyBonusText">-0 ₽</p>
-                        </div>
-                        <?php if ($userBonus > 0): ?>
-                            <div class="promo__activate">
-                                <p>Программа лояльности: <strong><?= $userBonus ?> баллов</strong></p>
-                                <div class="promo__btn">
-                                    <div class="promo__btn-circle"></div>
+                        <!-- Если юзер авторизован -->
+                        <div class="promo">
+                            <!-- Если юзер тратит баллы -->
+                            <div id="applyBonusBlock" class="checkout__param-item checkout__param-item_sale"
+                                 style="display: none">
+                                <p>Программа лояльности</p>
+                                <p id="applyBonusText">-0 ₽</p>
+                            </div>
+                            <?php if ($userBonus > 0): ?>
+                                <div class="promo__activate">
+                                    <p>Программа лояльности: <strong><?= $userBonus ?> баллов</strong></p>
+                                    <div class="promo__btn">
+                                        <div class="promo__btn-circle"></div>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+                            <div class="promo__show">
+                                <div class="promo__form">
+                                    <input type="hidden" name="setBonus" id="setBonus" value="N">
+                                    <input type="number" class="promo__input" name="bonus" id="bonus"
+                                           max="<?= calculateMaxPointsToSpend($fullPrice, $userBonus) ?>"
+                                           value="0">
+                                    <button id="applyBonus" type="button" class="border-btn">Применить</button>
                                 </div>
                             </div>
-                        <?php endif; ?>
-                        <div class="promo__show">
-                            <div class="promo__form">
-                                <input type="hidden" name="setBonus" id="setBonus" value="N">
-                                <input type="number" class="promo__input" name="bonus" id="bonus"
-                                       max="<?= calculateMaxPointsToSpend($fullPrice, $userBonus) ?>"
-                                       value="0">
-                                <button id="applyBonus" type="button" class="border-btn">Применить</button>
-                            </div>
                         </div>
-                    </div>
                     <?php endif; ?>
                     <button id="saveBtn" type="submit" class="black-btn">Оплатить заказ</button>
                     <p class="checkout__small">
@@ -510,7 +658,7 @@ $salePrice = 0;
                 const id = item.id;
                 const count = parseInt(item.querySelector('.countProduct').value);
                 const priceEl = item.querySelector('.checkout__cart-price');
-                items[id] = { id, count, priceEl };
+                items[id] = {id, count, priceEl};
             });
             //console.log('Корзина инициализирована:', items);
             return items;
@@ -688,7 +836,7 @@ $salePrice = 0;
             try {
                 const response = await fetch(url, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(data),
                 });
                 const result = await response.json();
@@ -730,7 +878,7 @@ $salePrice = 0;
             const discountPercent = document.querySelector('#discountPercent').value || '';
             let points = 0;
 
-            if(discountPercent){
+            if (discountPercent) {
                 points = Math.floor(totalPrice * discountPercent * 0.01);
             }
 
@@ -771,6 +919,7 @@ $salePrice = 0;
             moskvaInput.disabled = !isMoscow;
 
             if (!isMoscow) otherCityInput.checked = true;
+            if (value.length > 3) loadRegion(value);
         }
 
         // ====== Функция управления блоками доставки ======
@@ -784,6 +933,9 @@ $salePrice = 0;
 
             if (isMoscowDelivery) {
                 cityInput.value = 'Москва';
+            }
+            if (isAddressHidden) {
+                //loadRegion(cityInput.value);
             }
 
             updateMoscowAvailability(cityInput.value);

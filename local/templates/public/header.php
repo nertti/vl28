@@ -40,9 +40,13 @@ if ($isProfilePages && !$isFavoritePage){
 <!doctype html>
 <html lang="ru">
 <head>
+    <meta property="og:image" content="https://vl28.pro/local/templates/public/assets/img/vl28.jpg">
     <link rel="preload" as="image" href="/local/templates/public/assets/img/logo.svg">
     <?php Asset::getInstance()->addString("<meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1'>") ?>
     <title><?php $APPLICATION->ShowTitle(); ?> - vl28.pro</title>
+    <?php if($isOrderPage):?>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@cdek-it/widget@3" charset="utf-8"></script>
+    <?php endif;?>
     <?php
     Asset::getInstance()->addCss(SITE_TEMPLATE_PATH . '/assets/css/hystmodal.min.css');
     Asset::getInstance()->addCss(SITE_TEMPLATE_PATH . '/assets/css/swiper-bundle.min.css');
