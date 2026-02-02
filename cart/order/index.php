@@ -78,30 +78,6 @@ if (empty($basket->getQuantityList())) {
 $fullPrice = $basket->getBasePrice();
 $salePrice = 0;
 ?>
-<style>
-    .cdek-region-wrapper {
-        position: relative;
-    }
-
-    #cdek-region-list {
-        position: absolute;
-        top: 0;
-        background-color: white;
-        z-index: 999;
-    }
-
-    .cdek-region-item {
-        border: 1px solid #bebebe;
-        width: 100%;
-        padding: 10px 20px;
-        color: #222;
-        cursor: pointer;
-    }
-
-    .cdek-region-item:hover {
-        background-color: #bbbbbb;
-    }
-</style>
 <section class="checkout first-section">
     <div class="container">
         <p class="h2">Оформление заказа</p>
@@ -201,10 +177,6 @@ $salePrice = 0;
                             <div class="checkout__inputs">
                                 <p class="error-text city" style="display: none;">Пожалуйста, введите свой город.</p>
                                 <input id="city" type="text" name="city" class="form-input checkout__input city">
-                                <input id="cityCode" type="hidden" name="cityCode">
-                                <div class="cdek-region-wrapper">
-                                    <div id="cdek-region-list"></div>
-                                </div>
                             </div>
                         </div>
                         <div class="checkout__label ">
@@ -232,63 +204,9 @@ $salePrice = 0;
                             </div>
                         </div>
                     </div>
-                    <!--test-->
+                    <!--сдек-->
                     <div id="cdek-map" style="max-width:1000px;width: 100%;height:600px;display: none"></div>
-                    <script>
-                        document.addEventListener('DOMContentLoaded', () => {
-                            const cart = new CheckoutCart('<?=$siteId?>', '<?=$fUserId?>', <?=$userBonus?>);
-                            cart.deliveryCost = 0; // добавляем поле для стоимости доставки
-
-                            let lastCalculation = {}; // сюда будем сохранять результат onCalculate
-
-                            new window.CDEKWidget({
-                                from: {
-                                    country_code: 'RU',
-                                    city: 'Москва',
-                                    postal_code: 117105,
-                                    code: 44,
-                                    address: 'Варшавское шоссе, 26 с32',
-                                },
-                                root: 'cdek-map',
-                                apiKey: '0fd446ed-d771-44f9-a488-d51a25655491',
-                                servicePath: '<?=((!empty($_SERVER['HTTPS'])) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST']?>/ajax/cdek/service.php',
-                                defaultLocation: 'Москва',
-                                lang: 'rus',
-                                currency: 'RUB',
-                                tariffs: { office: [136, 291], door: [137, 294] },
-                                goods: [{ width: 10, height: 10, length: 10, weight: 50 }],
-                                hideDeliveryOptions: { office: false, door: false },
-                                debug: true,
-                                // При расчете сохраняем цены
-                                onCalculate(result) {
-                                    //console.log('Расчет доставки:', result);
-                                    lastCalculation = result; // сохраняем данные
-                                },
-
-                                // При выборе ПВЗ или тарифа выводим только выбранную цену
-                                onChoose(selected) {
-                                    //console.log('Выбранная доставка:', selected);
-                                    if (selected && lastCalculation[selected]) {
-                                        const cost = lastCalculation[selected][0].delivery_sum;
-                                        document.getElementById('cdek-price').innerHTML =
-                                            `${cost} ₽`;
-                                        document.getElementById('delivery-price').value = cost
-
-                                        cart.deliveryCost = cost; // сохраняем в корзину
-                                        cart.currentTotalWithoutBonus = cart.getTotalPriceWithoutBonus();
-                                        cart.currentTotal = cart.currentTotalWithoutBonus + cart.deliveryCost;
-                                        cart.updateTotalWithBonus();
-                                    } else {
-                                        cart.deliveryCost = 0;
-                                        document.getElementById('cdek-price').innerHTML = `0 ₽`;
-                                        cart.currentTotal = cart.getTotalPriceWithoutBonus();
-                                        cart.updateTotalWithBonus();
-                                    }
-                                },
-                            });
-                        });
-                    </script>
-                    <!--test-->
+                    <!--сдек-->
 
                     <div class="checkout__label checkout__label_radios">
                         <p class="checkout__name">Способ оплаты</p>
@@ -336,7 +254,6 @@ $salePrice = 0;
                         <div class="checkout__param-item">
                             <p>Доставка:</p>
                             <p id="cdek-price">0 ₽</p>
-                            <input type="hidden" name="delivery_price" id="delivery-price">
                         </div>
                         <div class="checkout__param-item">
                             <p>Скидка по промокоду:</p>
@@ -389,6 +306,16 @@ $salePrice = 0;
                             оферты</a>&nbsp;и&nbsp;<a href="/personal/">политики конфиденциальности</a>
                     </p>
                 </div>
+                <input type="hidden" name="delivery_price" id="delivery-price">
+
+
+                <input type="hidden" name="cdek" id="cdek" value="N">
+                <input type="hidden" name="city_cdek" id="city_cdek" value="">
+                <input type="hidden" name="city_code_cdek" id="city_code_cdek" value="">
+                <input type="hidden" name="tariff_cdek" id="tariff_cdek" value="">
+                <input type="hidden" name="address_cdek" id="address_cdek" value="">
+                <input type="hidden" name="pvz_code_cdek" id="pvz_code_cdek" value="">
+                <input type="hidden" name="postal_code_cdek" id="postal_code_cdek" value="">
                 <script>
                     /* оформление заказа */
                     document.addEventListener('DOMContentLoaded', function () {
@@ -579,6 +506,7 @@ $salePrice = 0;
             this.bonusAmount = 0;
             this.currentTotal = 0;
             this.maxBonus = 0;
+            this.deliveryCost = 0;
 
             const totalEl = document.querySelector('.totalPrice strong');
             if (totalEl) {
@@ -683,7 +611,7 @@ $salePrice = 0;
         updateTotalWithBonus() {
             const totalEl = document.querySelector('.totalPrice strong');
             const applyText = document.querySelector('#applyBonusText');
-            const totalAfter = Math.max(this.currentTotal - this.bonusAmount, 0);
+            const totalAfter = Math.max(this.currentTotal - this.bonusAmount + this.deliveryCost, 0);
 
             if (totalEl) totalEl.textContent = `${totalAfter.toLocaleString('ru-RU')} ₽`;
             if (applyText) applyText.textContent = `-${this.bonusAmount.toLocaleString('ru-RU')} ₽`;
@@ -838,6 +766,9 @@ $salePrice = 0;
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        const cart = new CheckoutCart('<?=$siteId?>', '<?=$fUserId?>', <?=$userBonus?>);
+        cart.deliveryCost = 0; // добавляем поле для стоимости доставки
+
         const cityInput = document.querySelector('#city');
         const moskvaBlock = document.querySelector('#moskva');
         const otherCityInput = document.querySelector('#otherCity input');
@@ -874,10 +805,15 @@ $salePrice = 0;
             cityInput.disabled = isMoscowDelivery;
 
             if (isMoscowDelivery) {
+
                 cityInput.value = 'Москва';
+                cart.deliveryCost = 0; // сохраняем в корзину
+                cart.updateTotalWithBonus();
+                document.getElementById('cdek-price').innerHTML = `0 ₽`;
+                document.getElementById('cdek').value = `N`;
             }
             if (isAddressHidden) {
-                //loadRegion(cityInput.value);
+                cityInput.value = '';
             }
 
             updateMoscowAvailability(cityInput.value);
@@ -900,6 +836,98 @@ $salePrice = 0;
         cityInput.addEventListener('input', e => updateMoscowAvailability(e.target.value));
         deliveryInputs.forEach(input => input.addEventListener('change', updateDeliveryBlocks));
         paymentInputs.forEach(input => input.addEventListener('change', updatePaymentButton));
+
+
+
+        // === сдек ===
+
+        let calculationTariff = {}; // сюда будем сохранять результат onCalculate
+        let calculationAddress = {}; // сюда будем сохранять результат onCalculate
+
+        new window.CDEKWidget({
+            from: {
+                country_code: 'RU',
+                city: 'Москва',
+                postal_code: 117105,
+                code: 44,
+                address: 'Варшавское шоссе, 26 с32',
+            },
+            root: 'cdek-map',
+            apiKey: '0fd446ed-d771-44f9-a488-d51a25655491',
+            servicePath: '<?=((!empty($_SERVER['HTTPS'])) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST']?>/ajax/cdek/service.php',
+            defaultLocation: 'Москва',
+            lang: 'rus',
+            currency: 'RUB',
+            tariffs: { office: [136, 291], door: [137, 294] },
+            goods: [{ width: 30, height: 20, length: 40, weight: 500 }],
+            hideDeliveryOptions: { office: false, door: false },
+            debug: false,
+            // При расчете сохраняем цены
+            onCalculate(tariffs, address) {
+                //console.log('Расчет доставки:', result);
+                calculationTariff = tariffs; // сохраняем данные
+                calculationAddress = address; // сохраняем данные
+            },
+
+            // При выборе ПВЗ или тарифа выводим только выбранную цену
+            onChoose(selected, tariff, address) {
+                //console.log('Выбранная доставка:',calculationAddress);
+                let cdek = document.getElementById('cdek');
+                let city_cdek = document.getElementById('city_cdek');
+                let city_code_cdek = document.getElementById('city_code_cdek');
+                let tariff_cdek = document.getElementById('tariff_cdek');
+                let address_cdek = document.getElementById('address_cdek');
+                let pvz_code_cdek = document.getElementById('pvz_code_cdek');
+                let postal_code = document.getElementById('postal_code_cdek');
+
+                if (selected && calculationTariff[selected]) {
+                    console.log(address)
+                    console.log(tariff)
+
+                    cdek.value = 'Y';
+
+                    if(address.type === 'PVZ'){
+                        pvz_code_cdek.value = address.code;
+
+                        city_cdek.value = null;
+                        city_code_cdek.value = null;
+                        address_cdek.value = null;
+                        postal_code.value = null;
+                    } else {
+                        pvz_code_cdek.value = null;
+
+                        city_cdek.value = address.city;
+                        address_cdek.value = address.formatted;
+                        postal_code.value = address.postal_code;
+                    }
+                    tariff_cdek.value = tariff.tariff_code;
+
+                    const cost = tariff.delivery_sum;
+                    document.getElementById('cdek-price').innerHTML =
+                        `${cost} ₽`;
+                    document.getElementById('delivery-price').value = cost
+
+                    cart.deliveryCost = cost; // сохраняем в корзину
+                    cart.updateTotalWithBonus();
+                    if(address?.code === 44 || (typeof address !== 'undefined' && address?.name?.includes('Москва'))){
+                        updateMoscowAvailability('Москва')
+                    } else {
+                        updateMoscowAvailability('')
+                    }
+                } else {
+                    pvz_code_cdek.value = null;
+                    city_cdek.value = null;
+                    city_code_cdek.value = null;
+                    address_cdek.value = null;
+                    postal_code.value = null;
+                    tariff_cdek.value = null;
+
+                    document.getElementById('cdek-price').innerHTML = `0 ₽`;
+                    cart.deliveryCost = 0;
+                    cart.updateTotalWithBonus();
+                }
+            },
+        });
     });
 </script>
 <div class="hystmodal" id="alertModal" aria-hidden="true">

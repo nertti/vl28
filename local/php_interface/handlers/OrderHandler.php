@@ -53,6 +53,8 @@ function onOrderPaid($order_id, &$arFields)
 
 function onOrderCreate(Bitrix\Main\Event $event)
 {
+
+    //return;
 //    file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/local/log.txt', print_r($sendTelegram, 1), FILE_APPEND);
 //    $telegramToken = "8332872680:AAG1OtqE-zZKpCXghJFjPQAzKuFWvMzlV4U";
 //    $chatId = "-1002635999993";
@@ -154,6 +156,8 @@ function onOrderCreate(Bitrix\Main\Event $event)
     $parts = array_filter([$city, $street, $home, $apartment]);
     $address = implode(', ', $parts);
 
+    $cdek = $propertyCollection->getItemByOrderPropertyId(30)->getValue();
+
     // Проверяем оплату бонусами (ID = 6) и суммируем
     $bonusPaidAmount = 0;
     foreach ($paymentCollection as $paymentItem) {
@@ -181,6 +185,7 @@ function onOrderCreate(Bitrix\Main\Event $event)
     $message = ($isNew ? "🆕 Новый заказ #$orderId\n" : "💳 Оплата заказа #$orderId\n")
         . "{$payStatus}\n\n"
         . "🚚 Доставка: " . ($service ? $service['NAME'] : "Неизвестно") . "\n"
+        . ($cdek ? "🚚 CDEK_UUID: " . $cdek : "") . "\n"
         . "🏠 Адрес доставки: {$address}\n\n"
         . "👤 Клиент: {$userName}\n"
         . "📧 Email: {$userEmail}\n"

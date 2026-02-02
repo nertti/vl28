@@ -65,8 +65,21 @@ $kvartira = $request["kvartira"];
 $siteId = $request['siteId'];
 $fUserId = $request['fUserId'];
 $basket = Basket::loadItemsForFUser($fUserId, $siteId);
-$totalPrice = $basket->getPrice() - (float)$bonusPointsWithdraw;
-$deliveryPrice = (float)$request['delivery_price'] ?? 300;
+
+// == cdek ==
+$deliveryPrice = (float)$request['delivery_price'] ?? 0;
+
+require_once $_SERVER['DOCUMENT_ROOT'] . '/ajax/cdek/create_cdek_order.php';
+$cdek = $request['cdek'];
+$city_cdek = $request['city_cdek'];
+$city_code_cdek = $request['city_code_cdek'];
+$tariff_cdek = $request['tariff_cdek'];
+$address_cdek = $request['address_cdek'];
+$pvz_code_cdek = $request['pvz_code_cdek'];
+$postal_code_cdek = $request['postal_code_cdek'];
+
+
+$totalPrice = $basket->getPrice() - (float)$bonusPointsWithdraw + $deliveryPrice;
 
 // =========================================
 // === Вариант 1: Оплата онлайн (CARD) ===
@@ -86,7 +99,7 @@ if ($request["payment"] === 'card') {
         'OrderId' => $orderTempId,
         'Description' => $description,
         'Password' => $secretKey,
-		'NotificationURL' => 'https://vl28.pro/ajax/paySuccess.php',
+        'NotificationURL' => 'https://vl28.pro/ajax/paySuccess.php',
     ];
     ksort($tokenFields);
     $token = hash('sha256', implode('', $tokenFields));
@@ -98,7 +111,7 @@ if ($request["payment"] === 'card') {
         'OrderId' => $orderTempId,
         'Description' => $description,
         'Token' => $token,
-		'NotificationURL' => 'https://vl28.pro/ajax/paySuccess.php',
+        'NotificationURL' => 'https://vl28.pro/ajax/paySuccess.php',
         'DATA' => [
             'Phone' => '+' . $phone,
             'Email' => $email,
@@ -114,6 +127,9 @@ if ($request["payment"] === 'card') {
         $itemPrice = intval(round($basketItem->getPrice() * 100));
         if ($key == 0 && $bonusPointsWithdraw > 0) {
             $itemPrice -= $bonusPointsWithdraw * 100;
+        }
+        if ($key == 0 && $deliveryPrice > 0) {
+            $itemPrice += $deliveryPrice * 100;
         }
         $itemQuantity = $basketItem->getQuantity();
         $requestData['Receipt']['Items'][] = [
@@ -236,6 +252,98 @@ $propertyCollection->getItemByOrderPropertyCode('BONUS')->setValue(empty($bonusP
 
 $order->doFinalAction(true);
 $result = $order->save();
+
+/*
+function getCdekItemsFromBasket(\Bitrix\Sale\Basket $basket, bool $isPrepaid): array
+{
+    $items = [];
+
+    foreach ($basket as $basketItem) {
+
+        $price = (float)$basketItem->getPrice();
+        $quantity = (int)$basketItem->getQuantity();
+        $weight = (int)$basketItem->getField('WEIGHT');
+
+        if ($weight <= 0) {
+            cdekLog('CDEK: товар без веса: ' . $basketItem->getField('NAME'));
+            //continue;
+            $weight = 1000;
+        }
+
+        $items[] = [
+            'name' => $basketItem->getField('NAME'),
+            'ware_key' => (string)$basketItem->getProductId(),
+            'quantity' => $quantity,
+            'cost' => $price,
+            'weight' => $weight,
+
+            // 🔑 КРИТИЧНО
+            'payment' => [
+                'value' => 0,
+            ],
+        ];
+    }
+
+    return $items;
+}
+$isPrepaid = ($request['payment'] === 'card');
+
+$cdekItems = getCdekItemsFromBasket($basket, $isPrepaid);
+*/
+if ($result->isSuccess()) {
+
+    $orderId = $order->getId();
+
+    // =========================
+    // СОЗДАЁМ СДЭК
+    // =========================
+    if ($cdek === 'Y') {
+
+        $cdekOrderData = [
+            'order_number' => $orderId,
+            'tariff_code' => $tariff_cdek,
+            'recipient_name' => $surname . ' ' . $name,
+            'recipient_phone' => $phone,
+
+            'weight' => 1000,
+
+            'items' => [
+                [
+                    'name' => 'Товар из заказа #' . $orderId,
+                    'ware_key' => 'BX-' . $orderId,
+                    'amount' => 1,
+                    'cost' => $basket->getPrice(),
+                    'weight' => 1200,
+                    'payment' => [
+                        'value' => 0,
+                    ],
+                ],
+            ],
+        ];
+
+        if (!empty($pvz_code_cdek)) {
+            $cdekOrderData['pvz_code'] = $pvz_code_cdek;
+        } else {
+            $cdekOrderData['to_location'] = [
+                'city' => $city_cdek,
+                'address' => $address_cdek,
+                'postal_code' => $postal_code_cdek,
+            ];
+        }
+
+        $cdekResult = createCdekOrder($cdekOrderData);
+
+        // =========================
+        // СОХРАНЯЕМ UUID В ЗАКАЗ
+        // =========================
+        $propertyCollection = $order->getPropertyCollection();
+        $cdekProp = $propertyCollection->getItemByOrderPropertyCode('CDEK_UUID');
+        if ($cdekProp) {
+            $cdekProp->setValue($cdekResult['entity']['uuid']);
+            $order->save();
+        }
+    }
+}
 
 header('Content-Type: application/json');
 if ($result->isSuccess()) {
