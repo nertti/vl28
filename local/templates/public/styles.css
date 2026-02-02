@@ -53,6 +53,7 @@ img{
     text-align: center;
     color: #bababa;
     margin-bottom: 42px;
+    line-height: initial;
 }
 .bx-sbb-empty-cart-desc {
     text-align: center;

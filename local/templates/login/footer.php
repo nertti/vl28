@@ -23,7 +23,7 @@ use Bitrix\Main\Page\Asset;
                     "MENU_CACHE_TYPE" => "Y",	// Тип кеширования
                     "MENU_CACHE_USE_GROUPS" => "Y",	// Учитывать права доступа
                     "ROOT_MENU_TYPE" => "bottom",	// Тип меню для первого уровня
-                    "USE_EXT" => "N",	// Подключать файлы с именами вида .тип_меню.menu_ext.php
+                    "USE_EXT" => "Y",	// Подключать файлы с именами вида .тип_меню.menu_ext.php
                 ),
                     false
                 ); ?>
