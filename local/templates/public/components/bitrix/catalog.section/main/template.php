@@ -34,8 +34,25 @@ $this->setFrameMode(true);
                     <div class="product__swiper swiper" id="product<?= $cell ?>">
                         <div id="swiper-wrapper-<?= $cell ?>" class="swiper-wrapper">
                             <div class="swiper-slide">
-                                <img src="<?= $arElement['DETAIL_PICTURE']['SRC'] ?>" alt="<?= $arElement['NAME'] ?>"
-                                     class="product__img">
+                                <?php
+                                $mainImage = getResponsiveImage($arElement['DETAIL_PICTURE']['ID']);
+                                ?>
+                                <?php if ($mainImage): ?>
+                                    <div class="main_img">
+                                        <img
+                                                src="<?= $mainImage['src'] ?>"
+                                                srcset="<?= $mainImage['srcset'] ?>"
+                                                sizes="<?= $mainImage['sizes'] ?>"
+                                                alt="<?= htmlspecialchars($arElement['NAME']) ?>"
+                                                class="product__img"
+                                                loading="lazy"
+                                        >
+                                        <div class="product__inner">
+                                            <p class="product__title"><?= $arElement['NAME'] ?></p>
+                                            <p class="product__price"><?= $arElement['OFFERS'][0]['PRICES']['BASE']['PRINT_VALUE'] ?></p>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                             <?php foreach ($arElement['PROPERTIES']['IMAGES']['VALUE'] as $image): ?>
                                 <div class="swiper-slide">
@@ -57,10 +74,6 @@ $this->setFrameMode(true);
                         <div class="swiper-scrollbar"></div>
                     </div>
                 <?php endif; ?>
-                <div class="product__inner">
-                    <p class="product__title"><?= $arElement['NAME'] ?></p>
-                    <p class="product__price"><?= $arElement['OFFERS'][0]['PRICES']['BASE']['PRINT_VALUE'] ?></p>
-                </div>
             </a>
         <?php endforeach; ?>
     </div>

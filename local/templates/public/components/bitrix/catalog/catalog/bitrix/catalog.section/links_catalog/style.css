@@ -8,3 +8,8 @@
 	object-fit: cover;
 	display: block;
 }
+.main_img{
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+}

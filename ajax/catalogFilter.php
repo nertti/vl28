@@ -20,20 +20,23 @@ if (isset($_POST['kasemir'])){
     $arrFilter['PROPERTY_MATERIAL'][] = 16;
 }
 
-if (isset($_POST['graphit'])){
-    $arrFilter["OFFERS"]['PROPERTY_COLOR'][] = 64;
+if (isset($_POST['474a51'])){
+    $arrFilter["OFFERS"]['PROPERTY_COLOR'][] = 64; // графитовый
 }
-if (isset($_POST['grey'])){
-    $arrFilter["OFFERS"]['PROPERTY_COLOR'][] = 63;
+if (isset($_POST['808080'])){
+    $arrFilter["OFFERS"]['PROPERTY_COLOR'][] = 63; // серый
 }
-if (isset($_POST['white'])){
-    $arrFilter["OFFERS"]['PROPERTY_COLOR'][] = 62;
+if (isset($_POST['fff'])){
+    $arrFilter["OFFERS"]['PROPERTY_COLOR'][] = 62; // белый
 }
-if (isset($_POST['black'])){
-    $arrFilter["OFFERS"]['PROPERTY_COLOR'][] = 61;
+if (isset($_POST['000'])){
+    $arrFilter["OFFERS"]['PROPERTY_COLOR'][] = 61; // чёрный
 }
-if (isset($_POST['bisque'])){
-    $arrFilter["OFFERS"]['PROPERTY_COLOR'][] = 153;
+if (isset($_POST['ffe4c4'])){
+    $arrFilter["OFFERS"]['PROPERTY_COLOR'][] = 153; // бежевый
+}
+if (isset($_POST['9eff00'])){
+    $arrFilter["OFFERS"]['PROPERTY_COLOR'][] = 154; // кислотный
 }
 
 if (isset($_POST['xs'])){

@@ -31,14 +31,20 @@ $this->setFrameMode(true);
                                 $mainImage = getResponsiveImage($arElement['DETAIL_PICTURE']['ID']);
                                 ?>
                                 <?php if ($mainImage): ?>
-                                    <img
-                                            src="<?= $mainImage['src'] ?>"
-                                            srcset="<?= $mainImage['srcset'] ?>"
-                                            sizes="<?= $mainImage['sizes'] ?>"
-                                            alt="<?= htmlspecialchars($arElement['NAME']) ?>"
-                                            class="product__img"
-                                            loading="lazy"
-                                    >
+                                    <div class="main_img">
+                                        <img
+                                                src="<?= $mainImage['src'] ?>"
+                                                srcset="<?= $mainImage['srcset'] ?>"
+                                                sizes="<?= $mainImage['sizes'] ?>"
+                                                alt="<?= htmlspecialchars($arElement['NAME']) ?>"
+                                                class="product__img"
+                                                loading="lazy"
+                                        >
+                                        <div class="product__inner">
+                                            <p class="product__title"><?= $arElement['NAME'] ?></p>
+                                            <p class="product__price"><?=round($arElement['PRICE']['PRICE'])?> ₽</p>
+                                        </div>
+                                    </div>
                                 <?php endif; ?>
                             </div>
                             <?php foreach ($arElement['PROPERTIES']['IMAGES']['VALUE'] as $imageId): ?>
@@ -71,10 +77,7 @@ $this->setFrameMode(true);
                     </div>
 
                 <?php endif; ?>
-                <div class="product__inner">
-                    <p class="product__title"><?= $arElement['NAME'] ?></p>
-                    <p class="product__price"><?=round($arElement['PRICE']['PRICE'])?> ₽</p>
-                </div>
+
             </a>
         <?php endforeach; ?>
     </div>
