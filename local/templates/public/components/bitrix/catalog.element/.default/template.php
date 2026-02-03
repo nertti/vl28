@@ -254,6 +254,35 @@ foreach ($arFavorites as $favorite) {
                 </div>
                 <div class="swiper-pagination"></div>
             </div>
+            <div class="images">
+                <?php foreach ($arResult['PROPERTIES']['IMAGES']['VALUE'] as $index => $imageId): ?>
+                    <?php if ($index === 0 && !empty($arResult['PROPERTIES']['VIDEO']['VALUE'])): ?>
+                        <video
+                                class="catalog-cart-video"
+                                autoplay
+                                muted
+                                playsinline
+                                loop
+                                src="<?= CFile::GetPath($arResult['PROPERTIES']['VIDEO']['VALUE']) ?>">
+                        </video>
+                    <?php endif; ?>
+                    <?php
+                    $file = CFile::ResizeImageGet(
+                        $imageId,
+                        ['width' => 760, 'height' => 760],
+                        BX_RESIZE_IMAGE_EXACT,
+                        true
+                    );
+                    ?>
+                    <img
+                            src="<?= $file['src'] ?>"
+                            width="<?= $file['width'] ?>"
+                            height="<?= $file['height'] ?>"
+                            alt="Фото"
+                            loading="lazy"
+                    >
+                <?php endforeach; ?>
+            </div>
         </div>
         <div class="tovar__right">
             <?php $APPLICATION->IncludeComponent(
@@ -412,8 +441,158 @@ foreach ($arFavorites as $favorite) {
                     });
             }
         });
+        document.addEventListener('DOMContentLoaded', function () {
+            const verticalSwiper = new Swiper('.product-vertical-swiper', {
+                direction: 'vertical',
+                slidesPerView: 1,
+                spaceBetween: 20,
+                mousewheel: {
+                    releaseOnEdges: true,
+                },
+                pagination: {
+                    el: '.product-vertical-swiper .swiper-pagination',
+                    clickable: true,
+                },
+                breakpoints: {
+                    0: {
+                        enabled: false,
+                    },
+                    991: {
+                        enabled: true,
+                    }
+                }
+            });
+        });
+
     </script>
 
+    <div class="product-gallery-modal" hidden>
+        <div class="product-gallery-overlay"></div>
+
+        <div class="product-gallery-content">
+
+            <!-- основной fullscreen swiper -->
+            <div class="swiper product-fullscreen">
+                <div class="swiper-wrapper">
+
+                    <?php foreach ($arResult['PROPERTIES']['IMAGES']['VALUE'] as $index => $imageId): ?>
+
+                        <?php if ($index === 0 && !empty($arResult['PROPERTIES']['VIDEO']['VALUE'])): ?>
+                            <div class="swiper-slide">
+                                <video
+                                        class="catalog-cart-video"
+                                        autoplay
+                                        muted
+                                        loop
+                                        playsinline
+                                        controls
+                                        src="<?= CFile::GetPath($arResult['PROPERTIES']['VIDEO']['VALUE']) ?>">
+                                </video>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php
+                        $file = CFile::ResizeImageGet(
+                            $imageId,
+                            ['width' => 1600, 'height' => 1600],
+                            BX_RESIZE_IMAGE_PROPORTIONAL,
+                            true
+                        );
+                        ?>
+
+                        <div class="swiper-slide">
+                            <div class="swiper-zoom-container">
+                                <img src="<?= $file['src'] ?>" alt="">
+                            </div>
+                        </div>
+
+                    <?php endforeach; ?>
+
+                </div>
+
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+
+            <!-- миниатюры снизу -->
+            <div class="swiper product-thumbs">
+                <div class="swiper-wrapper">
+
+                    <?php foreach ($arResult['PROPERTIES']['IMAGES']['VALUE'] as $index => $imageId): ?>
+
+                        <?php if ($index === 0 && !empty($arResult['PROPERTIES']['VIDEO']['VALUE'])): ?>
+                            <div class="swiper-slide">
+                                <video
+                                        muted
+                                        playsinline
+                                        src="<?= CFile::GetPath($arResult['PROPERTIES']['VIDEO']['VALUE']) ?>">
+                                </video>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php
+                        $thumb = CFile::ResizeImageGet(
+                            $imageId,
+                            ['width' => 150, 'height' => 150],
+                            BX_RESIZE_IMAGE_EXACT,
+                            true
+                        );
+                        ?>
+
+                        <div class="swiper-slide">
+                            <img src="<?= $thumb['src'] ?>" alt="">
+                        </div>
+
+                    <?php endforeach; ?>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script>
+        const thumbsSwiper = new Swiper('.product-thumbs', {
+            slidesPerView: 6,
+            spaceBetween: 10,
+            watchSlidesProgress: true,
+        });
+
+        const fullscreenSwiper = new Swiper('.product-fullscreen', {
+            zoom: {
+                maxRatio: 3,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            thumbs: {
+                swiper: thumbsSwiper,
+            },
+        });
+
+        const modal = document.querySelector('.product-gallery-modal');
+
+        // открытие по клику на картинку или видео
+        document.querySelectorAll('.media-square img, .media-square video').forEach((el, index) => {
+            el.addEventListener('click', () => {
+                modal.hidden = false;
+                document.body.style.overflow = 'hidden';
+                fullscreenSwiper.slideTo(index, 0);
+            });
+        });
+
+        // закрытие
+        modal.querySelector('.product-gallery-overlay').addEventListener('click', closeModal);
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        function closeModal() {
+            modal.hidden = true;
+            document.body.style.overflow = '';
+        }
+
+    </script>
 <?php /** Конец карточки товара*/ ?>
     <section class="products products_others">
         <div class="container">
