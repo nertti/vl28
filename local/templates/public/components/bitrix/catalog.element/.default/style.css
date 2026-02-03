@@ -66,75 +66,7 @@
 	}
 	.tovar__right{
 		position: sticky;
-		top: 100px;
+		top: 200px;
 		height: 600px;
 	}
-}
-
-
-/*новые стили*/
-.product-vertical-swiper {
-	height: calc(100vh - 120px);
-}
-
-.product-vertical-swiper .swiper-slide {
-	height: auto;
-}
-
-.product-vertical-swiper .swiper-wrapper {
-	align-items: flex-start;
-}
-.product-vertical-swiper .swiper-pagination {
-	right: 10px;
-}
-
-.product-vertical-swiper .swiper-pagination-bullet {
-	background: black;
-	opacity: 0.3;
-}
-.product-gallery-modal {
-	position: fixed;
-	inset: 0;
-	z-index: 1000;
-}
-
-.product-gallery-overlay {
-	position: absolute;
-	inset: 0;
-	background: rgba(0,0,0,.8);
-}
-
-.product-gallery-content {
-	position: relative;
-	height: 100%;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-}
-
-.product-fullscreen {
-	flex: 1;
-}
-
-.product-fullscreen img,
-.product-fullscreen video {
-	max-height: 90vh;
-	margin: 0 auto;
-}
-
-.product-thumbs {
-	padding: 20px;
-}
-
-.product-thumbs .swiper-slide {
-	opacity: .4;
-	cursor: pointer;
-}
-
-.product-thumbs .swiper-slide-thumb-active {
-	opacity: 1;
-}
-
-.product-vertical-swiper .swiper-pagination-bullet-active {
-	opacity: 1;
 }
