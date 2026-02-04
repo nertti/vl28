@@ -153,6 +153,7 @@ function onOrderCreate(Bitrix\Main\Event $event)
     $street = $propertyCollection->getItemByOrderPropertyId(18)->getValue();
     $home = $propertyCollection->getItemByOrderPropertyId(19)->getValue();
     $apartment = $propertyCollection->getItemByOrderPropertyId(20)->getValue();
+    $address_cdek = $propertyCollection->getItemByOrderPropertyId(31)->getValue();
     $parts = array_filter([$city, $street, $home, $apartment]);
     $address = implode(', ', $parts);
 
@@ -186,7 +187,7 @@ function onOrderCreate(Bitrix\Main\Event $event)
         . "{$payStatus}\n\n"
         . "🚚 Доставка: " . ($service ? $service['NAME'] : "Неизвестно") . "\n"
         . ($cdek ? "🚚 CDEK_UUID: " . $cdek : "") . "\n"
-        . "🏠 Адрес доставки: {$address}\n\n"
+        . "🏠 Адрес доставки: {($address ? $address : $address_cdek)}\n\n"
         . "👤 Клиент: {$userName}\n"
         . "📧 Email: {$userEmail}\n"
         . "📞 Телефон: +{$userPhone}\n\n"

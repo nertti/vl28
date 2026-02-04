@@ -316,6 +316,7 @@ $salePrice = 0;
                 <input type="hidden" name="address_cdek" id="address_cdek" value="">
                 <input type="hidden" name="pvz_code_cdek" id="pvz_code_cdek" value="">
                 <input type="hidden" name="postal_code_cdek" id="postal_code_cdek" value="">
+                <input type="hidden" name="formatted_cdek" id="formatted_cdek" value="">
                 <script>
                     /* оформление заказа */
                     document.addEventListener('DOMContentLoaded', function () {
@@ -879,10 +880,11 @@ $salePrice = 0;
                 let address_cdek = document.getElementById('address_cdek');
                 let pvz_code_cdek = document.getElementById('pvz_code_cdek');
                 let postal_code = document.getElementById('postal_code_cdek');
+                let formatted = document.getElementById('formatted_cdek');
 
                 if (selected && calculationTariff[selected]) {
-                    console.log(address)
-                    console.log(tariff)
+                    // console.log(address)
+                    // console.log(tariff)
 
                     cdek.value = 'Y';
 
@@ -891,7 +893,7 @@ $salePrice = 0;
 
                         city_cdek.value = null;
                         city_code_cdek.value = null;
-                        address_cdek.value = null;
+                        address_cdek.value = address.address;
                         postal_code.value = null;
                     } else {
                         pvz_code_cdek.value = null;

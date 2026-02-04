@@ -77,6 +77,7 @@ $tariff_cdek = $request['tariff_cdek'];
 $address_cdek = $request['address_cdek'];
 $pvz_code_cdek = $request['pvz_code_cdek'];
 $postal_code_cdek = $request['postal_code_cdek'];
+$formatted_cdek = $request['formatted_cdek'];
 
 
 $totalPrice = $basket->getPrice() - (float)$bonusPointsWithdraw + $deliveryPrice;
@@ -170,6 +171,14 @@ if ($request["payment"] === 'card') {
             'dom' => $request["dom"],
             'kvartira' => $request["kvartira"],
             'bonusPoints' => empty($bonusPointsWithdraw) ? $bonusPoints : 0,
+
+            'cdek' => $request['cdek'],
+            'city_cdek' => $request['city_cdek'],
+            'city_code_cdek' => $request['city_code_cdek'],
+            'tariff_cdek' => $request['tariff_cdek'],
+            'address_cdek' => $request['address_cdek'],
+            'pvz_code_cdek' => $request['pvz_code_cdek'],
+            'postal_code_cdek' => $request['postal_code_cdek'],
         ]
     ];
 
@@ -249,6 +258,8 @@ $propertyCollection->getItemByOrderPropertyCode('STREET')->setValue($street);
 $propertyCollection->getItemByOrderPropertyCode('HOUSE')->setValue($dom);
 $propertyCollection->getItemByOrderPropertyCode('APARTMENT')->setValue($kvartira);
 $propertyCollection->getItemByOrderPropertyCode('BONUS')->setValue(empty($bonusPointsWithdraw) ? $bonusPoints : 0);
+
+$propertyCollection->getItemByOrderPropertyCode('ADDRESS')->setValue($address_cdek);
 
 $order->doFinalAction(true);
 $result = $order->save();

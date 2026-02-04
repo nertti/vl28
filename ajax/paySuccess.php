@@ -10,6 +10,7 @@ use Bitrix\Sale\PaySystem;
 
 Loader::includeModule('sale');
 Loader::includeModule('catalog');
+require_once $_SERVER['DOCUMENT_ROOT'] . '/ajax/cdek/create_cdek_order.php';
 
 session_start();
 //pr($_SESSION);
@@ -18,6 +19,15 @@ $paymentId = $_GET['PaymentId'];
 $amount = $_GET['Amount']/100;
 $success = $_GET['Success'] === 'true' || $_GET['Success'] === '1';
 $phoneCleaned = $_SESSION['PENDING_ORDER'][$orderId]['FIELDS']['phone'];
+
+$cdek = $_SESSION['PENDING_ORDER'][$orderId]['FIELDS']['cdek'];
+$city_cdek = $_SESSION['PENDING_ORDER'][$orderId]['FIELDS']['city_cdek'];
+$city_code_cdek = $_SESSION['PENDING_ORDER'][$orderId]['FIELDS']['city_code_cdek'];
+$tariff_cdek = $_SESSION['PENDING_ORDER'][$orderId]['FIELDS']['tariff_cdek'];
+$address_cdek = $_SESSION['PENDING_ORDER'][$orderId]['FIELDS']['address_cdek'];
+$pvz_code_cdek = $_SESSION['PENDING_ORDER'][$orderId]['FIELDS']['pvz_code_cdek'];
+$postal_code_cdek = $_SESSION['PENDING_ORDER'][$orderId]['FIELDS']['postal_code_cdek'];
+$formatted_cdek = $_SESSION['PENDING_ORDER'][$orderId]['FIELDS']['formatted_cdek'];
 
 if ($success) {
     // === Заказа нет — создаём новый ===
@@ -95,11 +105,65 @@ if ($success) {
     $propertyCollection->getItemByOrderPropertyCode('HOUSE')->setValue($fields['dom']);
     $propertyCollection->getItemByOrderPropertyCode('APARTMENT')->setValue($fields['kvartira']);
     $propertyCollection->getItemByOrderPropertyCode('BONUS')->setValue($fields['bonusPoints']);
+    $propertyCollection->getItemByOrderPropertyCode('ADDRESS')->setValue($address_cdek);
 
     // === Сохраняем заказ ===
     $order->doFinalAction(true);
-    $order->save();
+    $result = $order->save();
+    if ($result->isSuccess()) {
 
+        $orderId = $order->getId();
+
+        // =========================
+        // СОЗДАЁМ СДЭК
+        // =========================
+        if ($cdek === 'Y') {
+
+            $cdekOrderData = [
+                'order_number' => $orderId,
+                'tariff_code' => $tariff_cdek,
+                'recipient_name' => $surname . ' ' . $name,
+                'recipient_phone' => $phone,
+
+                'weight' => 1000,
+
+                'items' => [
+                    [
+                        'name' => 'Товар из заказа #' . $orderId,
+                        'ware_key' => 'BX-' . $orderId,
+                        'amount' => 1,
+                        'cost' => $basket->getPrice(),
+                        'weight' => 1200,
+                        'payment' => [
+                            'value' => 0,
+                        ],
+                    ],
+                ],
+            ];
+
+            if (!empty($pvz_code_cdek)) {
+                $cdekOrderData['pvz_code'] = $pvz_code_cdek;
+            } else {
+                $cdekOrderData['to_location'] = [
+                    'city' => $city_cdek,
+                    'address' => $address_cdek,
+                    'postal_code' => $postal_code_cdek,
+                ];
+            }
+
+            $cdekResult = createCdekOrder($cdekOrderData);
+
+            // =========================
+            // СОХРАНЯЕМ UUID В ЗАКАЗ
+            // =========================
+            $propertyCollection = $order->getPropertyCollection();
+            $cdekProp = $propertyCollection->getItemByOrderPropertyCode('CDEK_UUID');
+            if ($cdekProp) {
+                $cdekProp->setValue($cdekResult['entity']['uuid']);
+                $order->save();
+            }
+        }
+    }
     unset($_SESSION['PENDING_ORDER'][$orderId]); // очищаем временные данные
 }
 ?>
