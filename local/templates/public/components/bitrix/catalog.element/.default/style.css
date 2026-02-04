@@ -26,27 +26,40 @@
 	pointer-events: none;
 
 	object-fit: cover;
+	/*position: absolute;*/
+}
+.catalog-cart-video-modal{
+	width: 100%;
+	/*width: 75%;*/
+	height: 100vh;
+	margin: 0 auto;
+	pointer-events: none;
+	object-fit: contain;
 	position: absolute;
+}
+.catalog-cart-video-modal-mini{
+	width: inherit;
+	object-fit: contain;
+	padding: 20px 10px;
 }
 .tovar__head{
 	margin-top: 10px;
 }
-
-.media-square {
-	position: relative;
+.images img,
+.images video{
 	width: 100%;
-	/*max-width: 760px;*/
-	aspect-ratio: 1 / 1;
-	overflow: hidden;
+}
+.images * {
+	pointer-events: auto;
 }
 
-.media-square img,
-.media-square video {
-	position: absolute;
-	inset: 0;
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
+.images::before,
+.images::after {
+	pointer-events: none;
+}
+.catalog-cart-video {
+	cursor: pointer;
+	height: 100vh;
 }
 
 @media screen and (max-width:991px) {
@@ -66,7 +79,78 @@
 	}
 	.tovar__right{
 		position: sticky;
-		top: 200px;
+		top: 150px;
 		height: 600px;
 	}
+}
+
+.gallery {
+	display: grid;
+	/*display: none;*/
+	grid-template-columns: repeat(4, 1fr);
+	gap: 10px;
+}
+
+.gallery img {
+	width: 100%;
+	cursor: pointer;
+}
+
+.slider-modal {
+	position: fixed;
+	inset: 0;
+	background: rgba(230, 230, 230, 0.8);
+	display: none;
+	z-index: 99999;
+}
+
+.slider-modal.active {
+	display: block;
+}
+
+.slider-close {
+	position: absolute;
+	top: 20px;
+	right: 20px;
+	font-size: 30px;
+	background: none;
+	border: none;
+	color: #000000;
+	cursor: pointer;
+	z-index: 10;
+}
+
+/* Основной слайдер */
+.main-swiper {
+	height: 100vh;
+}
+
+.main-swiper img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	cursor: zoom-in;
+}
+
+/* Миниатюры */
+.thumbs-swiper {
+	height: 120px;
+	padding: 10px 0;
+	position: absolute !important;
+	bottom: 0;
+	width: 100%;
+}
+
+.thumbs-swiper .swiper-slide {
+	opacity: 0.4;
+	cursor: pointer;
+}
+
+.thumbs-swiper .swiper-slide-thumb-active {
+	opacity: 1;
+}
+
+.thumbs-swiper img {
+	height: 100%;
+	object-fit: contain;
 }

@@ -4,6 +4,7 @@ use Bitrix\Main\Loader;
 use Bitrix\Sale;
 use Bitrix\Main\UserTable;
 use Bitrix\Main\UserGroupTable;
+use Bitrix\Main\Web\WebP;
 
 function pr($o, $show = false, $die = false, $fullBackTrace = false)
 {

@@ -214,36 +214,81 @@ foreach ($arFavorites as $favorite) {
                 <span class="favorite-btn favor <?php if ($active): ?>active<?php endif; ?>"
                       data-item="<?= $arResult['ID'] ?>"></span>
             </div>
+            <div class="swiper product-swiper">
+                <div class="swiper-wrapper">
+                    <?php foreach ($arResult['PROPERTIES']['IMAGES']['VALUE'] as $index => $imageId): ?>
+
+                        <?php if ($index === 0 && !empty($arResult['PROPERTIES']['VIDEO']['VALUE'])): ?>
+                            <div class="swiper-slide  gallery-item">
+                                <video
+                                        data-index="0"
+                                        class="catalog-cart-video"
+                                        autoplay
+                                        muted
+                                        playsinline
+                                        loop
+                                        src="<?= CFile::GetPath($arResult['PROPERTIES']['VIDEO']['VALUE']) ?>">
+                                </video>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php
+                        $file = CFile::ResizeImageGet(
+                            $imageId,
+                            ['width' => 760, 'height' => 760],
+                            BX_RESIZE_IMAGE_EXACT,
+                            true
+                        );
+                        if (!empty($arResult['PROPERTIES']['VIDEO']['VALUE'])) {
+                            $index++;
+                        }
+                        ?>
+
+                        <div class="swiper-slide  gallery-item">
+                            <img
+                                    data-index="<?= $index ?>"
+                                    src="<?= $file['src'] ?>"
+                                    width="<?= $file['width'] ?>"
+                                    height="<?= $file['height'] ?>"
+                                    alt="Фото"
+                                    loading="lazy"
+                            >
+                        </div>
+
+                    <?php endforeach; ?>
+                </div>
+                <div class="swiper-pagination"></div>
+            </div>
             <div class="images">
                 <?php foreach ($arResult['PROPERTIES']['IMAGES']['VALUE'] as $index => $imageId): ?>
-
                     <?php if ($index === 0 && !empty($arResult['PROPERTIES']['VIDEO']['VALUE'])): ?>
                         <video
-                                class="catalog-cart-video"
+                                class="catalog-cart-video gallery-item"
+                                data-index="0"
                                 autoplay
                                 muted
                                 playsinline
                                 loop
                                 src="<?= CFile::GetPath($arResult['PROPERTIES']['VIDEO']['VALUE']) ?>">
                         </video>
-
                     <?php endif; ?>
 
                     <?php
-                    $file = CFile::ResizeImageGet(
-                        $imageId,
-                        ['width' => 760, 'height' => 760],
-                        BX_RESIZE_IMAGE_EXACT,
-                        true
-                    );
+                    $file = CFile::GetFileArray($imageId);
+
+                    if (!empty($arResult['PROPERTIES']['VIDEO']['VALUE'])) {
+                        $index++;
+                    }
                     ?>
 
                     <img
-                            src="<?= $file['src'] ?>"
-                            width="<?= $file['width'] ?>"
-                            height="<?= $file['height'] ?>"
+                            src="<?= $file['SRC'] ?>"
+                            width=""
+                            height=""
                             alt="Фото"
                             loading="lazy"
+                            data-index="<?= $index ?>"
+                            class="gallery-item"
                     >
 
                 <?php endforeach; ?>
@@ -408,8 +453,118 @@ foreach ($arFavorites as $favorite) {
             }
         });
     </script>
-
 <?php /** Конец карточки товара*/ ?>
+<?php /** Начало модалки*/ ?>
+    <!-- Модалка -->
+    <div class="slider-modal" id="sliderModal">
+        <button class="slider-close">✕</button>
+
+        <!-- Основной слайдер -->
+        <div class="swiper main-swiper">
+            <div class="swiper-wrapper">
+                <?php foreach ($arResult['PROPERTIES']['IMAGES']['VALUE'] as $index => $imageId): ?>
+
+                    <?php if ($index === 0 && !empty($arResult['PROPERTIES']['VIDEO']['VALUE'])): ?>
+                        <div class="swiper-slide">
+                            <div class="swiper-zoom-container">
+                                <video
+                                        class="catalog-cart-video-modal"
+                                        autoplay
+                                        muted
+                                        playsinline
+                                        loop
+                                        src="<?= CFile::GetPath($arResult['PROPERTIES']['VIDEO']['VALUE']) ?>">
+                                </video>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php
+                    $file = CFile::GetFileArray($imageId);
+                    ?>
+
+                    <div class="swiper-slide">
+                        <div class="swiper-zoom-container">
+                            <img src="<?= $file['SRC'] ?>" width="" height="" alt="Фото"
+                                 loading="lazy">
+                        </div>
+                    </div>
+
+                <?php endforeach; ?>
+            </div>
+        </div>
+
+        <!-- Миниатюры -->
+        <div class="swiper thumbs-swiper">
+            <div class="swiper-wrapper">
+                <?php foreach ($arResult['PROPERTIES']['IMAGES']['VALUE'] as $index => $imageId): ?>
+                    <?php if ($index === 0 && !empty($arResult['PROPERTIES']['VIDEO']['VALUE'])): ?>
+                        <div class="swiper-slide">
+                            <video
+                                    class="catalog-cart-video-modal-mini"
+                                    muted
+                                    playsinline
+                                    src="<?= CFile::GetPath($arResult['PROPERTIES']['VIDEO']['VALUE']) ?>">
+                            </video>
+                        </div>
+                    <?php endif; ?>
+                    <?php
+                    $file = CFile::GetFileArray($imageId);
+                    ?>
+                    <div class="swiper-slide">
+                        <img src="<?= $file['SRC'] ?>" width="" height="" alt="Фото" loading="lazy">
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const modal = document.getElementById('sliderModal');
+            const closeBtn = modal.querySelector('.slider-close');
+
+            const thumbsSwiper = new Swiper('.thumbs-swiper', {
+                slidesPerView: 20,
+                spaceBetween: 10,
+                watchSlidesProgress: true,
+            });
+
+            const mainSwiper = new Swiper('.main-swiper', {
+                spaceBetween: 10,
+                thumbs: {swiper: thumbsSwiper},
+                zoom: {maxRatio: 5},
+            });
+
+            // ✅ Делегирование
+            document.addEventListener('click', function (e) {
+                console.log(e)
+                const item = e.target.closest('.gallery-item');
+                if (!item) return;
+
+                const index = Number(item.dataset.index ?? 0);
+
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+
+                mainSwiper.update();
+                thumbsSwiper.update();
+                mainSwiper.slideTo(index, 0);
+            });
+
+            closeBtn.addEventListener('click', () => {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+
+            document.addEventListener('keydown', e => {
+                if (e.key === 'Escape') {
+                    modal.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        });
+    </script>
+<?php /** Конец модалки*/ ?>
     <section class="products products_others">
         <div class="container">
             <p class="h2">Может вам понравиться</p>

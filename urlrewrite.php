@@ -8,6 +8,14 @@ $arUrlRewrite=array (
     'PATH' => '/profile/order-list/index.php',
     'SORT' => 100,
   ),
+  17 => 
+  array (
+    'CONDITION' => '#^([^/]+?)\\??(.*)#',
+    'RULE' => 'SECTION_CODE=$1&$2',
+    'ID' => 'bitrix:catalog.section',
+    'PATH' => '/local/templates/public/components/bitrix/catalog.element/.default/template.php',
+    'SORT' => 100,
+  ),
   14 => 
   array (
     'CONDITION' => '#^/catalog/#',
