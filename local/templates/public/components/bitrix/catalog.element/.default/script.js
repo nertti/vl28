@@ -2495,6 +2495,7 @@
 
 			this.selectedValues = arFilter;
 			this.changeInfo();
+
 		},
 
 		changeInfo: function()
@@ -2633,6 +2634,21 @@
 				BX.onCustomEvent('onCatalogElementChangeOffer', [eventData]);
 				eventData = null;
 			}
+			// === CUSTOM: update ARTICLE ===
+			var offer = this.offers[this.offerNum];
+			console.log(offer)
+			if (
+				offer
+				&& offer.PROPERTIES
+				&& offer.PROPERTIES.ARTICLE
+				&& offer.PROPERTIES.ARTICLE.VALUE
+			) {
+				var articleNode = document.querySelector('.product-article');
+				if (articleNode) {
+					articleNode.textContent = offer.PROPERTIES.ARTICLE.VALUE;
+				}
+			}
+			// === /CUSTOM ===
 		},
 		changeSkuDescription: function(index)
 		{

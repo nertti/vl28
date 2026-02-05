@@ -308,9 +308,16 @@ foreach ($arFavorites as $favorite) {
             ); ?>
             <div class="tovar__head">
                 <h1 class="h2"><?= $arResult['NAME'] ?></h1>
+
                 <span class="favorite-btn favor <?php if ($active): ?>active<?php endif; ?>"
                       data-item="<?= $arResult['ID'] ?>"></span>
             </div>
+            <?php if($arResult['OFFERS'][0]['PROPERTIES']['ARTICLE']['VALUE']):?>
+            <div class="product-article" style="margin-bottom: 10px">
+                Артикул: <?= $arResult['OFFERS'][0]['PROPERTIES']['ARTICLE']['VALUE'] ?>
+            </div>
+            <?php endif;?>
+
             <p class="tovar__price"><?= $arResult['JS_OFFERS'][0]['ITEM_PRICES'][0]['PRINT_PRICE'] ?></p>
             <form action="#" class="tovar__form">
                 <div class="tovar__color">
@@ -444,7 +451,7 @@ foreach ($arFavorites as $favorite) {
                         if (data.status === 'error') {
 
                         } else {
-                            console.log('УСПЕХ')
+                            //console.log('УСПЕХ')
                         }
                     })
                     .catch(error => {
@@ -537,7 +544,7 @@ foreach ($arFavorites as $favorite) {
 
             // ✅ Делегирование
             document.addEventListener('click', function (e) {
-                console.log(e)
+                //console.log(e)
                 const item = e.target.closest('.gallery-item');
                 if (!item) return;
 
@@ -1739,3 +1746,5 @@ if ($haveOffers) {
     </script>
 <?php
 unset($actualItem, $itemIds, $jsParams);
+?>
+

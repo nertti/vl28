@@ -61,7 +61,14 @@ if (!empty($arResult["PROPERTIES"]["MAIN_PRODUCT"]['VALUE'])) {
             'LINK' => $sameSizeob["DETAIL_PAGE_URL"],
             "COLOR" => $color_xml,
         );
-
     }
-
+}
+if (!empty($arResult['OFFERS'])) {
+    foreach ($arResult['OFFERS'] as $offerIndex => $offer) {
+        if (!empty($offer['PROPERTIES']['ARTICLE']['VALUE'])) {
+            $arResult['JS_OFFERS'][$offerIndex]['PROPERTIES']['ARTICLE'] = array(
+                'VALUE' => $offer['PROPERTIES']['ARTICLE']['VALUE']
+            );
+        }
+    }
 }
