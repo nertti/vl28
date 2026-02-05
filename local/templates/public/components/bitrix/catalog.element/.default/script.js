@@ -2636,7 +2636,7 @@
 			}
 			// === CUSTOM: update ARTICLE ===
 			var offer = this.offers[this.offerNum];
-			console.log(offer)
+
 			if (
 				offer
 				&& offer.PROPERTIES
@@ -2647,6 +2647,16 @@
 				if (articleNode) {
 					articleNode.textContent = offer.PROPERTIES.ARTICLE.VALUE;
 				}
+			}
+			if (
+				offer
+				&& offer.ITEM_PRICES
+			) {
+				var tovarPrice = document.querySelector('.tovar__price');
+				if (tovarPrice) {
+					tovarPrice.innerHTML  = offer.ITEM_PRICES[0].PRINT_BASE_PRICE;
+				}
+				console.log(offer.ITEM_PRICES[0])
 			}
 			// === /CUSTOM ===
 		},
