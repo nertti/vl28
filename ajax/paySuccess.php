@@ -60,6 +60,9 @@ if ($success) {
     $shipment->setFields([
         'DELIVERY_ID' => $service['ID'],
         'DELIVERY_NAME' => $service['NAME'],
+        'BASE_PRICE_DELIVERY' => $fields['deliveryPrice'],
+        'PRICE_DELIVERY' => $fields['deliveryPrice'],
+        'CUSTOM_PRICE_DELIVERY' => 'Y',
     ]);
 
     // === Добавляем оплату (Тиньков) ===

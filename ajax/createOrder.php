@@ -179,6 +179,7 @@ if ($request["payment"] === 'card') {
             'address_cdek' => $request['address_cdek'],
             'pvz_code_cdek' => $request['pvz_code_cdek'],
             'postal_code_cdek' => $request['postal_code_cdek'],
+            'deliveryPrice' => $deliveryPrice,
         ]
     ];
 
@@ -264,43 +265,6 @@ $propertyCollection->getItemByOrderPropertyCode('ADDRESS')->setValue($address_cd
 $order->doFinalAction(true);
 $result = $order->save();
 
-/*
-function getCdekItemsFromBasket(\Bitrix\Sale\Basket $basket, bool $isPrepaid): array
-{
-    $items = [];
-
-    foreach ($basket as $basketItem) {
-
-        $price = (float)$basketItem->getPrice();
-        $quantity = (int)$basketItem->getQuantity();
-        $weight = (int)$basketItem->getField('WEIGHT');
-
-        if ($weight <= 0) {
-            cdekLog('CDEK: товар без веса: ' . $basketItem->getField('NAME'));
-            //continue;
-            $weight = 1000;
-        }
-
-        $items[] = [
-            'name' => $basketItem->getField('NAME'),
-            'ware_key' => (string)$basketItem->getProductId(),
-            'quantity' => $quantity,
-            'cost' => $price,
-            'weight' => $weight,
-
-            // 🔑 КРИТИЧНО
-            'payment' => [
-                'value' => 0,
-            ],
-        ];
-    }
-
-    return $items;
-}
-$isPrepaid = ($request['payment'] === 'card');
-
-$cdekItems = getCdekItemsFromBasket($basket, $isPrepaid);
-*/
 if ($result->isSuccess()) {
 
     $orderId = $order->getId();
