@@ -154,3 +154,15 @@
 	height: 100%;
 	object-fit: contain;
 }
+.slider-modal .swiper-button-prev,
+.slider-modal .swiper-button-next {
+	color: #555;
+}
+
+.slider-modal .swiper-button-prev {
+	left: 10px;
+}
+
+.slider-modal .swiper-button-next {
+	right: 10px;
+}

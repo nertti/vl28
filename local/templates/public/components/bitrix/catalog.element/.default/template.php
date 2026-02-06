@@ -499,6 +499,9 @@ foreach ($arFavorites as $favorite) {
 
                 <?php endforeach; ?>
             </div>
+            <!-- Стрелки -->
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-button-next"></div>
         </div>
 
         <!-- Миниатюры -->
@@ -538,8 +541,18 @@ foreach ($arFavorites as $favorite) {
 
             const mainSwiper = new Swiper('.main-swiper', {
                 spaceBetween: 10,
-                thumbs: {swiper: thumbsSwiper},
-                zoom: {maxRatio: 5},
+                thumbs: { swiper: thumbsSwiper },
+                zoom: { maxRatio: 5 },
+
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+
+                keyboard: {
+                    enabled: true,
+                    onlyInViewport: false,
+                },
             });
 
             // ✅ Делегирование
