@@ -5,6 +5,9 @@ if(file_exists($_SERVER['DOCUMENT_ROOT']. "/local/php_interface/include/function
 // Подключаем класс события полной оплаты заказа
 if(file_exists($_SERVER['DOCUMENT_ROOT']. "/local/php_interface/handlers/OrderHandler.php"))
     require_once($_SERVER['DOCUMENT_ROOT'] . "/local/php_interface/handlers/OrderHandler.php");
+// Подключаем класс добавления новости
+if(file_exists($_SERVER['DOCUMENT_ROOT']. "/local/php_interface/handlers/NewsHandler.php"))
+    require_once($_SERVER['DOCUMENT_ROOT'] . "/local/php_interface/handlers/NewsHandler.php");
 // ПОДКЛЮЧАЕМ СОБЫТИЯ
 if(file_exists($_SERVER['DOCUMENT_ROOT']. "/local/php_interface/events.php"))
     require_once($_SERVER['DOCUMENT_ROOT'] . "/local/php_interface/events.php");

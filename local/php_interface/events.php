@@ -13,3 +13,8 @@ $eventManager->addEventHandler("iblock", "OnAfterIBlockElementUpdate", "OnLoyalt
 
 AddEventHandler("main", "OnAfterUserAuthorize", Array("RememberAuth", "OnAfterUserAuthorize"));
 AddEventHandler("main", "OnUserLogout", Array("OutUser", "OnAfterUserExit"));
+
+use Bitrix\Main\EventManager;
+
+$eventManager->addEventHandler('iblock', 'OnAfterIBlockElementAdd', 'sendNewsToSubscribers');
+$eventManager->addEventHandler('iblock', 'OnAfterIBlockElementUpdate', 'sendNewsToSubscribers');
