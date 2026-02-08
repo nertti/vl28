@@ -28,7 +28,6 @@ $address_cdek = $_SESSION['PENDING_ORDER'][$orderId]['FIELDS']['address_cdek'];
 $pvz_code_cdek = $_SESSION['PENDING_ORDER'][$orderId]['FIELDS']['pvz_code_cdek'];
 $postal_code_cdek = $_SESSION['PENDING_ORDER'][$orderId]['FIELDS']['postal_code_cdek'];
 $formatted_cdek = $_SESSION['PENDING_ORDER'][$orderId]['FIELDS']['formatted_cdek'];
-
 if ($success) {
     // === Заказа нет — создаём новый ===
     if (!isset($_SESSION['PENDING_ORDER'][$orderId])) {
@@ -114,26 +113,29 @@ if ($success) {
     $order->doFinalAction(true);
     $result = $order->save();
     if ($result->isSuccess()) {
+        //pr($orderId);
 
-        $orderId = $order->getId();
+        $idOrder = $order->getId();
 
         // =========================
         // СОЗДАЁМ СДЭК
         // =========================
+
+        //pr($_SESSION['PENDING_ORDER']);
         if ($cdek === 'Y') {
 
             $cdekOrderData = [
-                'order_number' => $orderId,
+                'order_number' => $idOrder,
                 'tariff_code' => $tariff_cdek,
-                'recipient_name' => $surname . ' ' . $name,
-                'recipient_phone' => $phone,
+                'recipient_name' => $fields['surname'] . ' ' . $fields['name'],
+                'recipient_phone' => $fields['phone'],
 
                 'weight' => 1000,
 
                 'items' => [
                     [
-                        'name' => 'Товар из заказа #' . $orderId,
-                        'ware_key' => 'BX-' . $orderId,
+                        'name' => 'Товар из заказа #' . $idOrder,
+                        'ware_key' => 'BX-' . $idOrder,
                         'amount' => 1,
                         'cost' => $basket->getPrice(),
                         'weight' => 1200,
@@ -155,7 +157,7 @@ if ($success) {
             }
 
             $cdekResult = createCdekOrder($cdekOrderData);
-
+//pr($cdekResult);
             // =========================
             // СОХРАНЯЕМ UUID В ЗАКАЗ
             // =========================
