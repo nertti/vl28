@@ -181,13 +181,13 @@ function onOrderCreate(Bitrix\Main\Event $event)
     } else {
         $discountsText = "Нет применённых скидок\n";
     }
-
+    $deliveryAddress = $address ?: $address_cdek;
     // Сообщение
     $message = ($isNew ? "🆕 Новый заказ #$orderId\n" : "💳 Оплата заказа #$orderId\n")
         . "{$payStatus}\n\n"
         . "🚚 Доставка: " . ($service ? $service['NAME'] : "Неизвестно") . "\n"
         . ($cdek ? "🚚 CDEK_UUID: " . $cdek : "") . "\n"
-        . "🏠 Адрес доставки:".$address ? $address : $address_cdek."\n\n"
+        . "🏠 Адрес доставки: {$deliveryAddress}\n\n"
         . "👤 Клиент: {$userName}\n"
         . "📧 Email: {$userEmail}\n"
         . "📞 Телефон: +{$userPhone}\n\n"

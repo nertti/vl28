@@ -154,6 +154,10 @@ jQuery(document).ready(function($) {
       scrollbar: {
         el: "#"+this_ID+" .swiper-scrollbar",
       },
+    pagination: {
+        el: '#'+this_ID+' .swiper-pagination',
+        clickable: true,
+    },
       breakpoints: {
         991: {
           loop: true,

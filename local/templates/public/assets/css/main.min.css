@@ -812,7 +812,8 @@ section {
   .product .swiper-button-next svg,
   .product .swiper-button-prev svg {
     width:15px;
-    height:15px
+    height:15px;
+    display: none;
   }
   .product {
     width:50%
@@ -1887,6 +1888,11 @@ section {
 .favorite-btn_active {
   background-image:url(../img/favorite-active.svg)
 }
+@media screen and (min-width:991px) {
+  .swiper-pagination {
+    display: none !important;
+  }
+}
 @media screen and (max-width:600px) {
   .favorite-btn {
     width:20px;
@@ -1894,17 +1900,14 @@ section {
   }
 }
 .swiper-pagination {
-  bottom:40px!important;
-  left:40px!important;
+  bottom:30px!important;
+  /*left:40px!important;*/
   display:-webkit-box;
   display:-ms-flexbox;
   display:flex;
-  -webkit-box-orient:vertical;
-  -webkit-box-direction:normal;
-  -ms-flex-direction:column;
-  flex-direction:column;
+  flex-direction:row;
   gap:5px;
-  width:7px!important
+  justify-content: center;
 }
 .swiper-pagination-bullet {
   width:7px;
@@ -1919,12 +1922,6 @@ section {
 }
 .swiper-pagination-bullet-active {
   background-color:#000
-}
-@media screen and (max-width:991px) {
-  .swiper-pagination {
-    bottom:30px!important;
-    left:20px!important
-  }
 }
 .how {
   height:100%;
