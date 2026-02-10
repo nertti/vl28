@@ -263,62 +263,58 @@ $propertyCollection->getItemByOrderPropertyCode('BONUS')->setValue(empty($bonusP
 $propertyCollection->getItemByOrderPropertyCode('ADDRESS')->setValue($address_cdek);
 
 $order->doFinalAction(true);
-$result = $order->save();
 
-if ($result->isSuccess()) {
 
-    $orderId = $order->getId();
+$orderId = $order->getId();
 
-    // =========================
-    // СОЗДАЁМ СДЭК
-    // =========================
-    if ($cdek === 'Y') {
+// =========================
+// СОЗДАЁМ СДЭК
+// =========================
+if ($cdek === 'Y') {
 
-        $cdekOrderData = [
-            'order_number' => $orderId,
-            'tariff_code' => $tariff_cdek,
-            'recipient_name' => $surname . ' ' . $name,
-            'recipient_phone' => $phone,
+    $cdekOrderData = [
+        'order_number' => $orderId,
+        'tariff_code' => $tariff_cdek,
+        'recipient_name' => $surname . ' ' . $name,
+        'recipient_phone' => $phone,
 
-            'weight' => 1000,
+        'weight' => 1000,
 
-            'items' => [
-                [
-                    'name' => 'Товар из заказа #' . $orderId,
-                    'ware_key' => 'BX-' . $orderId,
-                    'amount' => 1,
-                    'cost' => $basket->getPrice(),
-                    'weight' => 1200,
-                    'payment' => [
-                        'value' => 0,
-                    ],
+        'items' => [
+            [
+                'name' => 'Товар из заказа #' . $orderId,
+                'ware_key' => 'BX-' . $orderId,
+                'amount' => 1,
+                'cost' => $basket->getPrice(),
+                'weight' => 1200,
+                'payment' => [
+                    'value' => 0,
                 ],
             ],
+        ],
+    ];
+
+    if (!empty($pvz_code_cdek)) {
+        $cdekOrderData['pvz_code'] = $pvz_code_cdek;
+    } else {
+        $cdekOrderData['to_location'] = [
+            'city' => $city_cdek,
+            'address' => $address_cdek,
+            'postal_code' => $postal_code_cdek,
         ];
-
-        if (!empty($pvz_code_cdek)) {
-            $cdekOrderData['pvz_code'] = $pvz_code_cdek;
-        } else {
-            $cdekOrderData['to_location'] = [
-                'city' => $city_cdek,
-                'address' => $address_cdek,
-                'postal_code' => $postal_code_cdek,
-            ];
-        }
-
-        $cdekResult = createCdekOrder($cdekOrderData);
-
-        // =========================
-        // СОХРАНЯЕМ UUID В ЗАКАЗ
-        // =========================
-        $propertyCollection = $order->getPropertyCollection();
-        $cdekProp = $propertyCollection->getItemByOrderPropertyCode('CDEK_UUID');
-        if ($cdekProp) {
-            $cdekProp->setValue($cdekResult['entity']['uuid']);
-            $order->save();
-        }
     }
+
+    $cdekResult = createCdekOrder($cdekOrderData);
+
+    // =========================
+    // СОХРАНЯЕМ UUID В ЗАКАЗ
+    // =========================
+    $propertyCollection = $order->getPropertyCollection();
+    $cdekProp = $propertyCollection->getItemByOrderPropertyCode('CDEK_UUID');
+    $cdekProp->setValue($cdekResult['entity']['uuid']);
 }
+$result = $order->save();
+
 
 header('Content-Type: application/json');
 if ($result->isSuccess()) {

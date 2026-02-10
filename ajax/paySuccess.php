@@ -111,8 +111,7 @@ if ($success) {
 
     // === Сохраняем заказ ===
     $order->doFinalAction(true);
-    $result = $order->save();
-    if ($result->isSuccess()) {
+
         //pr($orderId);
 
         $idOrder = $order->getId();
@@ -168,7 +167,7 @@ if ($success) {
                 $order->save();
             }
         }
-    }
+
     unset($_SESSION['PENDING_ORDER'][$orderId]); // очищаем временные данные
 }
 ?>

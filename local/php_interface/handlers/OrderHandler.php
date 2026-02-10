@@ -186,7 +186,7 @@ function onOrderCreate(Bitrix\Main\Event $event)
     $message = ($isNew ? "🆕 Новый заказ #$orderId\n" : "💳 Оплата заказа #$orderId\n")
         . "{$payStatus}\n\n"
         . "🚚 Доставка: " . ($service ? $service['NAME'] : "Неизвестно") . "\n"
-        . ($cdek ? "🚚 CDEK_UUID: " . $cdek : "") . "\n"
+//        . ($cdek ? "🚚 CDEK_UUID: " . $cdek : "") . "\n"
         . "🏠 Адрес доставки: {$deliveryAddress}\n\n"
         . "👤 Клиент: {$userName}\n"
         . "📧 Email: {$userEmail}\n"
