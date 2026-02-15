@@ -758,7 +758,9 @@ section {
   display:flex
 }
 .product__swiper .swiper-slide img {
-  width:100%
+  width:100%;
+  padding: 0;
+  margin: 0;
 }
 .product .swiper-button-next,
 .product .swiper-button-prev {
