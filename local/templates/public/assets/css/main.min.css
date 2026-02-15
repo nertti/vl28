@@ -1658,8 +1658,7 @@ section {
   margin-bottom:40px;
   width:100%
 }
-.tovar__color,
-.tovar__size {
+.tovar__color{
   display:-webkit-box;
   display:-ms-flexbox;
   display:flex;
@@ -1671,7 +1670,13 @@ section {
   position:relative
 }
 .tovar__size {
-  padding-right:170px
+  display:-webkit-box;
+  display:-ms-flexbox;
+  display:flex;
+  margin-bottom:30px;
+  justify-content: space-between;
+  align-items: end;
+  flex-wrap: wrap;
 }
 .tovar__color-text {
   display:-webkit-box;
@@ -1771,10 +1776,7 @@ section {
 }
 .tovar__size-btn {
   font-size:16px;
-  position:absolute;
-  padding-bottom:5px;
-  bottom:0;
-  right:0;
+  padding:5px 0;
   border-bottom:1px solid #222
 }
 .tovar__link {

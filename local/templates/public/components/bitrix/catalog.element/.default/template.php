@@ -1380,55 +1380,9 @@ foreach ($arFavorites as $favorite) {
             <div class="hystmodal__window" role="dialog" aria-modal="true">
                 <button data-hystclose="" class="hystmodal__close"></button>
                 <div class="how">
-                    <p class="h2">Информация об уходе для термобелья</p>
-                    <p class="gray">При уходе за термобельем придерживайтесь этих правил:</p>
-                    <ol class="gray">
-                        <li>
-                            В целях гигиены, мы рекомендуем постирать новую вещь перед ноской, так как термобелье
-                            используется в качестве первого слоя к телу.
-                        </li>
-                        <li>
-                            Перед стиркой застегните молнию и выверните вещь наизнанку.
-                        </li>
-                        <li>
-                            Стирка при температуре не выше 30 градусов на деликатном режиме, отжим самый минимальный,
-                            без скручивания. Лучше поставить функцию «без отжима».
-                        </li>
-                        <li>
-                            Мы рекомендуем использовать стиральные средства для деликатных тканей. Лучше всего подойдут
-                            жидкие гели, так как стиральные порошки могут попасть в структуру плетения и плохо
-                            выстираться, что скажется на эффективности термобелья.
-                        </li>
-                        <li>
-                            Сушить термобелье&nbsp;необходимо в хорошо проветриваемом помещении, вдали от солнечных
-                            лучей и отопительных приборов.&nbsp;
-                        </li>
-                        <li>
-                            Сушка в стиральной машине запрещена
-                        </li>
-                        <li>
-                            Утюжить и отпаривать термобелье не требуется. Любое температурное воздействие болье 30
-                            градусов С, для термобелья- запрещено.
-                        </li>
-                        <li>
-                            Храните термобелье&nbsp;в сложенном виде, чтобы избежать деформации.
-                        </li>
-                    </ol>
-                    <p>
-            <span class="gray">
-              При бережном уходе ваши любимые вещи прослужат не один сезон.
-            </span>
-                        Мы рекомендуем относиться аккуратно с липучками и другими элементами экипировки, которые могут
-                        оставлять зацепки на термобелье.
-                    </p>
-                    <div class="how__icons">
-                        <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/how1.svg" alt="icon">
-                        <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/how2.svg" alt="icon">
-                        <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/how3.svg" alt="icon">
-                        <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/how4.svg" alt="icon">
-                        <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/how5.svg" alt="icon">
-                        <img src="<?= SITE_TEMPLATE_PATH ?>/assets/img/how6.svg" alt="icon">
-                    </div>
+                    <?php if (!empty($arResult['PROPERTIES']['INFO']['VALUE']['TEXT'])): ?>
+                        <?= html_entity_decode($arResult['PROPERTIES']['INFO']['VALUE']['TEXT']) ?>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
