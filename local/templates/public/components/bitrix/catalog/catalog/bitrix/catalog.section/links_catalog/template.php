@@ -42,7 +42,7 @@ $this->setFrameMode(true);
                                         >
                                         <div class="product__inner">
                                             <p class="product__title"><?= $arElement['NAME'] ?></p>
-                                            <p class="product__price"><?=round($arElement['PRICE']['PRICE'])?> ₽</p>
+                                            <p class="product__price"><?=number_format(round($arElement['PRICE']['PRICE']), 0, '.', ' ')?> ₽</p>
                                         </div>
                                     </div>
                                 <?php endif; ?>

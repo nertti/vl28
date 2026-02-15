@@ -43,7 +43,7 @@ $this->setFrameMode(true);
                      class="product__img">
                 <a href="/catalog/<?= $arRes['CODE'] ?>/<?= $arElement['CODE'] ?>/" class="product__inner">
                     <p class="product__title"><?= $arElement['NAME'] ?></p>
-                    <p class="product__price"><?= round($arElement['OFFERS'][2]['PRICES']['BASE']['VALUE_VAT']) ?> ₽</p>
+                    <p class="product__price"><?= $arElement['OFFERS'][0]['PRICES']['BASE']['PRINT_VALUE'] ?></p>
                 </a>
             </div>
         <?php endforeach; ?>
