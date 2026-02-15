@@ -28,10 +28,19 @@
 
                 <a href="<?= $arItem['URL_WO_PARAMS'] ?>"
                    class="product">
-
                     <?php if (!empty($arItem['IMAGES'])): ?>
                         <div class="product__swiper swiper" id="product<?= $arItem['ID'] ?>">
                             <div id="swiper-wrapper-<?= $arItem['ID'] ?>" class="swiper-wrapper">
+                                <div class="swiper-slide">
+                                    <div class="main_img">
+                                        <img src="<?= CFile::GetPath($arItem['DETAIL_PICTURE']) ?>" alt="<?= $arItem['TITLE'] ?>"
+                                             class="product__img">
+                                        <div class="product__inner">
+                                            <p class="product__title"><?= $arItem['TITLE'] ?></p>
+                                            <p class="product__price"><?= number_format($arItem['PRICE'], 0, ',',  ' ') ?> ₽</p>
+                                        </div>
+                                    </div>
+                                </div>
                                 <?php foreach ($arItem['IMAGES']['VALUE'] as $image): ?>
                                     <div class="swiper-slide">
                                         <img src="<?= CFile::GetPath($image); ?>" alt="<?= $arItem['TITLE'] ?>"
@@ -52,11 +61,6 @@
                             <div class="swiper-scrollbar"></div>
                         </div>
                     <?php endif; ?>
-
-                    <div class="product__inner">
-                        <p class="product__title"><?= $arItem['TITLE'] ?></p>
-                        <p class="product__price"><?= $arItem['PRICE'] ?> ₽</p>
-                    </div>
                 </a>
             <?php endforeach; ?>
         <?php else: ?>

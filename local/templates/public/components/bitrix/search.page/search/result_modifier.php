@@ -15,8 +15,8 @@ foreach ($arResult['SEARCH'] as &$arItem) {
             $arItem['ITEM_ID'],
         );
 
+        $arItem['DETAIL_PICTURE'] = $arFields['DETAIL_PICTURE'];
         $arItem['IMAGES'] = $arProps['IMAGES'];
         $arItem['PRICE'] = $price['PRICES'][1]['PRICE'];
     }
-    //pr($arItem['IMAGES']);
 }
