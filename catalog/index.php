@@ -242,7 +242,7 @@ $APPLICATION->SetTitle("Каталог");
 		"PAGER_SHOW_ALWAYS" => "N",
 		"PAGER_TEMPLATE" => "arrows",
 		"PAGER_TITLE" => "Товары",
-		"PAGE_ELEMENT_COUNT" => "15",
+		"PAGE_ELEMENT_COUNT" => "100",
 		"PARTIAL_PRODUCT_PROPERTIES" => "Y",
 		"PATH_TO_SMILE" => "/bitrix/images/forum/smile/",
 		"POST_FIRST_MESSAGE" => "N",

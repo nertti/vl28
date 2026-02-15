@@ -37,7 +37,7 @@ $APPLICATION->IncludeComponent("bitrix:catalog.section", "links_catalog", array(
     "SECTION_CODE" => $arResult["VARIABLES"]["SECTION_CODE"],
     //"SECTION_ID" => $arResult["VARIABLES"]["SECTION_ID"],
     "SHOW_ALL_WO_SECTION" => "Y", // Важный параметр для отображения всех товаров
-    "PAGE_ELEMENT_COUNT" => 0, // Без пагинации
+    "PAGE_ELEMENT_COUNT" => 100, // Без пагинации
     "DETAIL_URL" => $arResult["FOLDER"] . $arResult["URL_TEMPLATES"]["element"],
     "BASKET_URL" => $arParams["BASKET_URL"]
 ), $component);
