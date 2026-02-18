@@ -164,10 +164,9 @@ if ($success) {
             $cdekProp = $propertyCollection->getItemByOrderPropertyCode('CDEK_UUID');
             if ($cdekProp) {
                 $cdekProp->setValue($cdekResult['entity']['uuid']);
-                $order->save();
             }
         }
-
+    $order->save();
     unset($_SESSION['PENDING_ORDER'][$orderId]); // очищаем временные данные
 }
 ?>
