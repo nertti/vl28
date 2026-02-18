@@ -97,10 +97,11 @@ $salePrice = 0;
                         </div>
                         <p class="checkout__cart-value"><?= $propertySize ?></p>
                         <div class="checkout__cart-quantity">
-                            <div class="plus"></div>
+                            <div class="minus"></div>
                             <input type="number" min="1" max="30" class="checkout__cart-input countProduct"
                                    value="<?= $basketItem->getQuantity() ?>">
-                            <div class="minus"></div>
+                            <div class="plus"></div>
+
                         </div>
                         <p class="checkout__cart-price"><?= number_format($basketItem->getFinalPrice(), 0, '', ' ') ?>
                             ₽</p>
@@ -533,6 +534,7 @@ $salePrice = 0;
         }
 
         initListeners() {
+            console.log('123')
             document.querySelectorAll('.checkout__cart-quantity').forEach(wrapper => {
                 wrapper.addEventListener('click', e => this.handleCountChange(e));
             });
@@ -760,7 +762,7 @@ $salePrice = 0;
 
     // --- Инициализация ---
     document.addEventListener('DOMContentLoaded', () => {
-        const cart = new CheckoutCart('<?=$siteId?>', '<?=$fUserId?>', <?=$userBonus?>);
+        //const cart = new CheckoutCart('<?=$siteId?>', '<?=$fUserId?>', <?=$userBonus?>);
     });
 
 </script>

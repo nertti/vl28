@@ -146,7 +146,7 @@ function onOrderCreate(Bitrix\Main\Event $event)
     foreach ($basket->getListOfFormatText() as $basketItem) {
         $items[] = html_entity_decode($basketItem);
     }
-    $itemsList = implode("\n", $items);
+    $itemsList = implode("\n", preg_replace('/\[[^\]]*\]/u', '', $items));
 
     // Адрес доставки
     $city = $propertyCollection->getItemByOrderPropertyId(17)->getValue();
@@ -200,7 +200,7 @@ function onOrderCreate(Bitrix\Main\Event $event)
         $message .= "🎁 Оплачено бонусами: {$bonusPaidAmount} {$order->getCurrency()}\n";
     }
 
-    $message .= "📦 Товары:\n{$itemsList}";
+    $message .= "📦 Товары: {$itemsList}";
 
     // Кнопка для открытия заказа
     $keyboard = [
