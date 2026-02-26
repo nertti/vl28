@@ -25,8 +25,8 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
                                 <?php if ($prop['ID'] == 26 || $prop['ID'] == 25 || $prop['ID'] == 24): ?>
                                     <input type="hidden" name="<?= $prop['CODE'] ?>" value="<?= $prop['VALUE'] ?>">
                                 <?php endif; ?>
-                                <input type="hidden" name="ID" value="<?= $arResult['ID'] ?>">
                             <?php endforeach; ?>
+                            <input type="hidden" name="ID" value="<?= $arResult['ID'] ?>">
                             <span class="link cancelOrder pointer">Отменить заказ</span>
                         </form>
                     <?php elseif ($arResult['STATUS']['ID'] == 'N' || $arResult['STATUS']['ID'] == 'D'): ?>

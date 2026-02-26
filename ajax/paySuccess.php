@@ -98,6 +98,8 @@ if ($success) {
 
     // === Заполняем свойства ===
     $propertyCollection = $order->getPropertyCollection();
+    $propertyCollection->getItemByOrderPropertyCode('PAYMENT_ID')->setValue($paymentId);
+
     $propertyCollection->getItemByOrderPropertyCode('EMAIL')->setValue($fields['email']);
     $propertyCollection->getItemByOrderPropertyCode('PHONE')->setValue($fields['phone']);
     $propertyCollection->getItemByOrderPropertyCode('NAME')->setValue($fields['name']);

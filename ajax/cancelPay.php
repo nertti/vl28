@@ -13,7 +13,7 @@ if (CModule::IncludeModule('sale')) {
     $order->setField('STATUS_ID', 'C'); // статус Отмены
 }
 $data = [
-    "TerminalKey" => $_POST['TERMINAL_KEY'],
+    "TerminalKey" => $terminalKey,
     "PaymentId" => $_POST['PAYMENT_ID'],
     'Password' => $secretKey
 
@@ -25,7 +25,7 @@ $token = hash('sha256', implode('', $data));
 
 // Тело запроса
 $requestData = [
-    "TerminalKey" => $_POST['TERMINAL_KEY'],
+    "TerminalKey" => $terminalKey,
     "PaymentId" => $_POST['PAYMENT_ID'],
     "Token" => $token,
 ];
