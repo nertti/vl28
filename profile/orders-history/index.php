@@ -71,7 +71,7 @@ $arUser = $rsUser->Fetch();
 			1 => "N",
 			2 => "P",
 		),
-		"SEF_FOLDER" => "/profile/order-list/",
+		"SEF_FOLDER" => "/profile/orders-history/",
 		"COMPONENT_TEMPLATE" => "order-list",
 		"DETAIL_HIDE_USER_INFO" => array(
 		),

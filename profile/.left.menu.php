@@ -1,8 +1,22 @@
 <?php
 $aMenuLinks = array(
     array(
+        "Профиль",
+        "/profile/",
+        array(),
+        array(),
+        ""
+    ),
+    array(
+        "Текущие заказы",
+        "/profile/orders/",
+        array(),
+        array(),
+        ""
+    ),
+    array(
         "История заказов",
-        "/profile/order-list/",
+        "/profile/orders-history/",
         array(),
         array(),
         ""

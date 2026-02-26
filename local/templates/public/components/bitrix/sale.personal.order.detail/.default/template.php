@@ -19,20 +19,19 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
             <div class="account__order account__order_big">
                 <p class="account__order-title">Заказ #<?= $arResult['ID'] ?></p>
                 <div class="account__order-wrap">
-                    <?php if ($arResult['STATUS']['ID'] == 'N'): ?>
-                        <?php foreach ($arResult['ORDER_PROPS'] as $prop): ?>
-                            <?php if ($prop['ID'] == 11): ?>
-                                <a href="<?= $prop['VALUE'] ?>" class="link">Ссылка на оплату</a>
-                            <?php endif; ?>
-                        <?php endforeach; ?>
-                    <?php elseif($arResult['STATUS']['ID'] == 'P' || $arResult['STATUS']['ID'] == 'N'):?>
+                    <?php if ($arResult['STATUS']['ID'] == 'P'): ?>
                         <form action="/ajax/cancelPay.php" id="form">
                             <?php foreach ($arResult['ORDER_PROPS'] as $prop): ?>
                                 <?php if ($prop['ID'] == 26 || $prop['ID'] == 25 || $prop['ID'] == 24): ?>
-                                    <input type="hidden" name="<?=$prop['CODE']?>" value="<?=$prop['VALUE']?>">
+                                    <input type="hidden" name="<?= $prop['CODE'] ?>" value="<?= $prop['VALUE'] ?>">
                                 <?php endif; ?>
-                                <input type="hidden" name="ID" value="<?=$arResult['ID']?>">
+                                <input type="hidden" name="ID" value="<?= $arResult['ID'] ?>">
                             <?php endforeach; ?>
+                            <span class="link cancelOrder pointer">Отменить заказ</span>
+                        </form>
+                    <?php elseif ($arResult['STATUS']['ID'] == 'N' || $arResult['STATUS']['ID'] == 'D'): ?>
+                        <form action="/ajax/cancelPayWithoutPay.php" id="form">
+                            <input type="hidden" name="ID" value="<?= $arResult['ID'] ?>">
                             <span class="link cancelOrder pointer">Отменить заказ</span>
                         </form>
                     <?php endif; ?>
@@ -98,7 +97,7 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
         const cancelOrder = new HystModal({
             linkAttributeName: 'data-hystmodal',
             afterClose: function (modal) {
-                window.location = '/profile/order-list/'
+                window.location = '/profile/orders/'
             },
         });
 
@@ -128,11 +127,11 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
                     if (data.status === 'error') {
                         console.log('Ошибка отмены оплаты');
                     } else {
-                        if(data.data.Success === '1'){
-                            cancelOrder.open('#alertModal');
-                        } else {
-                            cancelOrder.open('#alertModal2');
-                        }
+                        cancelOrder.open('#alertModal');
+                        // if (data.data.Success === '1') {
+                        // } else {
+                        //     cancelOrder.open('#alertModal2');
+                        // }
                     }
                 })
                 .catch(error => {
