@@ -701,23 +701,15 @@ section {
     display:none
   }
 }
-/*.products__list {*/
-/*  display:-webkit-box;*/
-/*  display:-ms-flexbox;*/
-/*  display:flex;*/
-/*  -ms-flex-wrap:wrap;*/
-/*  flex-wrap:wrap;*/
-/*  width:100%*/
-/*}*/
 .products__list {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  width: 100%;
+  display:-webkit-box;
+  display:-ms-flexbox;
+  display:flex;
+  -ms-flex-wrap:wrap;
+  flex-wrap:wrap;
+  width:100%
 }
-.product {
-  width: 100%;
-  min-width: 0;   /* ВАЖНО для grid */
-}
+
 .products__link {
   margin-top:50px
 }
@@ -732,16 +724,16 @@ section {
   }
 }
 .product {
-  /*display:-webkit-box;*/
-  /*display:-ms-flexbox;*/
-  /*display:flex;*/
-  /*-webkit-box-orient:vertical;*/
-  /*-webkit-box-direction:normal;*/
-  /*-ms-flex-direction:column;*/
-  /*flex-direction:column;*/
-  /*width:33.3333333333%;*/
-  /*position:relative;*/
-  /*background-color:#d5d5d5*/
+  display:-webkit-box;
+  display:-ms-flexbox;
+  display:flex;
+  -webkit-box-orient:vertical;
+  -webkit-box-direction:normal;
+  -ms-flex-direction:column;
+  flex-direction:column;
+  width:33.3333333333%;
+  position:relative;
+  background-color:#d5d5d5;
   background:linear-gradient(to top, #d5d5d5, #fff);
 }
 .product__inner {
@@ -758,17 +750,13 @@ section {
   padding-bottom:30px;
   margin-top:auto
 }
-/*.product__swiper {*/
-/*  width:100%*/
-/*}*/
-/*.product__swiper .swiper-slide {*/
-/*  display:-webkit-box;*/
-/*  display:-ms-flexbox;*/
-/*  display:flex*/
-/*}*/
 .product__swiper {
-  width: 100%;
-  overflow: hidden;
+  width:100%
+}
+.product__swiper .swiper-slide {
+  display:-webkit-box;
+  display:-ms-flexbox;
+  display:flex
 }
 
 .product__swiper .swiper-wrapper {
@@ -839,7 +827,7 @@ section {
     display: none;
   }
   .product {
-    /*width:50%*/
+    width:50%
   }
   .product__price,
   .product__title {
@@ -870,14 +858,8 @@ section {
     border-radius:0;
     background-color:#222
   }
-  .products__list {
-    grid-template-columns: repeat(3, 1fr);
-  }
 }
 @media screen and (max-width:600px) {
-  .products__list {
-    grid-template-columns: repeat(2, 1fr);
-  }
   .product__price,
   .product__title {
     font-size:10px;
