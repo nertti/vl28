@@ -1,72 +1,111 @@
 <?php
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php");
 require_once $_SERVER["DOCUMENT_ROOT"] . '/local/php_interface/include/t_auth.php';
-/** @var $terminalKey */
-/** @var $secretKey */
 
-//pr($_POST);
+use Bitrix\Main\Loader;
 use Bitrix\Sale;
 
-if (CModule::IncludeModule('sale')) {
-    $orderId = $_POST['ID'];
-    $order = Sale\Order::load($orderId);
-    $order->setField('STATUS_ID', 'C'); // статус Отмены
+header('Content-Type: application/json');
+
+if (!Loader::includeModule('sale')) {
+    echo json_encode(['status' => 'error', 'message' => 'Модуль sale не подключен']);
+    exit;
 }
-$data = [
-    "TerminalKey" => $terminalKey,
-    "PaymentId" => $_POST['PAYMENT_ID'],
-    'Password' => $secretKey
 
-];
+$orderId   = (int)$_POST['ID'];
+$paymentId = $_POST['PAYMENT_ID'];
 
+$order = Sale\Order::load($orderId);
 
-ksort($data);
-$token = hash('sha256', implode('', $data));
-
-// Тело запроса
-$requestData = [
-    "TerminalKey" => $terminalKey,
-    "PaymentId" => $_POST['PAYMENT_ID'],
-    "Token" => $token,
-];
-// Инициализация сессии cURL
-$ch = curl_init('https://securepay.tinkoff.ru/v2/Cancel');
+if (!$order) {
+    echo json_encode(['status' => 'error', 'message' => 'Заказ не найден']);
+    exit;
+}
 
 try {
-    // Настраиваем заголовки для JSON
-    $headers = [
-        'Content-Type: application/json',
-        'Accept: application/json'
+
+    // =============================
+    // 1️⃣ Снимаем оплату в Битриксе
+    // =============================
+
+    $paymentCollection = $order->getPaymentCollection();
+
+    foreach ($paymentCollection as $payment) {
+        if ($payment->getField('PAID') === 'Y') {
+            $payment->setField('PAID', 'N');
+        }
+    }
+
+    // =============================
+    // 2️⃣ Ставим статус отмены
+    // =============================
+
+    $order->setField('STATUS_ID', 'C');
+
+    $result = $order->save();
+
+    if (!$result->isSuccess()) {
+        throw new Exception(implode(', ', $result->getErrorMessages()));
+    }
+
+    // =============================
+    // 3️⃣ Отправляем Cancel в Т-Банк
+    // =============================
+
+    $data = [
+        "TerminalKey" => $terminalKey,
+        "PaymentId"   => $paymentId,
+        "Password"    => $secretKey
     ];
 
-    // Кодирование данных в JSON
-    $jsonData = json_encode($requestData);
+    ksort($data);
+    $token = hash('sha256', implode('', $data));
 
-    // Настраиваем параметры cURL
+    $requestData = [
+        "TerminalKey" => $terminalKey,
+        "PaymentId"   => $paymentId,
+        "Token"       => $token,
+    ];
+
+    $ch = curl_init('https://securepay.tinkoff.ru/v2/Cancel');
+
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_POST => true,
-        CURLOPT_POSTFIELDS => $jsonData,
-        CURLOPT_HTTPHEADER => $headers,
+        CURLOPT_POSTFIELDS => json_encode($requestData),
+        CURLOPT_HTTPHEADER => [
+            'Content-Type: application/json',
+            'Accept: application/json'
+        ],
         CURLOPT_SSL_VERIFYPEER => true,
         CURLOPT_CONNECTTIMEOUT => 30,
         CURLOPT_TIMEOUT => 30
     ]);
 
-    // Выполняем запрос
     $response = curl_exec($ch);
-
-    // Получаем информацию о запросе
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-    // Проверяем успешность запроса
-    if ($httpCode === 200) {
-        header('Content-Type: application/json');
-        echo json_encode(['status' => 'success', 'data' => $response]);
-    }
-} catch (Exception $e) {
-    header('Content-Type: application/json');
-    echo json_encode(['status' => 'error', 'data' => $e->getMessage()]);
-} finally {
     curl_close($ch);
+
+    if ($httpCode !== 200) {
+        throw new Exception('Ошибка запроса к Т-Банку');
+    }
+
+    $responseData = json_decode($response, true);
+
+    if (!$responseData['Success']) {
+        throw new Exception($responseData['Message']);
+    }
+
+    echo json_encode([
+        'status' => 'success',
+        'message' => 'Заказ и оплата успешно отменены'
+    ]);
+
+} catch (Exception $e) {
+
+    echo json_encode([
+        'status' => 'error',
+        'message' => $e->getMessage()
+    ]);
 }
