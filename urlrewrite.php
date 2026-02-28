@@ -1,11 +1,27 @@
 <?php
 $arUrlRewrite=array (
+  20 => 
+  array (
+    'CONDITION' => '#^/profile/orders-history/#',
+    'RULE' => '',
+    'ID' => 'bitrix:sale.personal.order',
+    'PATH' => '/profile/orders-history/index.php',
+    'SORT' => 100,
+  ),
   15 => 
   array (
     'CONDITION' => '#^/profile/order-list/#',
     'RULE' => '',
     'ID' => 'bitrix:sale.personal.order',
     'PATH' => '/profile/order-list/index.php',
+    'SORT' => 100,
+  ),
+  21 => 
+  array (
+    'CONDITION' => '#^/profile/orders/#',
+    'RULE' => '',
+    'ID' => 'bitrix:sale.personal.order',
+    'PATH' => '/profile/orders/index.php',
     'SORT' => 100,
   ),
   17 => 

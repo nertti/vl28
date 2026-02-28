@@ -50,57 +50,60 @@ $arUser = $rsUser->Fetch();
                         <p class="account__title">Мои заказы</p>
                         <?php
                         $APPLICATION->IncludeComponent(
-                            "bitrix:sale.personal.order",
-                            "order-list",
-                            array(
-                                "STATUS_COLOR_N" => "green",
-                                "STATUS_COLOR_P" => "yellow",
-                                "STATUS_COLOR_F" => "gray",
-                                "STATUS_COLOR_PSEUDO_CANCELLED" => "red",
-                                "SEF_MODE" => "Y",
-                                "ORDERS_PER_PAGE" => "5",
-                                "PATH_TO_PAYMENT" => "payment.php",
-                                "PATH_TO_BASKET" => "/cart/",
-                                "SET_TITLE" => "Y",
-                                "SAVE_IN_SESSION" => "Y",
-                                "NAV_TEMPLATE" => "",
-                                "ACTIVE_DATE_FORMAT" => "j F Y",
-                                "PROP_1" => array(),
-                                "PROP_2" => "",
-                                "CACHE_TYPE" => "A",
-                                "CACHE_TIME" => "3600",
-                                "CACHE_GROUPS" => "Y",
-                                "CUSTOM_SELECT_PROPS" => array(),
-                                "HISTORIC_STATUSES" => array(
-                                    0 => "C",
-                                    1 => "F",
-                                ),
-                                "SEF_FOLDER" => "/profile/order-list/",
-                                "COMPONENT_TEMPLATE" => "order-list",
-                                "DETAIL_HIDE_USER_INFO" => array(),
-                                "PATH_TO_CATALOG" => "/catalog/",
-                                "DISALLOW_CANCEL" => "N",
-                                "RESTRICT_CHANGE_PAYSYSTEM" => array(
-                                    0 => "F",
-                                    1 => "N",
-                                ),
-                                "REFRESH_PRICES" => "N",
-                                "ORDER_DEFAULT_SORT" => "ID",
-                                "ALLOW_INNER" => "N",
-                                "ONLY_INNER_FULL" => "N",
-                                "SEF_URL_TEMPLATES" => array(
-                                    "list" => "",
-                                    "detail" => "#ID#/",
-                                    "cancel" => "order_cancel.php?ID=#ID#",
-                                ),
-                                "VARIABLE_ALIASES" => array(
-                                    "cancel" => array(
-                                        "ID" => "ID",
-                                    ),
-                                )
-                            ),
-                            false
-                        ); ?>
+	"bitrix:sale.personal.order", 
+	"order-list", 
+	[
+		"STATUS_COLOR_N" => "green",
+		"STATUS_COLOR_P" => "yellow",
+		"STATUS_COLOR_F" => "gray",
+		"STATUS_COLOR_PSEUDO_CANCELLED" => "red",
+		"SEF_MODE" => "Y",
+		"ORDERS_PER_PAGE" => "50",
+		"PATH_TO_PAYMENT" => "payment.php",
+		"PATH_TO_BASKET" => "/cart/",
+		"SET_TITLE" => "Y",
+		"SAVE_IN_SESSION" => "Y",
+		"NAV_TEMPLATE" => "",
+		"ACTIVE_DATE_FORMAT" => "j F Y",
+		"PROP_1" => [
+		],
+		"PROP_2" => "",
+		"CACHE_TYPE" => "A",
+		"CACHE_TIME" => "3600",
+		"CACHE_GROUPS" => "Y",
+		"CUSTOM_SELECT_PROPS" => [
+		],
+		"HISTORIC_STATUSES" => [
+			0 => "C",
+			1 => "F",
+		],
+		"SEF_FOLDER" => "/profile/orders/",
+		"COMPONENT_TEMPLATE" => "order-list",
+		"DETAIL_HIDE_USER_INFO" => [
+		],
+		"PATH_TO_CATALOG" => "/catalog/",
+		"DISALLOW_CANCEL" => "N",
+		"RESTRICT_CHANGE_PAYSYSTEM" => [
+			0 => "F",
+			1 => "N",
+		],
+		"REFRESH_PRICES" => "N",
+		"ORDER_DEFAULT_SORT" => "ID",
+		"ALLOW_INNER" => "N",
+		"ONLY_INNER_FULL" => "N",
+		"SEF_URL_TEMPLATES" => [
+			"list" => "",
+			"detail" => "#ID#/",
+			"cancel" => "order_cancel.php?ID=#ID#",
+		],
+		"VARIABLE_ALIASES" => [
+			"cancel" => [
+				"ID" => "ID",
+			],
+		]
+	],
+	false
+); ?>
                     </div>
                 </div>
             </div>

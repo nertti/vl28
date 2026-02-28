@@ -127,10 +127,10 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
                     if (data.status === 'error') {
                         console.log('Ошибка отмены оплаты');
                     } else {
-                        cancelOrder.open('#alertModal');
+                        cancelOrder.open('#alertModal2');
                         // if (data.data.Success === '1') {
                         // } else {
-                        //     cancelOrder.open('#alertModal2');
+                        //     cancelOrder.open('#alertModal');
                         // }
                     }
                 })

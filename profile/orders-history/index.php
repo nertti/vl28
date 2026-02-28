@@ -45,7 +45,7 @@ $arUser = $rsUser->Fetch();
                 $APPLICATION->IncludeComponent(
 	"bitrix:sale.personal.order", 
 	"order-list", 
-	array(
+	[
 		"STATUS_COLOR_N" => "green",
 		"STATUS_COLOR_P" => "yellow",
 		"STATUS_COLOR_F" => "gray",
@@ -58,44 +58,47 @@ $arUser = $rsUser->Fetch();
 		"SAVE_IN_SESSION" => "Y",
 		"NAV_TEMPLATE" => "",
 		"ACTIVE_DATE_FORMAT" => "j F Y",
-		"PROP_1" => array(
-		),
+		"PROP_1" => [
+		],
 		"PROP_2" => "",
 		"CACHE_TYPE" => "A",
 		"CACHE_TIME" => "3600",
 		"CACHE_GROUPS" => "Y",
-		"CUSTOM_SELECT_PROPS" => array(
-		),
-		"HISTORIC_STATUSES" => array(
-			0 => "C",
+		"CUSTOM_SELECT_PROPS" => [
+		],
+		"HISTORIC_STATUSES" => [
+			0 => "D",
 			1 => "N",
 			2 => "P",
-		),
+		],
 		"SEF_FOLDER" => "/profile/orders-history/",
 		"COMPONENT_TEMPLATE" => "order-list",
-		"DETAIL_HIDE_USER_INFO" => array(
-		),
+		"DETAIL_HIDE_USER_INFO" => [
+		],
 		"PATH_TO_CATALOG" => "/catalog/",
 		"DISALLOW_CANCEL" => "N",
-		"RESTRICT_CHANGE_PAYSYSTEM" => array(
-			0 => "F",
-			1 => "N",
-		),
+		"RESTRICT_CHANGE_PAYSYSTEM" => [
+			0 => "C",
+			1 => "D",
+			2 => "F",
+			3 => "N",
+			4 => "P",
+		],
 		"REFRESH_PRICES" => "N",
 		"ORDER_DEFAULT_SORT" => "ID",
 		"ALLOW_INNER" => "N",
 		"ONLY_INNER_FULL" => "N",
-		"SEF_URL_TEMPLATES" => array(
+		"SEF_URL_TEMPLATES" => [
 			"list" => "",
 			"detail" => "#ID#/",
 			"cancel" => "order_cancel.php?ID=#ID#",
-		),
-		"VARIABLE_ALIASES" => array(
-			"cancel" => array(
+		],
+		"VARIABLE_ALIASES" => [
+			"cancel" => [
 				"ID" => "ID",
-			),
-		)
-	),
+			],
+		]
+	],
 	false
 );?>
             </div>
