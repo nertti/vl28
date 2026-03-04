@@ -534,7 +534,6 @@ $salePrice = 0;
         }
 
         initListeners() {
-            console.log('123')
             document.querySelectorAll('.checkout__cart-quantity').forEach(wrapper => {
                 wrapper.addEventListener('click', e => this.handleCountChange(e));
             });

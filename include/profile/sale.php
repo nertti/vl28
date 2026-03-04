@@ -23,25 +23,27 @@ $dbRes = Sale\Order::getList([
 while ($order = $dbRes->fetch()) {
     $totalPaid += $order['PRICE'];
 }
+
 $discountPercent = 0;
 
-$arSelect = Array(
+// Получаем уровни скидок
+$arSelect = [
     'ID',
     'IBLOCK_ID',
     'NAME',
     'PROPERTY_CONDITIONS',
     'PROPERTY_BONUS',
-);
-$arFilter = Array("IBLOCK_ID"=>IntVal(21), "ACTIVE"=>"Y");
-$res = CIBlockElement::GetList(Array(), $arFilter, false, Array(), $arSelect);
+];
+$arFilter = ["IBLOCK_ID" => IntVal(21), "ACTIVE" => "Y"];
+$res = CIBlockElement::GetList(["PROPERTY_CONDITIONS" => "ASC"], $arFilter, false, false, $arSelect);
+
 $arCards = [];
-while($ob = $res->GetNextElement())
-{
+while ($ob = $res->GetNextElement()) {
     $arFields = $ob->GetFields();
     $arCards[] = $arFields;
 }
 
-
+// Определяем базовую скидку
 if ($totalPaid < $arCards[1]['PROPERTY_CONDITIONS_VALUE']) {
     $discountPercent = $arCards[0]['PROPERTY_BONUS_VALUE'];
     $discountCard = $arCards[0]['NAME'];
@@ -52,3 +54,30 @@ if ($totalPaid < $arCards[1]['PROPERTY_CONDITIONS_VALUE']) {
     $discountPercent = $arCards[2]['PROPERTY_BONUS_VALUE'];
     $discountCard = $arCards[2]['NAME'];
 }
+
+/*
+|--------------------------------------------------------------------------
+| Проверка дня рождения
+|--------------------------------------------------------------------------
+*/
+
+$rsUser = CUser::GetByID($userId);
+$arUser = $rsUser->Fetch();
+
+if (!empty($arUser['PERSONAL_BIRTHDAY'])) {
+    $birthday = MakeTimeStamp($arUser['PERSONAL_BIRTHDAY'], "DD.MM.YYYY");
+
+    $todayDay = date('d');
+    $todayMonth = date('m');
+
+    $birthDay = date('d', $birthday);
+    $birthMonth = date('m', $birthday);
+
+    if ($todayDay == $birthDay && $todayMonth == $birthMonth) {
+        $discountPercent += 10;
+        $isBirthday = true;
+    }
+}
+
+// Ограничение, чтобы скидка не превышала 100%
+$discountPercent = min($discountPercent, 100);

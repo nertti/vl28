@@ -38,7 +38,7 @@ $this->setFrameMode(true);
                                             </label>
                                         <?php elseif ($arItem['DISPLAY_TYPE'] == 'H' || $arItem['CODE'] == 'COLOR'): ?>
                                             <label class="filter__item filter__item_color">
-                                                <input type="checkbox" name="<?= $value['URL_ID'] ?>"
+                                                <input type="checkbox" name="COLOR_<?= $value['URL_ID'] ?>"
                                                        <?php if ($value['CHECKED'] == 'Y'): ?>checked<?php endif; ?>>
                                                 <span class="checkmark">
                                                     <span class="checkmark__color"

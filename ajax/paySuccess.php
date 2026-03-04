@@ -158,7 +158,7 @@ if ($success) {
             }
 
             $cdekResult = createCdekOrder($cdekOrderData);
-//pr($cdekResult);
+            file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/local/log.txt', print_r($cdekResult, 1), FILE_APPEND);
             // =========================
             // СОХРАНЯЕМ UUID В ЗАКАЗ
             // =========================
