@@ -20,23 +20,35 @@ if (isset($_POST['kasemir'])){
     $arrFilter['PROPERTY_MATERIAL'][] = 16;
 }
 
-if (isset($_POST['474a51'])){
-    $arrFilter["OFFERS"]['PROPERTY_COLOR'][] = 64; // графитовый
+//if (isset($_POST['COLOR_474a51'])){
+//    $arrFilter['PROPERTY_COLOR'][] = '474a51'; // графитовый
+//}
+//if (isset($_POST['COLOR_808080'])){
+//    $arrFilter['PROPERTY_COLOR'][] = '808080'; // серый
+//}
+//if (isset($_POST['COLOR_fff'])){
+//    $arrFilter['PROPERTY_COLOR'][] = 'fff'; // белый
+//}
+//if (isset($_POST['COLOR_000'])){
+//    $arrFilter['PROPERTY_COLOR'][] = '000'; // чёрный
+//}
+//if (isset($_POST['COLOR_ffe4c4'])){
+//    $arrFilter['PROPERTY_COLOR'][] = 'ffe4c4'; // бежевый
+//}
+//if (isset($_POST['COLOR_e4ff5c'])){
+//    $arrFilter['PROPERTY_COLOR'][] = 'e4ff5c'; // Зелёный
+//}
+
+$colors = [];
+
+foreach ($_POST as $key => $value) {
+    if (preg_match('/^COLOR_(.+)$/', $key, $matches)) {
+        $colors[] = $matches[1]; // это и есть XML_ID
+    }
 }
-if (isset($_POST['808080'])){
-    $arrFilter["OFFERS"]['PROPERTY_COLOR'][] = 63; // серый
-}
-if (isset($_POST['fff'])){
-    $arrFilter["OFFERS"]['PROPERTY_COLOR'][] = 62; // белый
-}
-if (isset($_POST['000'])){
-    $arrFilter["OFFERS"]['PROPERTY_COLOR'][] = 61; // чёрный
-}
-if (isset($_POST['ffe4c4'])){
-    $arrFilter["OFFERS"]['PROPERTY_COLOR'][] = 153; // бежевый
-}
-if (isset($_POST['9eff00'])){
-    $arrFilter["OFFERS"]['PROPERTY_COLOR'][] = 154; // кислотный
+
+if (!empty($colors)) {
+    $arrFilter['PROPERTY_COLOR'] = $colors;
 }
 
 if (isset($_POST['xs'])){
