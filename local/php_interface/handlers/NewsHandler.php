@@ -19,7 +19,6 @@ function sendNewsToSubscribers(&$arFields)
 
     while ($sub = $rsSub->Fetch())
     {
-        //file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/local/log.txt', print_r($sub['EMAIL'], 1), FILE_APPEND);
 
         \CEvent::Send(
             'SEND_EMAIL_TO_SUBSCRIBERS',

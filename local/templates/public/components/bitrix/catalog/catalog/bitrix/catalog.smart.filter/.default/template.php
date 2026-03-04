@@ -105,14 +105,30 @@ $this->setFrameMode(true);
                         existingMainSection.replaceWith(mainSection);
                     }
                     setTimeout(function () {
-                        let productSwiperFilter = new Swiper('.product__swiper ', {
-                            slidesPerView: 1,
-                            loop: true,
-                            observer: true,
-                            pagination: {
-                                el: '.product-swiper .swiper-pagination',
-                                clickable: true,
-                            },
+                        var gallerySwipers = [];
+                        $('.product__swiper').each(function(i) {
+                            var this_ID = $(this).attr('id');
+
+                            gallerySwipers[i] = new Swiper("#"+this_ID, {
+                                spaceBetween: 0,
+                                slidesPerView: 1,
+                                navigation: {
+                                    nextEl: "#"+this_ID+" .swiper-button-next",
+                                    prevEl: "#"+this_ID+" .swiper-button-prev",
+                                },
+                                scrollbar: {
+                                    el: "#"+this_ID+" .swiper-scrollbar",
+                                },
+                                pagination: {
+                                    el: '#'+this_ID+' .swiper-pagination',
+                                    clickable: true,
+                                },
+                                breakpoints: {
+                                    991: {
+                                        loop: true,
+                                    },
+                                }
+                            });
                         });
                     }, 100);
                 })

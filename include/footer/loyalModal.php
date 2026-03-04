@@ -76,10 +76,6 @@ while($ob = $res->GetNextElement())
                 </div>
                 <div class="loyal__mobile">
                     <div class="loyal__nav">
-                        <div class="loyal__nav-item active">Light</div>
-                        <div class="loyal__nav-item">Highlight</div>
-                        <div class="loyal__nav-item">Luxury</div>
-
                         <?php foreach ($arCards as $key => $card):?>
                             <div class="loyal__nav-item<?php if($key == 0):?> active<?php endif;?>"><?=$card['NAME']?></div>
                         <?php endforeach;?>

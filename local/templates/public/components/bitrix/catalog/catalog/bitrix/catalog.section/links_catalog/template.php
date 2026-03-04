@@ -74,6 +74,8 @@ $this->setFrameMode(true);
                             </svg>
                         </div>
                         <div class="swiper-scrollbar"></div>
+                        <div class="swiper-pagination"></div>
+
                     </div>
 
                 <?php endif; ?>
