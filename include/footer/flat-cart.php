@@ -82,7 +82,7 @@ $isOrderPage = $APPLICATION->GetCurPage(false) === '/cart/order/';
                                             <p class="cart-modal__name">Цвет</p>
                                             <p class="cart-modal__value">
                                             <div class="cart__color">
-                                                <span style="background: <?= $propertyColor['VALUE'] ?>;"></span>
+                                                <span style="background: #<?= $propertyColor['VALUE'] ?>;"></span>
                                             </div>
 
                                             </p>
