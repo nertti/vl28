@@ -68,7 +68,7 @@ CJSCore::Init(array('popup', 'date'));
                         <div class="account__label">
                             <p class="account__name">Дата рождения</p>
                             <div class="account__inputs" style="position: relative" onclick="BX.calendar({node:this, field:'BIRTHDAY', form: 'form', bTime: false, currentTime: Math.floor(Date.now() / 1000), bHideTime: true});">
-                                <input type="text" name="BIRTHDAY" value="<?= $arUser['PERSONAL_BIRTHDAY'] ?>"
+                                <input type="text" name="BIRTHDAY" value="<?= $arUser['PERSONAL_BIRTHDAY'] ?>" <?php if($arUser['PERSONAL_BIRTHDAY']):?>disabled<?php endif;?>
                                        class="form-input account__input">
                                 <img src="/local/templates/public/assets/img/calendar.svg"
                                      style="
