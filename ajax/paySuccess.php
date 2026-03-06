@@ -126,7 +126,7 @@ if ($success) {
         if ($cdek === 'Y') {
 
             $cdekOrderData = [
-                'order_number' => $idOrder,
+                'order_number' => $idOrder. '-' . time(),
                 'tariff_code' => $tariff_cdek,
                 'recipient_name' => $fields['surname'] . ' ' . $fields['name'],
                 'recipient_phone' => $fields['phone'],
@@ -135,7 +135,7 @@ if ($success) {
 
                 'items' => [
                     [
-                        'name' => 'Товар из заказа #' . $idOrder,
+                        'name' => 'Товар из заказа #' . $idOrder. '-' . time(),
                         'ware_key' => 'BX-' . $idOrder,
                         'amount' => 1,
                         'cost' => $basket->getPrice(),
@@ -158,7 +158,7 @@ if ($success) {
             }
 
             $cdekResult = createCdekOrder($cdekOrderData);
-            file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/local/log.txt', print_r($cdekResult, 1), FILE_APPEND);
+            //file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/local/log.txt', print_r($cdekResult, 1), FILE_APPEND);
             // =========================
             // СОХРАНЯЕМ UUID В ЗАКАЗ
             // =========================

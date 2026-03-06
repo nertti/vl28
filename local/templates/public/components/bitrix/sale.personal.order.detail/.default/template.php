@@ -62,7 +62,8 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
                             <?php if ($arResult['STATUS']['ID'] == 'N'): ?>
                                 <div class="account__product-param">
                                     <strong>Сумма заказа (с учётом скидок)</strong>
-                                    <p><?= $arResult['PRICE'] - $arResult['SUM_PAID'] ?> ₽</p>
+                                    <?php $arResult['SUM'] = $arResult['PRICE'] - $arResult['SUM_PAID']?>
+                                    <p><?= number_format($arResult['SUM'], 0, ',',  ' ') ?> ₽</p>
                                 </div>
                             <?php endif; ?>
                             <div class="account__product-param">

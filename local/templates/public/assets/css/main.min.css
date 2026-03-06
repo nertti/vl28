@@ -3758,7 +3758,7 @@ section {
   width:calc(100% - 291px)
 }
 .account__product-params strong {
-  width:100px;
+  width:160px;
   margin-right:5px
 }
 .account__product .product {
@@ -3795,7 +3795,7 @@ section {
   display:-webkit-box;
   display:-ms-flexbox;
   display:flex;
-  width:calc(50% - 18px)
+  /*width:calc(50% - 18px)*/
 }
 .account__product-param strong {
   font-weight:500;
@@ -4015,7 +4015,7 @@ section {
     width:100%
   }
   .account__product-param strong {
-    width:80px;
+    /*width:80px;*/
     font-weight:500;
     margin-right:20px
   }
