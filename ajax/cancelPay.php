@@ -4,6 +4,7 @@ require_once $_SERVER["DOCUMENT_ROOT"] . '/local/php_interface/include/t_auth.ph
 
 use Bitrix\Main\Loader;
 use Bitrix\Sale;
+global $USER;
 
 header('Content-Type: application/json');
 
@@ -14,6 +15,7 @@ if (!Loader::includeModule('sale')) {
 
 $orderId   = (int)$_POST['ID'];
 $paymentId = $_POST['PAYMENT_ID'];
+$arOrder = CSaleOrder::GetByID($orderId);
 
 $order = Sale\Order::load($orderId);
 
@@ -47,6 +49,11 @@ try {
     if (!$result->isSuccess()) {
         throw new Exception(implode(', ', $result->getErrorMessages()));
     }
+
+    //отнимаем бонусы
+    $propertyCollection = $order->getPropertyCollection();
+    $bonus = $propertyCollection->getItemByOrderPropertyCode('BONUS')->getValue();
+    $accountID = CSaleUserAccount::Withdraw($arOrder["USER_ID"], $bonus, "RUB");
 
     // =============================
     // 3️⃣ Отправляем Cancel в Т-Банк

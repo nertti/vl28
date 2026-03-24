@@ -748,16 +748,19 @@ if ($isProfilePages && !$isFavoritePage){
             <div class="container <?php if (!$isAboutPage):?>top40<?php else:?>top50<?php endif;?>">
                 <?php if (!$isServicePages):?>
                 <?php $APPLICATION->IncludeComponent(
-                    "bitrix:breadcrumb",
-                    "breadcrumb",
-                    array(
-                        "COMPONENT_TEMPLATE" => "breadcrumb",
-                        "PATH" => "",
-                        "SITE_ID" => "s1",
-                        "START_FROM" => "-1"
-                    ),
-                    false
-                ); ?>
+	"bitrix:breadcrumb", 
+	"breadcrumb", 
+	[
+		"COMPONENT_TEMPLATE" => "breadcrumb",
+		"PATH" => "",
+		"SITE_ID" => "s1",
+		"START_FROM" => "-1"
+	],
+	false,
+	[
+		"ACTIVE_COMPONENT" => "N"
+	]
+); ?>
                 <?php endif;?>
                 <?php if (!$isAboutPage && !$isProfilePages && !$isCustomersPage):?>
                 <p class="h2"><?php $APPLICATION->ShowTitle(); ?></p>

@@ -223,7 +223,7 @@ $salePrice = 0;
                                 <input type="radio" name="payment" value="card_moskoy">
                                 <div class="checkmark"></div>
                                 <span>
-                                  Картой при получении (для Москвы)
+                                  Картой при получении (курьером по Москве)
                                 </span>
                             </label>
                         </div>
@@ -913,7 +913,7 @@ $salePrice = 0;
                     cart.deliveryCost = cost; // сохраняем в корзину
                     cart.updateTotalWithBonus();
                     if(address?.code === 44 || (typeof address !== 'undefined' && address?.name?.includes('Москва'))){
-                        updateMoscowAvailability('Москва')
+                        //updateMoscowAvailability('Москва')
                     } else {
                         updateMoscowAvailability('')
                     }
