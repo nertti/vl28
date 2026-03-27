@@ -111,6 +111,7 @@ $salePrice = 0;
             </div>
 
             <form id="form" action="/ajax/createOrder.php" class="checkout__form">
+
                 <input id="siteId" type="hidden" name="siteId" value="<?= $siteId ?>">
                 <input id="fUserId" type="hidden" name="fUserId" value="<?= $fUserId ?>">
                 <input id="discountCard" type="hidden" name="discountCard" value="<?= $discountCard ?>">
@@ -238,7 +239,7 @@ $salePrice = 0;
                     <div class="checkout__label">
                         <p class="checkout__name">Промокод</p>
                         <div class="checkout__inputs">
-                            <input type="text" name="promo" class="form-input checkout__input">
+                            <input type="text" name="promo" class="form-input checkout__input" style="margin-bottom: 10px">
                         </div>
                     </div>
                 </div>
@@ -502,23 +503,35 @@ $salePrice = 0;
         constructor(siteId, fUserId, userBonus) {
             this.siteId = siteId;
             this.fUserId = fUserId;
-            this.userBonus = userBonus; // Количество бонусов у пользователя
+            this.userBonus = userBonus;
+
             this.items = this.initItems();
+
+            // бонусы
             this.bonusApplied = false;
             this.bonusAmount = 0;
+
+            // промокод
+            this.promoApplied = false;
+            this.promoCode = '';
+            this.promoDiscount = 0;
+
+            // суммы
             this.currentTotal = 0;
-            this.maxBonus = 0;
             this.deliveryCost = 0;
+            this.maxBonus = 0;
 
             const totalEl = document.querySelector('.totalPrice strong');
             if (totalEl) {
                 this.currentTotal = parseFloat(totalEl.textContent.replace(/\D/g, '')) || 0;
-                this.updateMaxBonus();
-                this.updateBonusPoints(this.currentTotal);
             }
+
+            this.updateMaxBonus();
+            this.updateBonusPoints(this.currentTotal);
 
             this.initListeners();
             this.initBonusListeners();
+            this.initPromoListeners();
         }
 
         initItems() {
@@ -529,7 +542,6 @@ $salePrice = 0;
                 const priceEl = item.querySelector('.checkout__cart-price');
                 items[id] = {id, count, priceEl};
             });
-            //console.log('Корзина инициализирована:', items);
             return items;
         }
 
@@ -543,6 +555,55 @@ $salePrice = 0;
             });
         }
 
+        // ================= PROMO =================
+        initPromoListeners() {
+            const promoInput = document.querySelector('input[name="promo"]');
+            if (!promoInput) return;
+
+            const promoBtn = document.createElement('button');
+            promoBtn.type = 'button';
+            promoBtn.textContent = 'Применить';
+            promoBtn.classList.add('border-btn');
+
+            promoInput.after(promoBtn);
+
+            promoBtn.addEventListener('click', async () => {
+                const code = promoInput.value.trim();
+                if (!code) return;
+
+                if (!this.promoApplied) {
+                    const result = await this.sendRequest('/ajax/applyPromo.php', {
+                        promo: code,
+                        total: this.currentTotal
+                    });
+
+                    if (result?.status === 'success') {
+                        this.promoApplied = true;
+                        this.promoCode = code;
+                        this.promoDiscount = result.discount;
+
+                        promoBtn.textContent = 'Отменить';
+                        alert(result.message || 'Промокод активирован');
+
+                    } else {
+                        alert(result.message || 'Промокод недействителен');
+                        return;
+                    }
+                } else {
+                    this.promoApplied = false;
+                    this.promoCode = '';
+                    this.promoDiscount = 0;
+
+                    promoBtn.textContent = 'Применить';
+                    alert('Промокод отменён');
+
+                }
+
+                this.updateTotalWithAll();
+            });
+        }
+
+        // ================= BONUS =================
         initBonusListeners() {
             const toggleBtn = document.querySelector('.promo__btn');
             const applyBtn = document.querySelector('#applyBonus');
@@ -550,77 +611,142 @@ $salePrice = 0;
 
             if (!toggleBtn || !applyBtn || !bonusInput) return;
 
-            // Тогл блока бонусов
             toggleBtn.addEventListener('click', () => {
                 const block = document.querySelector('.promo__show');
-                block.style.display = 'none';
                 toggleBtn.classList.toggle('active');
 
                 if (toggleBtn.classList.contains('active')) {
-                    if (block) block.style.display = 'block';
-                    // Подставляем максимально возможное списание
-                    let value = this.bonusApplied ? this.bonusAmount : this.maxBonus;
+                    block.style.display = 'block';
                     bonusInput.max = this.maxBonus;
                     bonusInput.value = this.maxBonus;
-
-                    //console.log(`Бонусы для списания подставлены: ${bonusInput.value} ₽ (макс: ${this.maxBonus})`);
                 } else {
-                    if (block) block.style.display = 'none';
+                    block.style.display = 'none';
+
                     if (this.bonusApplied) {
-                        this.bonusAmount = 0;
                         this.bonusApplied = false;
-                        if (applyBtn) applyBtn.textContent = 'Применить';
+                        this.bonusAmount = 0;
+                        applyBtn.textContent = 'Применить';
                         document.querySelector('#setBonus').value = 'N';
-                        this.updateBonusPoints(this.currentTotal);
-                        this.updateTotalWithBonus();
-                        //console.log('Списание бонусов отменено через выключение тогл, сумма пересчитана');
+                        this.updateTotalWithAll();
                     }
                 }
             });
 
-            // Кнопка "Применить/Отменить"
             applyBtn.addEventListener('click', () => {
                 if (!this.bonusApplied) {
-                    let applyValue = Math.min(bonusInput.value || 0, this.maxBonus);
-                    applyValue = Math.max(applyValue, 0);
-
-                    this.bonusAmount = applyValue;
+                    let value = Math.min(bonusInput.value || 0, this.maxBonus);
+                    this.bonusAmount = Math.max(value, 0);
                     this.bonusApplied = true;
 
                     applyBtn.textContent = 'Отменить';
                     document.querySelector('#setBonus').value = 'Y';
-
-                    //console.log(`Применены бонусы: ${this.bonusAmount} ₽`);
                 } else {
-                    this.bonusAmount = 0;
                     this.bonusApplied = false;
+                    this.bonusAmount = 0;
 
                     applyBtn.textContent = 'Применить';
                     document.querySelector('#setBonus').value = 'N';
-
-                    //console.log(`Списание бонусов отменено`);
                 }
 
-                this.updateBonusPoints(this.currentTotal);
-                this.updateTotalWithBonus();
+                this.updateTotalWithAll();
             });
         }
 
-        getTotalPriceWithoutBonus() {
-            return this.currentTotal;
+        updateMaxBonus() {
+            let maxByTotal = Math.floor(this.currentTotal * 0.9);
+            this.maxBonus = Math.min(maxByTotal, this.userBonus);
+
+            const bonusInput = document.querySelector('.promo__input');
+            if (bonusInput) bonusInput.max = this.maxBonus;
+
+            if (this.bonusApplied && this.bonusAmount > this.maxBonus) {
+                this.bonusAmount = this.maxBonus;
+            }
         }
 
-        updateTotalWithBonus() {
-            const totalEl = document.querySelector('.totalPrice strong');
-            const applyText = document.querySelector('#applyBonusText');
-            const totalAfter = Math.max(this.currentTotal - this.bonusAmount + this.deliveryCost, 0);
+        updateBonusPoints(totalPrice) {
+            const el = document.querySelector('.bonusPoints');
+            const input = document.querySelector('.bonusPointsValue');
+            const block = el?.closest('.checkout__param-item');
 
-            if (totalEl) totalEl.textContent = `${totalAfter.toLocaleString('ru-RU')} ₽`;
-            if (applyText) applyText.textContent = `-${this.bonusAmount.toLocaleString('ru-RU')} ₽`;
-            if (this.bonusAmount > 0) {
-                document.querySelector('#applyBonusBlock').style.display = 'flex';
+            if (!el || !input || !block) return;
+
+            if (this.bonusApplied) {
+                block.style.display = 'none';
+                input.value = 0;
+                return;
+            }
+
+            const percent = document.querySelector('#discountPercent').value || 0;
+            const points = Math.floor(totalPrice * percent * 0.01);
+
+            el.textContent = `+${points.toLocaleString('ru-RU')} баллов`;
+            input.value = points;
+            block.style.display = 'flex';
+        }
+
+        // ================= TOTAL =================
+        updateTotalWithAll() {
+            let total = this.currentTotal;
+
+            total -= this.promoDiscount;
+            total -= this.bonusAmount;
+            total += this.deliveryCost;
+
+            total = Math.max(total, 0);
+
+            const totalEl = document.querySelector('.totalPrice strong');
+            if (totalEl) {
+                totalEl.textContent = `${total.toLocaleString('ru-RU')} ₽`;
+            }
+
+            // промокод UI
+            this.renderPromo();
+
+            // бонусы UI
+            this.renderBonus();
+
+            this.updateBonusPoints(this.currentTotal);
+        }
+
+        renderPromo() {
+            let block = document.querySelector('.promo-discount');
+
+            if (this.promoDiscount > 0) {
+                if (!block) {
+                    block = document.createElement('div');
+                    block.className = 'checkout__param-item promo-discount';
+                    document.querySelector('.checkout__param').prepend(block);
+                }
+                block.innerHTML = `<p>Промокод:</p><p>-${this.promoDiscount.toLocaleString('ru-RU')} ₽</p>`;
             } else {
-                document.querySelector('#applyBonusBlock').style.display = 'none';
+                if (block) block.remove();
+            }
+        }
+
+        renderBonus() {
+            const block = document.querySelector('#applyBonusBlock');
+            const text = document.querySelector('#applyBonusText');
+
+            if (this.bonusAmount > 0) {
+                block.style.display = 'flex';
+                text.textContent = `-${this.bonusAmount.toLocaleString('ru-RU')} ₽`;
+            } else {
+                block.style.display = 'none';
+            }
+        }
+
+        // ================= API =================
+        async sendRequest(url, data) {
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data),
+                });
+                return await res.json();
+            } catch (e) {
+                console.error(e);
             }
         }
 
@@ -639,8 +765,6 @@ $salePrice = 0;
             input.value = value;
             this.items[id].count = value;
 
-            //console.log(`Изменено количество товара ${id}: ${value}`);
-
             const result = await this.sendRequest('/ajax/orderProduct.php', {
                 id,
                 count: value,
@@ -648,15 +772,10 @@ $salePrice = 0;
                 fUserId: this.fUserId,
             });
 
-            if (result?.status !== 'error') {
-                if (result.price) this.updateItemPrice(id, result.price);
-                if (result.totalPrice) {
-                    this.currentTotal = result.totalPrice;
-                    this.updateTotalPrice(this.currentTotal);
-                    this.updateMaxBonus();
-                    this.updateBonusPoints(this.currentTotal);
-                    if (this.bonusApplied) this.updateTotalWithBonus();
-                }
+            if (result?.totalPrice) {
+                this.currentTotal = result.totalPrice;
+                this.updateMaxBonus();
+                this.updateTotalWithAll();
             }
         }
 
@@ -665,10 +784,7 @@ $salePrice = 0;
             if (!item) return;
 
             const id = item.id;
-            delete this.items[id];
             item.remove();
-
-            //console.log(`Товар ${id} удалён из корзины`);
 
             const result = await this.sendRequest('/ajax/orderProductDelete.php', {
                 id,
@@ -676,93 +792,18 @@ $salePrice = 0;
                 fUserId: this.fUserId,
             });
 
-            if (result?.status !== 'error' && result.totalPrice) {
+            if (result?.totalPrice) {
                 this.currentTotal = result.totalPrice;
-                this.updateTotalPrice(this.currentTotal);
                 this.updateMaxBonus();
-                this.updateBonusPoints(this.currentTotal);
-                if (this.bonusApplied) this.updateTotalWithBonus();
+                this.updateTotalWithAll();
             }
-        }
-
-        updateMaxBonus() {
-            let maxByTotal = Math.floor(this.currentTotal * 0.9);
-            this.maxBonus = Math.min(maxByTotal, this.userBonus);
-
-            const bonusInput = document.querySelector('.promo__input');
-            if (bonusInput) bonusInput.max = this.maxBonus;
-
-            if (this.bonusApplied && this.bonusAmount > this.maxBonus) {
-                this.bonusAmount = this.maxBonus;
-                this.updateTotalWithBonus();
-                const applyBtn = document.querySelector('#applyBonus');
-                if (applyBtn) applyBtn.textContent = 'Отменить';
-                //console.log(`Списанные бонусы уменьшены до нового максимума: ${this.bonusAmount} ₽`);
-            }
-        }
-
-        async sendRequest(url, data) {
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(data),
-                });
-                const result = await response.json();
-                //console.log('Ответ сервера:', result);
-                return result;
-            } catch (error) {
-                console.error('Ошибка запроса:', error);
-            }
-        }
-
-        updateItemPrice(id, newPrice) {
-            const item = this.items[id];
-            if (!item) return;
-            item.priceEl.textContent = `${newPrice.toLocaleString('ru-RU')} ₽`;
-            //console.log(`Цена товара ${id} обновлена: ${newPrice} ₽`);
-        }
-
-        updateTotalPrice(total) {
-            const totalEl = document.querySelector('.totalPrice strong');
-            if (totalEl) totalEl.textContent = `${total.toLocaleString('ru-RU')} ₽`;
-            //console.log(`Общая сумма корзины: ${total} ₽`);
-        }
-
-        updateBonusPoints(totalPrice) {
-            const bonusTextEl = document.querySelector('.bonusPoints');
-            const bonusInputEl = document.querySelector('.bonusPointsValue');
-            const bonusBlockEl = bonusTextEl?.closest('.checkout__param-item');
-
-            if (!bonusTextEl || !bonusInputEl || !bonusBlockEl) return;
-
-            if (this.bonusApplied) {
-                bonusTextEl.textContent = '+0 баллов';
-                bonusInputEl.value = 0;
-                bonusBlockEl.style.display = 'none';
-                //console.log('Бонусы списаны, начисление скрыто');
-                return;
-            }
-
-            const discountPercent = document.querySelector('#discountPercent').value || '';
-            let points = 0;
-
-            if (discountPercent) {
-                points = Math.floor(totalPrice * discountPercent * 0.01);
-            }
-
-            bonusTextEl.textContent = `+${points.toLocaleString('ru-RU')} баллов`;
-            bonusInputEl.value = points;
-            bonusBlockEl.style.display = 'flex';
-
-            //console.log(`Начисляемые бонусы: ${points} баллов`);
         }
     }
 
     // --- Инициализация ---
-    document.addEventListener('DOMContentLoaded', () => {
-        //const cart = new CheckoutCart('<?=$siteId?>', '<?=$fUserId?>', <?=$userBonus?>);
-    });
+    //document.addEventListener('DOMContentLoaded', () => {
+    //const cart = new CheckoutCart('<?=$siteId?>', '<?=$fUserId?>', <?=$userBonus?>);
+    //});
 
 </script>
 
@@ -810,7 +851,7 @@ $salePrice = 0;
 
                 cityInput.value = 'Москва';
                 cart.deliveryCost = 0; // сохраняем в корзину
-                cart.updateTotalWithBonus();
+                cart.updateTotalWithAll();
                 document.getElementById('cdek-price').innerHTML = `0 ₽`;
                 document.getElementById('cdek').value = `N`;
             }
@@ -911,7 +952,7 @@ $salePrice = 0;
                     document.getElementById('delivery-price').value = cost
 
                     cart.deliveryCost = cost; // сохраняем в корзину
-                    cart.updateTotalWithBonus();
+                    cart.updateTotalWithAll();
                     if(address?.code === 44 || (typeof address !== 'undefined' && address?.name?.includes('Москва'))){
                         //updateMoscowAvailability('Москва')
                     } else {
@@ -927,7 +968,7 @@ $salePrice = 0;
 
                     document.getElementById('cdek-price').innerHTML = `0 ₽`;
                     cart.deliveryCost = 0;
-                    cart.updateTotalWithBonus();
+                    cart.updateTotalWithAll();
                 }
             },
         });

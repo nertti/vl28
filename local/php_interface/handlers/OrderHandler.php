@@ -5,7 +5,7 @@ use Bitrix\Sale;
 use Bitrix\Sale\Delivery;
 use Bitrix\Highloadblock\HighloadBlockTable;
 use Bitrix\Main\Entity;
-
+use Bitrix\Sale\DiscountCouponsManager;
 function onOrderPaid($order_id, &$arFields)
 {
     if ($arFields['PAYED'] == 'Y' && $arFields['ORDER_PROP'][23] != 'Y') {
@@ -86,7 +86,6 @@ function onOrderCreate(Bitrix\Main\Event $event)
 
     $order = $event->getParameter("ENTITY");
     $isNew = $event->getParameter("IS_NEW");
-
     \Bitrix\Main\Loader::includeModule("sale");
 
     $orderId = $order->getId();
@@ -171,16 +170,54 @@ function onOrderCreate(Bitrix\Main\Event $event)
     $payStatus = $order->isPaid() ? "✅ Заказ оплачен" : "❌ Заказ не оплачен";
     $payMethod = $order->isPaid() ? "Оплата онлайн" : "Оплата при получении";
 
-    // Скидки
-    $discountsText = "";
-    $discounts = $order->getDiscount()->getApplyResult(false);
-    if (!empty($discounts["DISCOUNT_LIST"])) {
-        $discountsList = array_shift($discounts['PRICES']['BASKET']);
-        $currency = $order->getCurrency();
-        $discountsText .= "💸 Итоговая скидка: {$discountsList['DISCOUNT']} {$currency}\n";
-    } else {
-        $discountsText = "Нет применённых скидок\n";
+    // ================= ПРОМОКОД =================
+
+// получаем применённые купоны
+    $coupons = DiscountCouponsManager::get(true);
+
+    $promoCode = '';
+    $promoDiscount = 0;
+
+    foreach ($coupons as $coupon) {
+        if ($coupon['STATUS'] === DiscountCouponsManager::STATUS_APPLYED) {
+            $promoCode = $coupon['COUPON'];
+            break;
+        }
     }
+
+// получаем скидки
+    $discountData = $order->getDiscount()->getApplyResult(true);
+
+    if (!empty($discountData['PRICES']['BASKET'])) {
+        foreach ($discountData['PRICES']['BASKET'] as $item) {
+            if (!empty($item['DISCOUNT'])) {
+                $promoDiscount += $item['DISCOUNT'];
+            }
+        }
+    }
+
+    $promoDiscount = round($promoDiscount);
+
+//    // Скидки
+//    $discountsText = "";
+//    $discounts = $order->getDiscount()->getApplyResult(false);
+//    if (!empty($discounts["DISCOUNT_LIST"])) {
+//        $discountsList = array_shift($discounts['PRICES']['BASKET']);
+//        $currency = $order->getCurrency();
+//        $discountsText .= "💸 Итоговая скидка: {$discountsList['DISCOUNT']} {$currency}\n";
+//    } else {
+//        $discountsText = "Нет применённых скидок\n";
+//    }
+
+    $currency = $order->getCurrency();
+
+    if ($promoCode) {
+        $discountsText = "🎟 Промокод: {$promoCode}\n";
+        $discountsText .= "💸 Скидка: {$promoDiscount} {$currency}\n";
+    } else {
+        $discountsText = "💸 Промокод не применён\n";
+    }
+
     $deliveryAddress = $address ?: $address_cdek;
     // Сообщение
     $message = ($isNew ? "🆕 Новый заказ #$orderId\n" : "💳 Оплата заказа #$orderId\n")
