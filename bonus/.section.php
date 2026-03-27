@@ -1,6 +1,0 @@
-<?
-$sSectionName = "bonus";
-$arDirProperties = Array(
-
-);
-?>
