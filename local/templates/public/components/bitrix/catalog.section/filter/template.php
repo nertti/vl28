@@ -28,7 +28,14 @@ $this->setFrameMode(true);
                                      class="product__img">
                                 <div class="product__inner">
                                     <p class="product__title"><?= $arElement['NAME'] ?></p>
-                                    <p class="product__price"><?= $arElement['OFFERS'][0]['PRICES']['BASE']['PRINT_VALUE'] ?></p>
+                                    <?php if($arElement['OFFERS'][0]['PRICES']['BASE']['VALUE'] == $arElement['OFFERS'][0]['PRICES']['BASE']['DISCOUNT_VALUE']):?>
+                                        <p class="product__price"><?= $arElement['OFFERS'][0]['PRICES']['BASE']['PRINT_VALUE'] ?></p>
+                                    <?php else:?>
+                                        <div class="price_wrapper">
+                                            <p class="product__price"><?= $arElement['OFFERS'][0]['PRICES']['BASE']['PRINT_DISCOUNT_VALUE'] ?></p>
+                                            <p class="tovar__price__wishoout__discont"><?= $arElement['OFFERS'][0]['PRICES']['BASE']['PRINT_VALUE'] ?></p>
+                                        </div>
+                                    <?php endif;?>
                                 </div>
                             </div>
                         </div>

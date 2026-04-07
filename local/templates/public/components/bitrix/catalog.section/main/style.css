@@ -16,3 +16,14 @@
 	flex-direction: column;
 	width: 100%;
 }
+
+.price_wrapper{
+	display: flex;
+	flex-wrap: wrap;
+	width: 100%;
+}
+.price_wrapper .tovar__price__wishoout__discont{
+	text-decoration: line-through;
+	margin: 0 30px;
+	color: #929292;
+}
