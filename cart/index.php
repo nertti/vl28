@@ -5,9 +5,30 @@
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
 $APPLICATION->SetTitle("Корзина");
 
+use Bitrix\Sale;
+use Bitrix\Main\Loader;
+use Bitrix\Sale\Order;
+use Bitrix\Currency\CurrencyManager;
+
+Loader::includeModule('sale');
+Loader::includeModule('catalog');
+
 $fUserId = Bitrix\Sale\Fuser::getId();
 $siteId = Bitrix\Main\Context::getCurrent()->getSite();
 $basket = Bitrix\Sale\Basket::loadItemsForFUser($fUserId, $siteId);
+
+
+// создаём временный заказ (без сохранения)
+$order = Order::create($siteId, $fUserId);
+$order->setPersonTypeId(1); // проверь свой ID типа плательщика
+
+$order->setBasket($basket);
+
+// валюта
+$order->setField('CURRENCY', CurrencyManager::getBaseCurrency());
+
+// ключевой момент — пересчет
+$order->doFinalAction(true);
 ?>
 
 <?php if (count($basket) !== 0): ?>
@@ -15,14 +36,14 @@ $basket = Bitrix\Sale\Basket::loadItemsForFUser($fUserId, $siteId);
     function getProductInfo($productId)
     {
         $result = \CIBlockElement::GetList(
-            array(),
-            array(
-                "ID" => $productId,
-                "=ACTIVE" => "Y"
-            ),
-            false,
-            false,
-            array("*")
+                array(),
+                array(
+                        "ID" => $productId,
+                        "=ACTIVE" => "Y"
+                ),
+                false,
+                false,
+                array("*")
         );
 
         if ($item = $result->Fetch()) {
@@ -63,7 +84,19 @@ $basket = Bitrix\Sale\Basket::loadItemsForFUser($fUserId, $siteId);
                     <?php foreach ($basket as $basketItem): ?>
                         <div class="cart__item" id="<?= $basketItem->getField('ID') ?>">
                             <?php
+                            // Цена за единицу со скидкой (текущая)
+                            $price = $basketItem->getPrice();
 
+                            // Базовая цена за единицу (до скидки)
+                            $basePrice = $basketItem->getBasePrice();
+
+                            // Общая стоимость позиции (цена * количество)
+                            $finalPrice = $basketItem->getFinalPrice();
+
+                            // Проверяем, есть ли скидка
+                            $hasDiscount = $basePrice > $price;
+                            ?>
+                            <?php
                             $product = getProductInfo($basketItem->getField('PRODUCT_ID'));
                             $product2 = getProductInfo($basketItem->getField('PRODUCT_XML_ID'));
                             $propertySize = getElementProperties($product['IBLOCK_ID'], $product['ID'], 'SIZE');
@@ -90,8 +123,14 @@ $basket = Bitrix\Sale\Basket::loadItemsForFUser($fUserId, $siteId);
                                         <span style="background: #<?= $propertyColor['VALUE'] ?>;"></span>
                                     </div>
                                 </div>
-                                <p class="cart__price"><?= number_format($basketItem->getFinalPrice(), 0, '', ' ') ?>
-                                    ₽ </p>
+                                <p class="cart__price">
+                                    <?php if ($hasDiscount): ?>
+                                        <span style="text-decoration: line-through; color: #999; margin-right: 20px">
+                                            <?= number_format($basePrice * $basketItem->getQuantity(), 0, '', ' ') ?> ₽
+                                        </span>
+                                    <?php endif; ?>
+                                    <?= number_format($finalPrice, 0, '', ' ') ?> ₽
+                                </p>
                                 <?php if (!$active): ?>
                                     <span class="cart__favorite favor"
                                           data-item="<?= explode('#', $basketItem->getField('PRODUCT_XML_ID'))[0] ?>">Добавить в избранное</span>
@@ -138,7 +177,7 @@ $basket = Bitrix\Sale\Basket::loadItemsForFUser($fUserId, $siteId);
 
                             } else {
                                 wrapperProduct.style.display = 'none';
-                                if(data.count === 0){
+                                if (data.count === 0) {
                                     location.reload();
                                 }
                             }

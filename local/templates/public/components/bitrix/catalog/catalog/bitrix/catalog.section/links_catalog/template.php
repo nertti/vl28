@@ -42,12 +42,12 @@ $this->setFrameMode(true);
                                         >
                                         <div class="product__inner">
                                             <p class="product__title"><?= $arElement['NAME'] ?></p>
-                                            <?php if($arElement['OFFERS'][0]['PRICES']['BASE']['VALUE'] == $arElement['OFFERS'][0]['PRICES']['BASE']['DISCOUNT_VALUE']):?>
-                                                <p class="product__price"><?= $arElement['OFFERS'][0]['PRICES']['BASE']['PRINT_VALUE'] ?></p>
+                                            <?php if(!$arElement['HAS_DISCOUNT']):?>
+                                                <p class="product__price"><?= $arElement['PRINT_BASE_PRICE'] ?></p>
                                             <?php else:?>
                                                 <div class="price_wrapper">
-                                                    <p class="product__price"><?= $arElement['OFFERS'][0]['PRICES']['BASE']['PRINT_DISCOUNT_VALUE'] ?></p>
-                                                    <p class="tovar__price__wishoout__discont"><?= $arElement['OFFERS'][0]['PRICES']['BASE']['PRINT_VALUE'] ?></p>
+                                                    <p class="product__price"><?= $arElement['PRINT_DISCOUNT_PRICE'] ?></p>
+                                                    <p class="tovar__price__wishoout__discont"><?= $arElement['PRINT_BASE_PRICE'] ?></p>
                                                 </div>
                                             <?php endif;?>
                                         </div>
