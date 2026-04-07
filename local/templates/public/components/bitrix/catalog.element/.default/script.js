@@ -2653,10 +2653,14 @@
 				&& offer.ITEM_PRICES
 			) {
 				var tovarPrice = document.querySelector('.tovar__price');
+				var tovarPriceWithoutDiscount = document.querySelector('.tovar__price__wishoout__discont');
 				if (tovarPrice) {
-					tovarPrice.innerHTML  = offer.ITEM_PRICES[0].PRINT_BASE_PRICE;
+					tovarPrice.innerHTML  = offer.ITEM_PRICES[0].PRINT_RATIO_PRICE;
 				}
-				console.log(offer.ITEM_PRICES[0])
+				if (offer.ITEM_PRICES[0].RATIO_PRICE == offer.ITEM_PRICES[0].BASE_PRICE){
+					tovarPriceWithoutDiscount.style.display = 'none';
+				}
+				//console.log(offer.ITEM_PRICES[0])
 			}
 			// === /CUSTOM ===
 		},

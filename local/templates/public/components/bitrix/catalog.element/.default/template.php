@@ -317,8 +317,10 @@ foreach ($arFavorites as $favorite) {
                 Артикул: <?= $arResult['OFFERS'][0]['PROPERTIES']['ARTICLE']['VALUE'] ?>
             </div>
             <?php endif;?>
-
-            <p class="tovar__price"><?= $arResult['JS_OFFERS'][0]['ITEM_PRICES'][0]['PRINT_PRICE'] ?></p>
+            <div class="price_wrapper">
+                <p class="tovar__price"><?= $arResult['JS_OFFERS'][0]['ITEM_PRICES'][0]['PRINT_PRICE'] ?></p>
+                <p class="tovar__price__wishoout__discont"><?= $arResult['JS_OFFERS'][0]['ITEM_PRICES'][0]['PRINT_BASE_PRICE'] ?></p>
+            </div>
             <form action="#" class="tovar__form">
                 <div class="tovar__color">
                     <div class="tovar__color-text">
@@ -417,9 +419,6 @@ foreach ($arFavorites as $favorite) {
                         <span>Добавить в корзину</span>
                     </a>
                 <?php endif; ?>
-                <!--                <span class="black-btn" id="addToBasket">-->
-                <!--                    <span>Добавить в корзину</span>-->
-                <!--                </span>-->
             </form>
             <a href="#" class="tovar__link" data-hystmodal="#descriptionModal">Описание</a>
             <a href="#" class="tovar__link" data-hystmodal="#howModal">Состав и уход</a>
