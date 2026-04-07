@@ -319,7 +319,7 @@ foreach ($arFavorites as $favorite) {
             <?php endif;?>
             <div class="price_wrapper">
                 <p class="tovar__price"><?= $arResult['JS_OFFERS'][0]['ITEM_PRICES'][0]['PRINT_PRICE'] ?></p>
-                <p class="tovar__price__wishoout__discont"><?= $arResult['JS_OFFERS'][0]['ITEM_PRICES'][0]['PRINT_BASE_PRICE'] ?></p>
+                <p class="tovar__price tovar__price__wishoout__discont"><?= $arResult['JS_OFFERS'][0]['ITEM_PRICES'][0]['PRINT_BASE_PRICE'] ?></p>
             </div>
             <form action="#" class="tovar__form">
                 <div class="tovar__color">

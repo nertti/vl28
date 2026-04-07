@@ -17,6 +17,8 @@ Bitrix\Main\Loader::includeModule("Sale");
 Bitrix\Main\Loader::includeModule("Catalog");
 
 use Bitrix\Sale\Delivery\Services\Manager;
+use Bitrix\Sale\Order;
+use Bitrix\Currency\CurrencyManager;
 
 $deliveriesList = Manager::getActiveList();
 array_shift($deliveriesList); // убираем бесплатную
@@ -72,10 +74,20 @@ $fUserId = Bitrix\Sale\Fuser::getId();
 $siteId = Bitrix\Main\Context::getCurrent()->getSite();
 $basket = Bitrix\Sale\Basket::loadItemsForFUser($fUserId, $siteId);
 
+// создаём временный заказ
+$order = Order::create($siteId, $fUserId);
+$order->setPersonTypeId(1); // проверь ID
+
+$order->setBasket($basket);
+$order->setField('CURRENCY', CurrencyManager::getBaseCurrency());
+
+// 🔥 ВАЖНО — применяем скидки
+$order->doFinalAction(true);
+
 if (empty($basket->getQuantityList())) {
     header('Location: /catalog/');
 }
-$fullPrice = $basket->getBasePrice();
+$fullPrice = $basket->getPrice();
 $salePrice = 0;
 ?>
 <section class="checkout first-section">
