@@ -1,6 +1,6 @@
 <?php
-global $APPLICATION;
-global $USER;
+
+/** @var \CMain $APPLICATION */
 
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
 $APPLICATION->SetTitle("Корзина");
@@ -62,6 +62,9 @@ $order->doFinalAction(true);
 
     ?>
     <?php
+    global $APPLICATION;
+    global $USER;
+
     if (!$USER->IsAuthorized()) {
         $arFavorites = unserialize($APPLICATION->get_cookie("favorites"));
         //pr($arFavorites);

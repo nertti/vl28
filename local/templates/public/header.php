@@ -759,7 +759,7 @@ if ($isProfilePages && !$isFavoritePage){
 	]
 ); ?>
                 <?php endif;?>
-                <?php if (!$isAboutPage && !$isProfilePages && !$isCustomersPage):?>
+                <?php if (!$isAboutPage && !$isProfilePages && !$isCustomersPage && $APPLICATION->GetPageProperty("PRINT_TITLE") === 'N'):?>
                 <p class="h2"><?php $APPLICATION->ShowTitle(); ?></p>
                 <?php elseif ($isAboutPage):?>
                 <p class="h2" style="margin-top: 35px; margin-bottom: 25px"><?php $APPLICATION->ShowTitle(); ?></p>

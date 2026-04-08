@@ -1,8 +1,8 @@
 <?php
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
-$APPLICATION->SetTitle("");
-?>
-<style>
+$APPLICATION->SetPageProperty("PRINT_TITLE", "N");
+$APPLICATION->SetTitle("Ты почти в клубе VL28");
+?><style>
     /* ===== ОСНОВА ===== */
 
     .promo {
@@ -203,48 +203,44 @@ $APPLICATION->SetTitle("");
 
     }
 </style>
-    <div class="promo container">
-
-        <div class="promo__inner">
-
-            <div class="promo__content">
-
-                <div class="promo__top fade-up">
-                    <p class="promo__subtitle">Круто. Ты почти в клубе VL28</p>
-                    <p class="promo__text">Закрытый доступ. Эксклюзивные условия. Только для своих</p>
-                </div>
-
-                <div class="promo__center fade-up delay-1">
-                    <p class="promo__step">Остался один шаг</p>
-
-                    <h1 class="promo__title">
-                        Зарегистрируйся и получи
-                    </h1>
-
-                    <div class="promo__discount">–35%</div>
-
-                    <p class="promo__site">на первый заказ на vl28.pro</p>
-                </div>
-
-                <div class="promo__action fade-up delay-2">
-                    <a href="/auth/" class="promo__btn">ВСТУПИТЬ В КЛУБ</a>
-                    <p class="promo__note">Только номер телефона. Без спама.</p>
-                </div>
-
-                <div class="promo__bottom fade-up delay-3">
-                    <p class="promo__alt">Или уже сейчас:</p>
-
-                    <div class="promo__links">
-                        <a href="/catalog/" class="promo__link">Смотреть каталог</a>
-                        <span class="promo__divider"></span>
-                        <a href="/about/" class="promo__link">Узнать о бренде</a>
-                    </div>
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-<?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php"); ?>
+<div class="promo container">
+	<div class="promo__inner">
+		<div class="promo__content">
+			<div class="promo__top fade-up">
+				<p class="promo__subtitle">
+					Круто. Ты почти в клубе VL28
+				</p>
+				<p class="promo__text">
+					Закрытый доступ. Эксклюзивные условия. Только для своих
+				</p>
+			</div>
+			<div class="promo__center fade-up delay-1">
+				<p class="promo__step">
+					Остался один шаг
+				</p>
+				<h1 class="promo__title">
+				Зарегистрируйся и получи </h1>
+				<div class="promo__discount">
+					–35%
+				</div>
+				<p class="promo__site">
+					на первый заказ на vl28.pro
+				</p>
+			</div>
+			<div class="promo__action fade-up delay-2">
+ <a href="/login/" class="promo__btn">ВСТУПИТЬ В КЛУБ</a>
+				<p class="promo__note">
+					Только номер телефона. Без спама.
+				</p>
+			</div>
+			<div class="promo__bottom fade-up delay-3">
+				<p class="promo__alt">
+					Или уже сейчас:
+				</p>
+				<div class="promo__links">
+ <a href="/catalog/" class="promo__link">Смотреть каталог</a> <span class="promo__divider"></span> <a href="/about/" class="promo__link">Узнать о бренде</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div><?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php"); ?>
