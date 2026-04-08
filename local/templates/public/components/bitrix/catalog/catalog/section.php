@@ -39,7 +39,8 @@ $APPLICATION->IncludeComponent("bitrix:catalog.section", "links_catalog", array(
     "SHOW_ALL_WO_SECTION" => "Y", // Важный параметр для отображения всех товаров
     "PAGE_ELEMENT_COUNT" => 100, // Без пагинации
     "DETAIL_URL" => $arResult["FOLDER"] . $arResult["URL_TEMPLATES"]["element"],
-    "BASKET_URL" => $arParams["BASKET_URL"]
+    "BASKET_URL" => $arParams["BASKET_URL"],
+    "CACHE_TYPE" => 'N',
 ), $component);
 
 $APPLICATION->IncludeComponent("bitrix:catalog.smart.filter", "", array(
@@ -66,6 +67,8 @@ $APPLICATION->IncludeComponent("bitrix:catalog.smart.filter", "", array(
     "SMART_FILTER_PATH" => $arResult["VARIABLES"]["SMART_FILTER_PATH"],
     "PAGER_PARAMS_NAME" => $arParams["PAGER_PARAMS_NAME"],
     "INSTANT_RELOAD" => $arParams["INSTANT_RELOAD"],
+    "CACHE_TYPE" => 'N',
+
 ),
     $component,
     array('HIDE_ICONS' => 'Y')
