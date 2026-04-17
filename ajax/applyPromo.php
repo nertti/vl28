@@ -1,9 +1,7 @@
 <?php
-
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php");
 
 use Bitrix\Main\Loader;
-use Bitrix\Main\Application;
 use Bitrix\Sale;
 use Bitrix\Sale\DiscountCouponsManager;
 
@@ -12,107 +10,71 @@ header('Content-Type: application/json');
 Loader::includeModule('sale');
 Loader::includeModule('catalog');
 
-$request = Application::getInstance()->getContext()->getRequest();
-$data = json_decode(file_get_contents('php://input'), true);
+// Инициализируем глобального пользователя
+global $USER;
 
+$data = json_decode(file_get_contents('php://input'), true);
 $promoCode = trim($data['promo'] ?? '');
 
 if (!$promoCode) {
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'Введите промокод'
-    ]);
+    echo json_encode(['status' => 'error', 'message' => 'Введите промокод']);
     exit;
 }
 
-// =======================
-// Инициализация корзины
-// =======================
+// ОПРЕДЕЛЯЕМ КТО ДЕЛАЕТ ЗАКАЗ
+// Если пользователь авторизован, берем его ID, иначе ID анонимной корзины
+$userId = ($USER instanceof CUser && $USER->IsAuthorized()) ? $USER->GetID() : \Bitrix\Sale\Fuser::getId();
+$siteId = \Bitrix\Main\Context::getCurrent()->getSite();
 
-$siteId = SITE_ID;
-$fUserId = Sale\Fuser::getId();
-$basket = Sale\Basket::loadItemsForFUser($fUserId, $siteId);
+if (!$siteId) $siteId = 's1'; // Страховка для SITE_ID
 
-if ($basket->isEmpty()) {
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'Корзина пуста'
-    ]);
-    exit;
-}
-
-// =======================
-// Сбрасываем купоны
-// =======================
-
+// 1. Сначала купон
 DiscountCouponsManager::clear(true);
+DiscountCouponsManager::add($promoCode);
 
-// =======================
-// Добавляем купон
-// =======================
+// 2. Загружаем корзину именно для этого пользователя
+$fUserId = \Bitrix\Sale\Fuser::getId();
+$basket = Sale\Basket::loadItemsForFUser($fUserId, $siteId);
+$basket->refreshData(['PRICE', 'COUPON']);
 
-$addResult = DiscountCouponsManager::add($promoCode);
-
-if (!$addResult) {
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'Промокод не существует'
-    ]);
-    exit;
-}
-
-// =======================
-// Создаём заказ (для расчёта)
-// =======================
-
-$order = Sale\Order::create($siteId, $fUserId);
+// 3. Создаем заказ С УКАЗАНИЕМ КОРРЕКТНОГО USER_ID
+// Это критично для проверки ограничений по группам пользователей!
+$order = Sale\Order::create($siteId, $userId); 
 $order->setBasket($basket);
 
-// Обязательно — иначе скидки не применятся
-$discount = $order->getDiscount();
-$discount->calculate();
+// 4. Расчет
+$discounts = $order->getDiscount();
+$discounts->calculate();
+$res = $discounts->getApplyResult(true);
 
-// =======================
-// Получаем результат
-// =======================
-
-$discountData = $discount->getApplyResult(true);
-
-$discountSum = 0;
-
-// Суммируем все скидки
-if (!empty($discountData['PRICES']['BASKET'])) {
-    foreach ($discountData['PRICES']['BASKET'] as $item) {
-        if (isset($item['DISCOUNT'])) {
-            $discountSum += $item['DISCOUNT'];
-        }
+$isApplied = false;
+if (!empty($res['COUPON_LIST'][$promoCode])) {
+    if ($res['COUPON_LIST'][$promoCode]['APPLY'] === 'Y') {
+        $isApplied = true;
     }
 }
 
-// Проверяем применился ли купон
-$coupons = DiscountCouponsManager::get(true);
-
-$applied = false;
-
-foreach ($coupons as $coupon) {
-    if ($coupon['COUPON'] === $promoCode && $coupon['STATUS'] === DiscountCouponsManager::STATUS_APPLYED) {
-        $applied = true;
-    }
-}
-
-// =======================
-// Ответ
-// =======================
-
-if (!$applied) {
+if (!$isApplied) {
     echo json_encode([
         'status' => 'error',
-        'message' => 'Промокод не применился (условия не выполнены)'
+        'message' => 'Промокод не применим для вашей группы пользователя или состава корзины',
+        'debug' => [
+            'USER_ID' => $userId,
+            'GROUPS' => ($USER instanceof CUser) ? $USER->GetUserGroupArray() : 'none',
+            'COUPON_RES' => $res['COUPON_LIST'][$promoCode] ?? 'not_found'
+        ]
     ]);
     exit;
+}
+
+// 5. Итог
+$discountSum = 0;
+foreach ($res['PRICES']['BASKET'] as $item) {
+    $discountSum += $item['DISCOUNT'];
 }
 
 echo json_encode([
     'status' => 'success',
-    'discount' => round($discountSum)
+    'discount' => round($discountSum),
+    'is_auth' => $USER->IsAuthorized() ? 'Y' : 'N'
 ]);

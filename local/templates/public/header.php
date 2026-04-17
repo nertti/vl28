@@ -4,6 +4,9 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
 }
 require($_SERVER['DOCUMENT_ROOT'] . '/include/header/remember_auth.php');
 use Bitrix\Main\Page\Asset;
+use Bitrix\Main\Loader;
+Loader::includeModule('sale');
+use Bitrix\Sale\DiscountCouponsManager;
 
 /** @var \CMain $APPLICATION */
 /** @var \CMain $USER */
@@ -35,6 +38,10 @@ if ($isProfilePages && !$isFavoritePage){
         header('Location: /login/');
         exit();
     }
+}
+
+if (!$isCartPage && !$isCartPage) {
+    DiscountCouponsManager::clear(true);
 }
 ?>
 <!doctype html>

@@ -86,6 +86,22 @@ function onOrderCreate(Bitrix\Main\Event $event)
 
     $order = $event->getParameter("ENTITY");
     $isNew = $event->getParameter("IS_NEW");
+
+    $userId = $order->getUserId();
+
+    if ($userId) {
+        $user = new CUser();
+        $userGroups = CUser::GetUserGroup($userId);
+
+        if (in_array(8, $userGroups)) {
+            // Удаляем группу 8
+            $newGroups = array_diff($userGroups, [8]);
+
+            // Обновляем группы пользователя
+            $user->SetUserGroup($userId, $newGroups);
+        }
+    }
+
     \Bitrix\Main\Loader::includeModule("sale");
 
     $orderId = $order->getId();

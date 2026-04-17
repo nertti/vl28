@@ -103,8 +103,48 @@ function buildOrder($siteId, $userId, $basket, $deliveryId, $deliveryPrice, $com
 if ($request["payment"] === 'card') {
 
     $orderTmp = buildOrder($siteId, $USER->GetID() ?: 44, $basket, $request["delivery"], $deliveryPrice, $comment);
-
     $orderTmp->doFinalAction(true);
+
+ require_once $_SERVER["DOCUMENT_ROOT"] . '/local/php_interface/include/t_auth.php';
+    $apiUrl = 'https://securepay.tinkoff.ru/v2/Init';
+    $orderTempId = uniqid('vl28_', true); // временный ID
+    $orderTmp = buildOrder($siteId, $USER->GetID() ?: 44, $basket, $request["delivery"], $deliveryPrice, $comment);
+
+    $amount = intval(round($totalPrice * 100));
+    $description = 'Предоплата заказа №' . $orderTempId;
+
+    $tokenFields = [
+        'TerminalKey' => $terminalKey,
+        'Amount' => $amount,
+        'OrderId' => $orderTempId,
+        'Description' => $description,
+        'Password' => $secretKey,
+        'NotificationURL' => 'https://vl28.pro/ajax/paySuccess.php',
+    ];
+    ksort($tokenFields);
+    $token = hash('sha256', implode('', $tokenFields));
+
+    // Формируем запрос к Tinkoff
+    $requestData = [
+        'TerminalKey' => $terminalKey,
+        'Amount' => $amount,
+        'OrderId' => $orderTempId,
+        'Description' => $description,
+        'Token' => $token,
+        'NotificationURL' => 'https://vl28.pro/ajax/paySuccess.php',
+        'DATA' => [
+            'Phone' => '+' . $phone,
+            'Email' => $email,
+        ],
+        'Receipt' => [
+            'Email' => $email,
+            'Phone' => '+' . $phone,
+            'Taxation' => 'osn',
+            'Items' => [],
+        ],
+    ];
+
+
 
     // Проверяем промокод
     if (!empty($promoCode)) {
@@ -126,7 +166,18 @@ if ($request["payment"] === 'card') {
             exit();
         }
     }
-
+    // Отправляем CURL
+    $curl = curl_init($apiUrl);
+    curl_setopt_array($curl, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => json_encode($requestData),
+    ]);
+    $response = curl_exec($curl);
+    curl_close($curl);
+    $resultData = json_decode($response, true);
+    $payUrl = $resultData['PaymentURL'] ?? '';
     $totalPrice = $orderTmp->getPrice() - $bonusPointsWithdraw;
 
     require_once $_SERVER["DOCUMENT_ROOT"] . '/local/php_interface/include/t_auth.php';
