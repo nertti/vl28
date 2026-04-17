@@ -284,6 +284,7 @@ $salePrice = 0;
                         <div class="checkout__param-item totalPrice">
                             <p>Итого:</p>
                             <strong><?= number_format($fullPrice, 0, '', ' '); ?> ₽</strong>
+                            <input class="totalPriceValue" type="hidden" name="totalPrice" value="<?= number_format($fullPrice, 0, '', ' '); ?>">
                         </div>
                     </div>
                     <?php if ($USER->isAuthorized()): ?>
@@ -534,6 +535,7 @@ $salePrice = 0;
             this.maxBonus = 0;
 
             const totalEl = document.querySelector('.totalPrice strong');
+            const totalElValue = document.querySelector('.totalPriceValue');
             if (totalEl) {
                 this.currentTotal = parseFloat(totalEl.textContent.replace(/\D/g, '')) || 0;
             }
@@ -708,8 +710,10 @@ $salePrice = 0;
             total = Math.max(total, 0);
 
             const totalEl = document.querySelector('.totalPrice strong');
+            const totalElValue = document.querySelector('.totalPriceValue');
             if (totalEl) {
                 totalEl.textContent = `${total.toLocaleString('ru-RU')} ₽`;
+                totalElValue.value = `${total}`;
             }
 
             // промокод UI
