@@ -3,11 +3,16 @@
 }
 .product-item-scu-item-list{
 	display: flex;
-	justify-content: space-between;
+	justify-content: start;
 	flex-wrap: wrap;
 }
+@media screen and (max-width:991px) {
+	.product-item-scu-item-list{
+		justify-content: space-between;
+	}
+}
 .product-item-scu-item-text-container{
-	margin-right: 2px;
+	margin-right: 20px;
 	cursor: pointer;
 	padding: 10px;
 }

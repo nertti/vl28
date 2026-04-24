@@ -640,12 +640,12 @@ section {
   color:#fff;
   margin-top:30px
 }
-@media screen and (max-width:991px) {
-  .banner__img_position {
-    -o-object-position:86% 100%;
-    object-position:86% 100%
-  }
-}
+/*@media screen and (max-width:991px) {*/
+/*  .banner__img_position {*/
+/*    -o-object-position:86% 100%;*/
+/*    object-position:86% 100%*/
+/*  }*/
+/*}*/
 @media screen and (max-width:600px) {
   .banner__content {
     bottom:70px
