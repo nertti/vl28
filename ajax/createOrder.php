@@ -8,6 +8,7 @@ use Bitrix\Sale\Basket;
 use Bitrix\Sale\Order;
 use Bitrix\Sale\Delivery;
 use Bitrix\Sale\PaySystem;
+use Bitrix\Sale\DiscountCouponsManager;
 
 Loader::includeModule("sale");
 Loader::includeModule("catalog");
@@ -78,7 +79,13 @@ $address_cdek = $request['address_cdek'];
 $pvz_code_cdek = $request['pvz_code_cdek'];
 $postal_code_cdek = $request['postal_code_cdek'];
 $formatted_cdek = $request['formatted_cdek'];
-
+$promo = trim($request['promo'] ?? '');
+// ===== ПРОМОКОД =====
+DiscountCouponsManager::clear(true);
+if ($promo) {
+    DiscountCouponsManager::add($promo);
+}
+$basket->refreshData(['PRICE', 'COUPONS']);
 
 $totalPrice = $basket->getPrice() - (float)$bonusPointsWithdraw + $deliveryPrice;
 
@@ -86,6 +93,14 @@ $totalPrice = $basket->getPrice() - (float)$bonusPointsWithdraw + $deliveryPrice
 // === Вариант 1: Оплата онлайн (CARD) ===
 // =========================================
 if ($request["payment"] === 'card') {
+
+    // создаём виртуальный заказ
+//    $order = Order::create($siteId, $USER->GetID() ?: 44);
+//    $order->setBasket($basket);
+//
+//    $discounts = $order->getDiscount();
+//    $discounts->calculate();
+//    $order->doFinalAction(true);
 
     require_once $_SERVER["DOCUMENT_ROOT"] . '/local/php_interface/include/t_auth.php';
     $apiUrl = 'https://securepay.tinkoff.ru/v2/Init';
