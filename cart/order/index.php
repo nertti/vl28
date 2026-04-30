@@ -269,10 +269,10 @@ $salePrice = 0;
                             <p>Доставка:</p>
                             <p id="cdek-price">0 ₽</p>
                         </div>
-                        <div class="checkout__param-item">
-                            <p>Скидка по промокоду:</p>
-                            <p>0 ₽</p>
-                        </div>
+<!--                        <div class="checkout__param-item">-->
+<!--                            <p>Скидка по промокоду:</p>-->
+<!--                            <p>0 ₽</p>-->
+<!--                        </div>-->
                         <?php if ($USER->isAuthorized()): ?>
                             <!-- Если юзер авторизован -->
                             <div class="checkout__param-item">
@@ -734,7 +734,7 @@ $salePrice = 0;
                     block.className = 'checkout__param-item promo-discount';
                     document.querySelector('.checkout__param').prepend(block);
                 }
-                block.innerHTML = `<p>Промокод:</p><p>-${this.promoDiscount.toLocaleString('ru-RU')} ₽</p>`;
+                block.innerHTML = `<p>Скидка по промокоду:</p><p>-${this.promoDiscount.toLocaleString('ru-RU')} ₽</p>`;
             } else {
                 if (block) block.remove();
             }

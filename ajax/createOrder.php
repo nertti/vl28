@@ -86,6 +86,12 @@ if ($promo) {
     DiscountCouponsManager::add($promo);
 }
 $basket->refreshData(['PRICE', 'COUPONS']);
+$order = Order::create($siteId, $USER->GetID() ?: 44);
+$order->setBasket($basket);
+
+$discounts = $order->getDiscount();
+$discounts->calculate();
+$order->doFinalAction(true);
 
 $totalPrice = $basket->getPrice() - (float)$bonusPointsWithdraw + $deliveryPrice;
 
@@ -95,13 +101,6 @@ $totalPrice = $basket->getPrice() - (float)$bonusPointsWithdraw + $deliveryPrice
 if ($request["payment"] === 'card') {
 
     // создаём виртуальный заказ
-//    $order = Order::create($siteId, $USER->GetID() ?: 44);
-//    $order->setBasket($basket);
-//
-//    $discounts = $order->getDiscount();
-//    $discounts->calculate();
-//    $order->doFinalAction(true);
-
     require_once $_SERVER["DOCUMENT_ROOT"] . '/local/php_interface/include/t_auth.php';
     $apiUrl = 'https://securepay.tinkoff.ru/v2/Init';
     $orderTempId = uniqid('vl28_', true); // временный ID
@@ -186,6 +185,7 @@ if ($request["payment"] === 'card') {
             'dom' => $request["dom"],
             'kvartira' => $request["kvartira"],
             'bonusPoints' => empty($bonusPointsWithdraw) ? $bonusPoints : 0,
+            'promocode' => $promo,
 
             'cdek' => $request['cdek'],
             'city_cdek' => $request['city_cdek'],
@@ -213,11 +213,6 @@ if ($request["payment"] === 'card') {
 // =========================================
 // === Вариант 2: Другие оплаты (создаём заказ сразу) ===
 // =========================================
-
-$order = Order::create($siteId, $USER->GetID() ?: 44);
-$order->setPersonTypeId(1);
-$order->setField('USER_DESCRIPTION', $comment);
-$order->setBasket($basket);
 
 // Доставка
 $shipmentCollection = $order->getShipmentCollection();

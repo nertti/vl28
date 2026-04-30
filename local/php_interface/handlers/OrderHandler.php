@@ -6,6 +6,9 @@ use Bitrix\Sale\Delivery;
 use Bitrix\Highloadblock\HighloadBlockTable;
 use Bitrix\Main\Entity;
 use Bitrix\Sale\DiscountCouponsManager;
+use Bitrix\Main\Event;
+use Bitrix\Main\Mail\Event as MailEvent;
+use Bitrix\Highloadblock as HL;
 function onOrderPaid($order_id, &$arFields)
 {
     if ($arFields['PAYED'] == 'Y' && $arFields['ORDER_PROP'][23] != 'Y') {
@@ -53,12 +56,6 @@ function onOrderPaid($order_id, &$arFields)
 
 function onOrderCreate(Bitrix\Main\Event $event)
 {
-
-    //return;
-//    file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/local/log.txt', print_r($sendTelegram, 1), FILE_APPEND);
-//    $telegramToken = "8332872680:AAG1OtqE-zZKpCXghJFjPQAzKuFWvMzlV4U";
-//    $chatId = "-1002635999993";
-
     \Bitrix\Main\Loader::includeModule('highloadblock');
 
 // ID хайлоад-блока
@@ -77,11 +74,13 @@ function onOrderCreate(Bitrix\Main\Event $event)
     ]);
 
     $firstItem = $result->fetch();
+    //file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/local/log.txt', print_r($firstItem, 1), FILE_APPEND);
 
 // Подставляем значения
     $telegramToken = $firstItem['UF_BOT_TOKEN'];
     $chatId        = $firstItem['UF_ID_CHAT'];
-
+//    $telegramToken = "8332872680:AAG1OtqE-zZKpCXghJFjPQAzKuFWvMzlV4U";
+//    $chatId = "-1002635999993";
     $adminOrderUrl = "https://vl28.pro/bitrix/admin/sale_order_view.php?ID=";
 
     $order = $event->getParameter("ENTITY");
@@ -279,6 +278,17 @@ function onOrderCreate(Bitrix\Main\Event $event)
         CURLOPT_POST => true,
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_POSTFIELDS => $postFields,
+
+        CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
+        CURLOPT_CONNECTTIMEOUT => 10,
+        CURLOPT_TIMEOUT => 20,
+
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_SSL_VERIFYHOST => false,
+
+        // 👇 ПРОКСИ
+        CURLOPT_PROXY => '123.123.123.123:1080',
+        CURLOPT_PROXYTYPE => CURLPROXY_SOCKS5,
     ]);
 
     $response = curl_exec($ch);
@@ -294,7 +304,7 @@ function onOrderCreate(Bitrix\Main\Event $event)
     if ($curlErrNo) {
         file_put_contents($logPath, "\n[CURL ERROR] №{$curlErrNo}: {$curlError}\n", FILE_APPEND);
     } else {
-        //file_put_contents($logPath, "\n[TELEGRAM RESPONSE] HTTP {$httpCode}: {$response}\n", FILE_APPEND);
+        file_put_contents($logPath, "\n[TELEGRAM RESPONSE] HTTP {$httpCode}: {$response}\n", FILE_APPEND);
     }
 
 // Проверяем, что Telegram вернул ok = true
@@ -316,7 +326,7 @@ function onOrderCreate(Bitrix\Main\Event $event)
     if ($ok) {
         $sendTelegramProp->setValue('Y');
         $order->save();
-        //file_put_contents($logPath, "\n[OK] Флаг SEND_TELEGRAM установлен для заказа {$orderId}\n", FILE_APPEND);
+        file_put_contents($logPath, "\n[OK] Флаг SEND_TELEGRAM установлен для заказа {$orderId}\n", FILE_APPEND);
     } else {
         file_put_contents($logPath, "\n[FAIL] Сообщение не отправлено в Telegram для заказа {$orderId}\n", FILE_APPEND);
     }
@@ -328,5 +338,226 @@ function onOrderPaidHandler($order_id, &$arFields)
     if ($arFields['PAYED'] == 'Y') {
         $userId = $arFields['USER_ID'];
         recalculateUserSummaryPay($userId);
+    }
+}
+
+function afterOrderCreate(Event $event)
+{
+    Loader::includeModule('sale');
+    Loader::includeModule('highloadblock');
+
+    $order = $event->getParameter("ENTITY");
+    $isNew = $event->getParameter("IS_NEW");
+
+    if (!$order) {
+        return;
+    }
+
+    $orderId = $order->getId();
+    $propertyCollection = $order->getPropertyCollection();
+
+    /*
+     * Удаляем группу 8 после оформления заказа
+     */
+    $userId = $order->getUserId();
+    if ($userId) {
+        $user = new CUser();
+        $userGroups = CUser::GetUserGroup($userId);
+
+        if (in_array(8, $userGroups)) {
+            $newGroups = array_diff($userGroups, [8]);
+            $user->SetUserGroup($userId, $newGroups);
+        }
+    }
+
+    /*
+     * Флаг отправки письма
+     * Создай свойство заказа SEND_EMAIL с ID 29
+     */
+    $sendEmailProp = $propertyCollection->getItemByOrderPropertyId(29);
+    if ($sendEmailProp && $sendEmailProp->getValue() === 'Y') {
+        return;
+    }
+
+    /*
+     * Проверка способа оплаты
+     */
+    $paymentCollection = $order->getPaymentCollection();
+    $sendEmail = false;
+
+    foreach ($paymentCollection as $paymentItem) {
+        if ($paymentItem->getPaymentSystemId() == 7) {
+            $sendEmail = true;
+            break;
+        }
+    }
+
+    if (!$sendEmail) {
+        foreach ($paymentCollection as $paymentItem) {
+            if ($paymentItem->getPaymentSystemId() != 7 && !$paymentItem->isPaid()) {
+                $sendEmail = true;
+                break;
+            }
+        }
+    }
+
+    if (!$sendEmail) {
+        return;
+    }
+
+    /*
+     * Доставка
+     */
+    $deliveryIds = $order->getDeliverySystemId();
+    $deliveryId = is_array($deliveryIds) && !empty($deliveryIds) ? $deliveryIds[0] : null;
+    $service = null;
+
+    if ($deliveryId) {
+        $service = \Bitrix\Sale\Delivery\Services\Manager::getById($deliveryId);
+    }
+
+    /*
+     * Данные клиента
+     */
+    $userName = trim(
+        $propertyCollection->getItemByOrderPropertyId(13)->getValue() . ' ' .
+        $propertyCollection->getItemByOrderPropertyId(14)->getValue()
+    );
+
+    $userEmail = $propertyCollection->getItemByOrderPropertyId(12)->getValue();
+    $userPhone = $propertyCollection->getItemByOrderPropertyId(15)->getValue();
+
+    /*
+     * Адрес
+     */
+    $city = $propertyCollection->getItemByOrderPropertyId(17)->getValue();
+    $street = $propertyCollection->getItemByOrderPropertyId(18)->getValue();
+    $home = $propertyCollection->getItemByOrderPropertyId(19)->getValue();
+    $apartment = $propertyCollection->getItemByOrderPropertyId(20)->getValue();
+    $addressCdek = $propertyCollection->getItemByOrderPropertyId(31)->getValue();
+
+    $parts = array_filter([$city, $street, $home, $apartment]);
+    $address = implode(', ', $parts);
+    $deliveryAddress = $address ?: $addressCdek;
+
+    /*
+     * Товары
+     */
+    $basket = $order->getBasket();
+    $items = [];
+
+    foreach ($basket->getListOfFormatText() as $basketItem) {
+        $items[] = html_entity_decode($basketItem);
+    }
+
+    $itemsList = implode("\n", preg_replace('/\[[^\]]*\]/u', '', $items));
+
+    /*
+     * Бонусы
+     */
+    $bonusPaidAmount = 0;
+
+    foreach ($paymentCollection as $paymentItem) {
+        if ($paymentItem->getPaymentSystemId() == 6 && $paymentItem->isPaid()) {
+            $bonusPaidAmount += $paymentItem->getSum();
+        }
+    }
+
+    $amount = $order->getPrice() - $bonusPaidAmount;
+
+    /*
+     * Статусы оплаты
+     */
+    $payStatus = $order->isPaid() ? 'Заказ оплачен' : 'Заказ не оплачен';
+    $payMethod = $order->isPaid() ? 'Оплата онлайн' : 'Оплата при получении';
+
+    /*
+     * Промокоды
+     */
+    $coupons = DiscountCouponsManager::get(true);
+
+    $promoCode = '';
+    $promoDiscount = 0;
+
+    foreach ($coupons as $coupon) {
+        if ($coupon['STATUS'] === DiscountCouponsManager::STATUS_APPLYED) {
+            $promoCode = $coupon['COUPON'];
+            break;
+        }
+    }
+
+    $discountData = $order->getDiscount()->getApplyResult(true);
+
+    if (!empty($discountData['PRICES']['BASKET'])) {
+        foreach ($discountData['PRICES']['BASKET'] as $item) {
+            if (!empty($item['DISCOUNT'])) {
+                $promoDiscount += $item['DISCOUNT'];
+            }
+        }
+    }
+
+    $promoDiscount = round($promoDiscount);
+    $currency = $order->getCurrency();
+
+    if ($promoCode) {
+        $discountsText = "Промокод: {$promoCode}\nСкидка: {$promoDiscount} {$currency}";
+    } else {
+        $discountsText = "Промокод не применён";
+    }
+
+    /*
+     * Ссылка на заказ
+     */
+    $adminOrderUrl = "https://vl28.pro/bitrix/admin/sale_order_view.php?ID=" . $orderId;
+
+    /*
+     * Отправка email
+     */
+    $result = MailEvent::send([
+        "EVENT_NAME" => "NEW_ORDER_NOTIFICATION",
+        "LID" => "s1",
+        "C_FIELDS" => [
+            "ORDER_ID" => $orderId,
+            "ORDER_TYPE" => $isNew ? "Новый заказ" : "Оплата заказа",
+            "PAY_STATUS" => $payStatus,
+            "DELIVERY" => $service ? $service['NAME'] : 'Неизвестно',
+            "ADDRESS" => $deliveryAddress,
+            "USER_NAME" => $userName,
+            "EMAIL" => $userEmail,
+            "PHONE" => $userPhone,
+            "PRICE" => $amount . ' ' . $currency,
+            "DISCOUNT" => $discountsText,
+            "PAY_METHOD" => $payMethod,
+            "BONUS" => $bonusPaidAmount,
+            "ITEMS" => $itemsList,
+            "ADMIN_LINK" => $adminOrderUrl,
+
+            "EMAIL_TO"=>'neretindaniil01@gmail.com'
+        ]
+    ]);
+
+    /*
+     * Логирование
+     */
+    $logPath = $_SERVER['DOCUMENT_ROOT'] . '/local/log.txt';
+
+    if ($result->isSuccess()) {
+        if ($sendEmailProp) {
+            $sendEmailProp->setValue('Y');
+            $order->save();
+        }
+
+        file_put_contents(
+            $logPath,
+            "\n[OK] Email отправлен для заказа {$orderId}\n",
+            FILE_APPEND
+        );
+    } else {
+        file_put_contents(
+            $logPath,
+            "\n[FAIL] Email не отправлен для заказа {$orderId}: " .
+            implode(', ', $result->getErrorMessages()) . "\n",
+            FILE_APPEND
+        );
     }
 }

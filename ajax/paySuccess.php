@@ -28,6 +28,8 @@ $address_cdek = $_SESSION['PENDING_ORDER'][$orderId]['FIELDS']['address_cdek'];
 $pvz_code_cdek = $_SESSION['PENDING_ORDER'][$orderId]['FIELDS']['pvz_code_cdek'];
 $postal_code_cdek = $_SESSION['PENDING_ORDER'][$orderId]['FIELDS']['postal_code_cdek'];
 $formatted_cdek = $_SESSION['PENDING_ORDER'][$orderId]['FIELDS']['formatted_cdek'];
+$promo = $_SESSION['PENDING_ORDER'][$orderId]['FIELDS']['promocode'];
+
 if ($success) {
     // === Заказа нет — создаём новый ===
     if (!isset($_SESSION['PENDING_ORDER'][$orderId])) {
@@ -46,11 +48,15 @@ if ($success) {
         $userId = 44;
     }
 
-    $order = Order::create($siteId, $USER->isAuthorized() ? $USER->GetID() : $userId);
-    $order->setPersonTypeId(1);
     // === Создаём заказ ===
-    $order->setField('USER_DESCRIPTION', $fields['comment']);
+    $order = Order::create($siteId, $USER->isAuthorized() ? $USER->GetID() : $userId);
     $order->setBasket($basket);
+
+    $discounts = $order->getDiscount();
+    $discounts->calculate();
+    $order->setPersonTypeId(1);
+    $order->setField('USER_DESCRIPTION', $fields['comment']);
+    $order->doFinalAction(true);
 
     // === Добавляем доставку ===
     $shipmentCollection = $order->getShipmentCollection();
