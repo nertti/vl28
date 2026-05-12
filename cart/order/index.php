@@ -232,7 +232,7 @@ $salePrice = 0;
                                   Оплата картой онлайн
                                 </span>
                             </label>
-                            <label class="checkout__radio" id="moskva">
+                            <label style="display: none" class="checkout__radio" id="moskva">
                                 <input type="radio" name="payment" value="card_moskoy">
                                 <div class="checkmark"></div>
                                 <span>
