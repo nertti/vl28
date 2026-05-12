@@ -5,6 +5,9 @@ use Bitrix\Sale;
 use Bitrix\Main\UserTable;
 use Bitrix\Main\UserGroupTable;
 use Bitrix\Main\Web\WebP;
+use Bitrix\Main\EventManager;
+use Bitrix\Main\Application;
+use Bitrix\Main\Web\Json;
 
 function pr($o, $show = false, $die = false, $fullBackTrace = false)
 {
@@ -125,17 +128,58 @@ function recalculateUserSummaryPay($userId)
     return true;
 }
 
-function onAfterUserUpdateHandler(&$arFields)
-{
-    if (!isset($arFields['ID']) || (int)$arFields['ID'] <= 0) {
-        return;
+function generateRandomString(): string {
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $charactersLength = strlen($characters);
+    $randomString = '';
+    for ($i = 0; $i < 8; $i++) {
+        $randomString .= $characters[random_int(0, $charactersLength - 1)];
     }
-    $userId = (int)$arFields['ID'];
-    // Пересчёт суммы заказов и обновление UF_SUMMARY_PAY + UF_CARD
-    RecalculateUserSummaryPay($userId);
-
+    return $randomString;
 }
 
+// Функция проверки уникальности ссылки в базе
+function isLinkUnique($link) {
+    $res = CUser::GetList(array(), array(), ["UF_REFERRAL_LINK" => $link], ["FIELDS" => ["ID"]]);
+    return !($res->Fetch());
+}
+
+function onAfterUserUpdateHandler(&$arFields)
+{
+    // 1. Определяем ID пользователя (учитываем оба события)
+    $userId = (int)($arFields['ID'] ?: $arFields['USER_ID']);
+
+    if ($userId <= 0) return;
+
+    static $isRunning = false;
+    if ($isRunning) return;
+
+    // Получаем текущие данные пользователя
+    $dbUser = CUser::GetList(array(), array(), ["ID" => $userId], ["SELECT" => ["UF_REFERRAL_LINK", "UF_LINK_PARTNER"]]);
+    $arUser = $dbUser->Fetch();
+
+    $fieldsToUpdate = [];
+
+    // 2. Генерируем СВОЮ ссылку, если её еще нет
+    if (empty($arUser['UF_REFERRAL_LINK'])) {
+        do {
+            $link = generateRandomString();
+        } while (!isLinkUnique($link));
+        $fieldsToUpdate['UF_REFERRAL_LINK'] = $link;
+    }
+
+    // 4. Обновляем, если есть что обновлять
+    if (!empty($fieldsToUpdate)) {
+        $isRunning = true;
+        $cUser = new CUser;
+        $cUser->Update($userId, $fieldsToUpdate);
+        $isRunning = false;
+    }
+
+    if (function_exists('RecalculateUserSummaryPay')) {
+        RecalculateUserSummaryPay($userId);
+    }
+}
 function OnLoyaltyCardChanged(&$arFields)
 {
     // Проверяем, что событие относится к нужному инфоблоку

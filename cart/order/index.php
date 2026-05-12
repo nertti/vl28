@@ -10,9 +10,11 @@
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
 $APPLICATION->SetTitle("Оформление заказа");
 $userId = $USER->GetID();
-$rsUser = CUser::GetByID($userId);
-$arUser = $rsUser->Fetch();
+$dbUser = CUser::GetList(array(), array(), ["ID" => $userId], ["SELECT" => ["*"]]);
+$arUser = $dbUser->Fetch();
 
+$dbUser = CUser::GetList(array(), array(), ["UF_REFERRAL_LINK" => $arUser['UF_LINK_PARTNER']], ["SELECT" => ["ID"]]);
+$arPartnerUser = $dbUser->Fetch();
 Bitrix\Main\Loader::includeModule("Sale");
 Bitrix\Main\Loader::includeModule("Catalog");
 
@@ -123,6 +125,7 @@ $salePrice = 0;
             </div>
 
             <form id="form" action="/ajax/createOrder.php" class="checkout__form">
+                <input type="hidden" name="partner" value="<?=$arPartnerUser['ID']?>">
 
                 <input id="siteId" type="hidden" name="siteId" value="<?= $siteId ?>">
                 <input id="fUserId" type="hidden" name="fUserId" value="<?= $fUserId ?>">

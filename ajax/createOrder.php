@@ -66,7 +66,7 @@ $kvartira = $request["kvartira"];
 $siteId = $request['siteId'];
 $fUserId = $request['fUserId'];
 $basket = Basket::loadItemsForFUser($fUserId, $siteId);
-
+$partner_id = $request["partner"];
 // == cdek ==
 $deliveryPrice = (float)$request['delivery_price'] ?? 0;
 
@@ -186,6 +186,7 @@ if ($request["payment"] === 'card') {
             'kvartira' => $request["kvartira"],
             'bonusPoints' => empty($bonusPointsWithdraw) ? $bonusPoints : 0,
             'promocode' => $promo,
+            'partner_id' => $partner_id,
 
             'cdek' => $request['cdek'],
             'city_cdek' => $request['city_cdek'],
@@ -269,6 +270,8 @@ $propertyCollection->getItemByOrderPropertyCode('STREET')->setValue($street);
 $propertyCollection->getItemByOrderPropertyCode('HOUSE')->setValue($dom);
 $propertyCollection->getItemByOrderPropertyCode('APARTMENT')->setValue($kvartira);
 $propertyCollection->getItemByOrderPropertyCode('BONUS')->setValue(empty($bonusPointsWithdraw) ? $bonusPoints : 0);
+
+$propertyCollection->getItemByOrderPropertyCode('PARTNER')->setValue($partner_id);
 
 $propertyCollection->getItemByOrderPropertyCode('ADDRESS')->setValue($address_cdek);
 

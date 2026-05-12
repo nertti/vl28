@@ -19,9 +19,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["code"])) {
             $arResult = $USER->Register($phone, "", "", $phone, $phone, $phone . "@vl28.ru");
             if ($arResult['TYPE'] == 'OK') {
                 $user = new CUser;
-                $fields = array(
-                    "PERSONAL_PHONE" => $_POST["phone"],
-                );
+                $fields["PERSONAL_PHONE"] = $_POST["phone"] ?? null;
+                $fields["UF_LINK_PARTNER"] = $_POST["partner"] ?? null;
                 $user->Update($arResult['ID'], $fields);
                 echo json_encode(["success" => true]);
             } else {

@@ -3,6 +3,7 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
     die();
 }
 require($_SERVER['DOCUMENT_ROOT'] . '/include/header/remember_auth.php');
+require($_SERVER['DOCUMENT_ROOT'] . '/include/header/check_referral_link.php');
 use Bitrix\Main\Page\Asset;
 use Bitrix\Main\Loader;
 Loader::includeModule('sale');

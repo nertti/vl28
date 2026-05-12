@@ -30,6 +30,8 @@ $postal_code_cdek = $_SESSION['PENDING_ORDER'][$orderId]['FIELDS']['postal_code_
 $formatted_cdek = $_SESSION['PENDING_ORDER'][$orderId]['FIELDS']['formatted_cdek'];
 $promo = $_SESSION['PENDING_ORDER'][$orderId]['FIELDS']['promocode'];
 
+$partnerId = $_SESSION['PENDING_ORDER'][$orderId]['FIELDS']['partner_id'];
+
 if ($success) {
     // === Заказа нет — создаём новый ===
     if (!isset($_SESSION['PENDING_ORDER'][$orderId])) {
@@ -116,6 +118,9 @@ if ($success) {
     $propertyCollection->getItemByOrderPropertyCode('APARTMENT')->setValue($fields['kvartira']);
     $propertyCollection->getItemByOrderPropertyCode('BONUS')->setValue($fields['bonusPoints']);
     $propertyCollection->getItemByOrderPropertyCode('ADDRESS')->setValue($address_cdek);
+
+    $propertyCollection->getItemByOrderPropertyCode('PARTNER')->setValue($partnerId);
+
 
     // === Сохраняем заказ ===
     $order->doFinalAction(true);
