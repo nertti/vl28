@@ -12,6 +12,17 @@
 /** @var CBitrixComponent $component */
 $this->setFrameMode(true);?>
 <form action="<?=$arResult["FORM_ACTION"]?>" role="search" method="get" class="search-form">
-    <input type="search" class="search-form__input" placeholder="Введите что вы хотите найти?" value="" name="q">
+    <div style="position: relative; display: flex; align-items: center; flex-grow: 1;">
+        <input type="search"
+               id="searchInput"
+               class="search-form__input"
+               placeholder="Введите что вы хотите найти?"
+               value=""
+               name="q"
+               autocomplete="off">
+
+        <!-- Кнопка очистки -->
+        <button type="reset" id="searchClear" class="search-form__clear">&times;</button>
+    </div>
     <input type="submit" class="main-btn" value="Найти">
 </form>

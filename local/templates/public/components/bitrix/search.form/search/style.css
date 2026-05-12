@@ -1,0 +1,22 @@
+.search-form__clear {
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 40px;
+    cursor: pointer;
+    color: #3b3b3b;
+    padding: 0;
+    display: none; /* Скрыт по умолчанию */
+    font-weight: lighter;
+}
+
+/* Показываем крестик только когда в инпуте есть текст */
+.search-form__input:not(:placeholder-shown) + .search-form__clear {
+    display: block;
+    position: relative;
+}
+
+/* Делаем отступ справа в инпуте, чтобы текст не заходил под крестик */
+.search-form__input {
+    padding-right: 30px;
+}
