@@ -30,7 +30,9 @@ $postal_code_cdek = $_SESSION['PENDING_ORDER'][$orderId]['FIELDS']['postal_code_
 $formatted_cdek = $_SESSION['PENDING_ORDER'][$orderId]['FIELDS']['formatted_cdek'];
 $promo = $_SESSION['PENDING_ORDER'][$orderId]['FIELDS']['promocode'];
 
-$partnerId = $_SESSION['PENDING_ORDER'][$orderId]['FIELDS']['partner_id'];
+$utmSource = $_SESSION['PENDING_ORDER'][$orderId]['FIELDS']['utmSource'] ?? null;
+$utmCampaign = $_SESSION['PENDING_ORDER'][$orderId]['FIELDS']['utmCampaign'] ?? null;
+$utmPartner = $_SESSION['PENDING_ORDER'][$orderId]['FIELDS']['utmPartner'] ?? null;
 
 if ($success) {
     // === Заказа нет — создаём новый ===
@@ -119,8 +121,9 @@ if ($success) {
     $propertyCollection->getItemByOrderPropertyCode('BONUS')->setValue($fields['bonusPoints']);
     $propertyCollection->getItemByOrderPropertyCode('ADDRESS')->setValue($address_cdek);
 
-    $propertyCollection->getItemByOrderPropertyCode('PARTNER')->setValue($partnerId);
-
+    $propertyCollection->getItemByOrderPropertyCode('UTM_SOURCE')->setValue($utmSource);
+    $propertyCollection->getItemByOrderPropertyCode('UTM_CAMPAIGN')->setValue($utmCampaign);
+    $propertyCollection->getItemByOrderPropertyCode('UTM_PARTNER')->setValue($utmPartner);
 
     // === Сохраняем заказ ===
     $order->doFinalAction(true);

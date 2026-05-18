@@ -66,7 +66,9 @@ $kvartira = $request["kvartira"];
 $siteId = $request['siteId'];
 $fUserId = $request['fUserId'];
 $basket = Basket::loadItemsForFUser($fUserId, $siteId);
-$partner_id = $request["partner"];
+$utmSource = $request["utmSource"];
+$utmCampaign = $request["utmCampaign"];
+$utmPartner = $request["utmPartner"];
 // == cdek ==
 $deliveryPrice = (float)$request['delivery_price'] ?? 0;
 
@@ -186,7 +188,9 @@ if ($request["payment"] === 'card') {
             'kvartira' => $request["kvartira"],
             'bonusPoints' => empty($bonusPointsWithdraw) ? $bonusPoints : 0,
             'promocode' => $promo,
-            'partner_id' => $partner_id,
+            'utmSource' => $utmSource,
+            'utmCampaign' => $utmCampaign,
+            'utmPartner' => $utmPartner,
 
             'cdek' => $request['cdek'],
             'city_cdek' => $request['city_cdek'],
@@ -271,7 +275,9 @@ $propertyCollection->getItemByOrderPropertyCode('HOUSE')->setValue($dom);
 $propertyCollection->getItemByOrderPropertyCode('APARTMENT')->setValue($kvartira);
 $propertyCollection->getItemByOrderPropertyCode('BONUS')->setValue(empty($bonusPointsWithdraw) ? $bonusPoints : 0);
 
-$propertyCollection->getItemByOrderPropertyCode('PARTNER')->setValue($partner_id);
+$propertyCollection->getItemByOrderPropertyCode('UTM_SOURCE')->setValue($utmSource);
+$propertyCollection->getItemByOrderPropertyCode('UTM_CAMPAIGN')->setValue($utmCampaign);
+$propertyCollection->getItemByOrderPropertyCode('UTM_PARTNER')->setValue($utmPartner);
 
 $propertyCollection->getItemByOrderPropertyCode('ADDRESS')->setValue($address_cdek);
 

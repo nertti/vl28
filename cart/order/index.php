@@ -13,8 +13,6 @@ $userId = $USER->GetID();
 $dbUser = CUser::GetList(array(), array(), ["ID" => $userId], ["SELECT" => ["*"]]);
 $arUser = $dbUser->Fetch();
 
-$dbUser = CUser::GetList(array(), array(), ["UF_REFERRAL_LINK" => $arUser['UF_LINK_PARTNER']], ["SELECT" => ["ID"]]);
-$arPartnerUser = $dbUser->Fetch();
 Bitrix\Main\Loader::includeModule("Sale");
 Bitrix\Main\Loader::includeModule("Catalog");
 
@@ -125,7 +123,9 @@ $salePrice = 0;
             </div>
 
             <form id="form" action="/ajax/createOrder.php" class="checkout__form">
-                <input type="hidden" name="partner" value="<?=$arPartnerUser['ID']?>">
+                <input type="hidden" name="utmSource" value="<?=$arUser['UF_UTM_SOURCE']?>">
+                <input type="hidden" name="utmCampaign" value="<?=$arUser['UF_UTM_CAMPAIGN']?>">
+                <input type="hidden" name="utmPartner" value="<?=$arUser['UF_UTM_PARTNER']?>">
 
                 <input id="siteId" type="hidden" name="siteId" value="<?= $siteId ?>">
                 <input id="fUserId" type="hidden" name="fUserId" value="<?= $fUserId ?>">
