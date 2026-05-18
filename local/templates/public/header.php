@@ -387,11 +387,11 @@ if (!$isCartPage && !$isCartPage) {
         <section class="products">
             <p class="h2">Новые поступления</p>
             <?php
-global $arrFilterCatalogItems;
-$arrFilterCatalogItems = array(
-    "PROPERTY_VIEW_ON_MAIN_VALUE" => "Да"
-);
-?>
+            global $arrFilterCatalogItems;
+            $arrFilterCatalogItems = array(
+                "PROPERTY_VIEW_ON_MAIN_VALUE" => "Да"
+            );
+            ?>
             <?php $APPLICATION->IncludeComponent(
 	"bitrix:catalog.section",
 	"main",
