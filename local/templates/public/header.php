@@ -386,6 +386,12 @@ if (!$isCartPage && !$isCartPage) {
         array('HIDE_ICONS' => 'Y')); ?>
         <section class="products">
             <p class="h2">Новые поступления</p>
+            <?php
+global $arrFilterCatalogItems;
+$arrFilterCatalogItems = array(
+    "PROPERTY_VIEW_ON_MAIN_VALUE" => "Да"
+);
+?>
             <?php $APPLICATION->IncludeComponent(
 	"bitrix:catalog.section",
 	"main",
@@ -424,7 +430,7 @@ if (!$isCartPage && !$isCartPage) {
 		"ELEMENT_SORT_ORDER2" => "desc",
 		"ENLARGE_PRODUCT" => "PROP",
 		"ENLARGE_PROP" => "COLLECTION",
-		"FILTER_NAME" => "arrFilter",
+		"FILTER_NAME" => "arrFilterCatalogItems",
 		"HIDE_NOT_AVAILABLE" => "Y",
 		"HIDE_NOT_AVAILABLE_OFFERS" => "Y",
 		"IBLOCK_ID" => "2",
