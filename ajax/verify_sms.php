@@ -20,7 +20,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["code"])) {
             if ($arResult['TYPE'] == 'OK') {
                 $user = new CUser;
                 $fields["PERSONAL_PHONE"] = $_POST["phone"] ?? null;
-                $fields["UF_LINK_PARTNER"] = $_POST["partner"] ?? null;
+                $fields["UF_UTM_SOURCE"] = $_POST["UF_UTM_SOURCE"] ?? null;
+                $fields["UF_UTM_CAMPAIGN"] = $_POST["UF_UTM_CAMPAIGN"] ?? null;
+                $fields["UF_UTM_PARTNER"] = $_POST["UF_UTM_PARTNER"] ?? null;
                 $user->Update($arResult['ID'], $fields);
                 echo json_encode(["success" => true]);
             } else {

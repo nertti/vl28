@@ -9,14 +9,20 @@ use Bitrix\Main\Application;
 use Bitrix\Main\Web\Json;
 
 $request = Application::getInstance()->getContext()->getRequest();
-$cookieValue = $request->getCookie("REFERRAL_LINK");
+$cookieValue = $request->getCookie("UTM");
 
 if (!empty($cookieValue)) {
     try {
         $data = Json::decode($cookieValue);
 
-        if (isset($data['VALUE'])) {
-            $referralLink = $data['VALUE'] ?? null;
+        if (isset($data['UF_UTM_PARTNER'])) {
+            $utmPartner = $data['UF_UTM_PARTNER'] ?? null;
+        }
+        if (isset($data['UF_UTM_CAMPAIGN'])) {
+            $utmCampaign = $data['UF_UTM_CAMPAIGN'] ?? null;
+        }
+        if (isset($data['UF_UTM_SOURCE'])) {
+            $utmSource = $data['UF_UTM_SOURCE'] ?? null;
         }
     } catch (\Exception $e) {}
 }
@@ -43,7 +49,9 @@ if (!empty($cookieValue)) {
         <!-- Форма ввода кода (скрыта до отправки SMS) -->
         <form action="#" class="registration__form" id="code-form" style="display: none;">
             <input type="hidden" class="form-input phone-input" id="phone-number-send" placeholder="+7">
-            <input type="hidden" id="partner" value="<?=$referralLink?>">
+            <input type="hidden" id="UF_UTM_SOURCE" value="<?=$utmSource?>">
+            <input type="hidden" id="UF_UTM_CAMPAIGN" value="<?=$utmCampaign?>">
+            <input type="hidden" id="UF_UTM_PARTNER" value="<?=$utmPartner?>">
             <input type="text" class="registration__code" id="sms-code" placeholder="Код из СМС">
             <input type="submit" class="registration__btn" value="Подтвердить">
         </form>
@@ -101,14 +109,18 @@ if (!empty($cookieValue)) {
             event.preventDefault();
             let code = document.getElementById("sms-code").value;
             let phone = document.getElementById("phone-number-send").value;
-            let partner = document.getElementById("partner").value;
+            let utm_source = document.getElementById("UF_UTM_SOURCE").value;
+            let utmCampaign = document.getElementById("UF_UTM_CAMPAIGN").value;
+            let utmPartner = document.getElementById("UF_UTM_PARTNER").value;
 
             fetch("/ajax/verify_sms.php", {
                 method: "POST",
                 headers: {"Content-Type": "application/x-www-form-urlencoded"},
                 body: "code=" + encodeURIComponent(code) +
                     "&phone=" + encodeURIComponent(phone) +
-                    "&partner=" + encodeURIComponent(partner)
+                    "&UF_UTM_SOURCE=" + encodeURIComponent(utm_source) +
+                    "&UF_UTM_CAMPAIGN=" + encodeURIComponent(utmCampaign) +
+                    "&UF_UTM_PARTNER=" + encodeURIComponent(utmPartner)
             })
                 .then(response => response.json())
                 .then(data => {

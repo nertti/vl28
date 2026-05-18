@@ -3,16 +3,20 @@ use Bitrix\Main\Application;
 use Bitrix\Main\Web\Cookie;
 
 $request = Application::getInstance()->getContext()->getRequest();
-$referralLink = $request->get('referral_link');
+$utmSource = $request->get('utm_source');
+$utmCampaign = $request->get('utm_campaign');
+$utmPartner = $request->get('utm_partner');
 
-if (!empty($referralLink)) {
+if (!empty($utmSource)) {
     $cookieTime = time() + 30 * 24 * 60 * 60;
     $cookieValue = json_encode([
-        "VALUE" => $referralLink,
+        "UF_UTM_SOURCE" => $utmSource,
+        "UF_UTM_CAMPAIGN" => $utmCampaign,
+        "UF_UTM_PARTNER" => $utmPartner,
         "TIME" => $cookieTime
     ]);
 
-    $cookie = new Cookie("REFERRAL_LINK", $cookieValue, $cookieTime);
+    $cookie = new Cookie("UTM", $cookieValue, $cookieTime);
     $cookie->setPath("/");
     $cookie->setHttpOnly(false); // если нужно читать через JS
 

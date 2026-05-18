@@ -155,7 +155,7 @@ function onAfterUserUpdateHandler(&$arFields)
     if ($isRunning) return;
 
     // Получаем текущие данные пользователя
-    $dbUser = CUser::GetList(array(), array(), ["ID" => $userId], ["SELECT" => ["UF_REFERRAL_LINK", "UF_LINK_PARTNER"]]);
+    $dbUser = CUser::GetList(array(), array(), ["ID" => $userId], ["SELECT" => ["UF_REFERRAL_LINK"]]);
     $arUser = $dbUser->Fetch();
 
     $fieldsToUpdate = [];
