@@ -44,6 +44,9 @@ if (!empty($cookieValue)) {
             <input type="password" class="form-input" name="confirm_password" id="confirm_password" placeholder="Подтвердите пароль" style="margin-top: 10px">
             <button type="submit" class="registration__btn">Зарегистрироваться</button>
             <p class="registration__desc" id="sms-message-desk">
+                Продолжая, вы даете <a href="https://vl28.pro/personal/">согласие</a> на обработку персональных данных.
+            </p>
+            <p class="registration__desc" id="sms-message-desk">
                 Уже есть аккаунт?
                 <a href="/signin/">
                     Авторизоваться

@@ -12,7 +12,9 @@ $APPLICATION->SetTitle("Авторизация");
         <form action="/ajax/auth/signin.php" class="registration__form" id="auth_form">
             <input type="text" class="form-input" name="email" id="email" placeholder="E-mail">
             <input type="password" class="form-input" name="password" id="password" placeholder="Пароль" style="margin-top: 10px">
+            <p id="sms-message-desk" class="registration__desc" style="text-align: end"><a href="/password-recovery/" class="gray">Забыли пароль?</a></p>
             <button type="submit" class="registration__btn">Войти</button>
+            <a href="/auth/" class="registration__btn">Я был зарегистрирован на номер телефона</a>
             <p class="registration__desc" id="sms-message-desk">
                 Ещё нет аккаунта?
                 <a href="/signup/">

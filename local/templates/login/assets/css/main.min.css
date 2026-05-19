@@ -3338,7 +3338,8 @@ section {
 }
 .registration__form {
   width:100%;
-  max-width:330px
+  max-width:420px;
+  margin: 0 20px;
 }
 .registration__form .form-input {
   color:#fff
@@ -3349,12 +3350,13 @@ section {
 .registration__desc {
   margin-top: 10px;
   text-align:center;
-  font-weight:300
+  font-weight:300;
+  font-size: 14px;
 }
 .registration__btn {
   margin-top:10px;
   background-color:#929292;
-  font-size:14px;
+  font-size:16px;
   line-height:18px;
   letter-spacing:-.02em;
   display:-webkit-box;

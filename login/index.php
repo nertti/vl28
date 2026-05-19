@@ -8,6 +8,9 @@ $APPLICATION->SetTitle("Вход или регистрация");
 use Bitrix\Main\Application;
 use Bitrix\Main\Web\Json;
 
+header("Location: /signin/");
+exit( );
+
 $request = Application::getInstance()->getContext()->getRequest();
 $cookieValue = $request->getCookie("UTM");
 
@@ -79,7 +82,7 @@ if (!empty($cookieValue)) {
             event.preventDefault();
             let phone = document.getElementById("phone-number").value;
 
-            fetch("/ajax/send_sms.php", {
+            fetch("/ajax/auth/send_sms.php", {
                 method: "POST",
                 headers: {"Content-Type": "application/x-www-form-urlencoded"},
                 body: "phone=" + encodeURIComponent(phone)
@@ -113,7 +116,7 @@ if (!empty($cookieValue)) {
             let utmCampaign = document.getElementById("UF_UTM_CAMPAIGN").value;
             let utmPartner = document.getElementById("UF_UTM_PARTNER").value;
 
-            fetch("/ajax/verify_sms.php", {
+            fetch("/ajax/auth/verify_sms.php", {
                 method: "POST",
                 headers: {"Content-Type": "application/x-www-form-urlencoded"},
                 body: "code=" + encodeURIComponent(code) +
@@ -160,7 +163,7 @@ if (!empty($cookieValue)) {
         document.getElementById("resend-btn").addEventListener("click", function () {
             let phone = document.getElementById("user-phone").textContent;
 
-            fetch("/ajax/send_sms.php", {
+            fetch("/ajax/auth/send_sms.php", {
                 method: "POST",
                 headers: {"Content-Type": "application/x-www-form-urlencoded"},
                 body: "phone=" + encodeURIComponent(phone)

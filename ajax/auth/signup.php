@@ -38,7 +38,7 @@ if ($request->isPost()) {
         $errors['PASSWORD'] = "Поле 'Пароль' обязательно для заполнения";
     }
     if (empty($confirmPassword)) {
-        $errors['CONFIRM_PASSWORD'] = "Поле 'Подтвердить пароль' обязательно для заполнения";
+        $errors['CONFIRM_PASSWORD'] = "Поле 'Подтвердите пароль' обязательно для заполнения";
     } elseif ($confirmPassword !== $password) {
         $errors['CONFIRM_PASSWORD'] = "Пароли не совпадают";
     }
