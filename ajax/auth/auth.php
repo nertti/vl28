@@ -1,0 +1,57 @@
+<?php
+require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php");
+CModule::IncludeModule("form");
+/** @var \CMain $APPLICATION */
+use Bitrix\Main\Application;
+
+$request = Application::getInstance()->getContext()->getRequest();
+
+global $USER;
+if (!is_object($USER)) $USER = new CUser;
+$pattern = '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/';
+
+// Проверяем, что форма отправлена
+if ($request->isPost()) {
+
+    $idUser = $request->getPost("id");
+    $email = $request->getPost("email");
+    $password = $request->getPost("password");
+    $confirmPassword = $request->getPost("confirm_password");
+    // Проверяем заполненные значения
+    $errors = [];
+    if (empty($email)) {
+        $errors['EMAIL'] = "Поле 'E-mail' обязательно для заполнения";
+    }  elseif (!preg_match($pattern, $email)) {
+        $errors['EMAIL'] = "Введите корректный электронный адрес";
+    } else {
+        $rsUsers = CUser::GetList(array(), 'sort', array('LOGIN' => $email));
+        if ($rsUsers->SelectedRowsCount() > 0){
+            $errors['EMAIL'] = "Данный электронный адрес зарегистрирован";
+            //$errors['DATA'] = $rsUsers->SelectedRowsCount();
+        }
+    }
+    if (empty($password)) {
+        $errors['PASSWORD'] = "Поле 'Пароль' обязательно для заполнения";
+    }
+    if (empty($confirmPassword)) {
+        $errors['CONFIRM_PASSWORD'] = "Поле 'Подтвердите пароль' обязательно для заполнения";
+    } elseif ($confirmPassword !== $password) {
+        $errors['CONFIRM_PASSWORD'] = "Пароли не совпадают";
+    }
+
+    // Если есть ошибки, возвращаем их в виде JSON
+    if (!empty($errors)) {
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'error', 'message' => $errors]);
+        exit();
+    } else {
+        //$USER->Authorize($idUser); // авторизуем
+        $result = $USER->Update($USER->GetID(), array(
+            'EMAIL' => $email,
+            'PASSWORD' => $password,
+            'UF_OLD_AUTH' => 0,
+        ));
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'success', 'message' => 'Успешная регистрация']);
+    }
+}
