@@ -3347,7 +3347,7 @@ section {
   margin-bottom:35px
 }
 .registration__desc {
-  max-width:260px;
+  margin-top: 10px;
   text-align:center;
   font-weight:300
 }
