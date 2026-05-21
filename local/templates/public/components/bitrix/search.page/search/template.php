@@ -16,16 +16,20 @@
 
 <div class="search-modal search-page">
     <form action="" role="search" method="get" class="search-form">
-        <input class="search-form__input" placeholder="Введите что вы хотите найти?" type="text" name="q"
-               value="<?= $arResult['REQUEST']['QUERY'] ?>">
+        <div style="position: relative; display: flex; align-items: center; flex-grow: 1;">
+            <input class="search-form__input" placeholder="Введите что вы хотите найти?" type="text" name="q"
+                   value="<?= $arResult['REQUEST']['QUERY'] ?>">
+            <button type="button" id="searchClear" class="search-form__clear"
+                    onclick="this.previousElementSibling.value='';">×
+            </button>
+        </div>
         <input type="submit" class="main-btn" value="Найти">
     </form>
 </div>
 <section class="products products_catalog">
     <div class="products__list">
-        <?php if (count($arResult['SEARCH']) > 0): ?>
+        <?php if (!empty($arResult['SEARCH'])): ?>
             <?php foreach ($arResult['SEARCH'] as $arItem): ?>
-
                 <a href="<?= $arItem['URL_WO_PARAMS'] ?>"
                    class="product">
                     <?php if (!empty($arItem['IMAGES'])): ?>
@@ -33,11 +37,13 @@
                             <div id="swiper-wrapper-<?= $arItem['ID'] ?>" class="swiper-wrapper">
                                 <div class="swiper-slide">
                                     <div class="main_img">
-                                        <img src="<?= CFile::GetPath($arItem['DETAIL_PICTURE']) ?>" alt="<?= $arItem['TITLE'] ?>"
+                                        <img src="<?= CFile::GetPath($arItem['DETAIL_PICTURE']) ?>"
+                                             alt="<?= $arItem['TITLE'] ?>"
                                              class="product__img">
                                         <div class="product__inner">
                                             <p class="product__title"><?= $arItem['TITLE'] ?></p>
-                                            <p class="product__price"><?= number_format($arItem['PRICE'], 0, ',',  ' ') ?> ₽</p>
+                                            <p class="product__price"><?= number_format($arItem['PRICE'], 0, ',', ' ') ?>
+                                                ₽</p>
                                         </div>
                                     </div>
                                 </div>
@@ -64,10 +70,10 @@
                 </a>
             <?php endforeach; ?>
         <?php else: ?>
-        <div class="search-modal">
-            <p class="h2">Ничего не нашлось...</p>
-            <p>Проверьте, правильно ли введен запрос</p>
-        </div>
+            <div class="search-modal">
+                <p class="h2">Ничего не нашлось...</p>
+                <p>Проверьте, правильно ли введен запрос</p>
+            </div>
         <?php endif; ?>
     </div>
 </section>

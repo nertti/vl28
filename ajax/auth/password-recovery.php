@@ -19,7 +19,7 @@ if ($request->isPost()) {
     } elseif (!preg_match($pattern, $email)) {
         $errors['EMAIL'] = "Введите корректный электронный адрес";
     } else {
-        $rsUsers = CUser::GetList(array(), 'sort', array('LOGIN' => $email));
+        $rsUsers = CUser::GetList(array(), 'sort', array('EMAIL' => $email));
         if ($rsUsers->SelectedRowsCount() <= 0) {
             $errors['EMAIL'] = "Данный электронный адрес не зарегистрирован";
         }

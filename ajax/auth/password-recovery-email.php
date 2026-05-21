@@ -36,14 +36,13 @@ if ($request->isPost()) {
         echo json_encode(['status' => 'error', 'message' => $errors]);
         exit();
     } else {
-
         $arResult = $USER->ChangePassword($email, $checkWord, $password, $confirmPassword);
         if($arResult["TYPE"] == "OK") {
             header('Content-Type: application/json');
             echo json_encode(['status' => 'success', 'message' => 'Успешная отправка']);
         } else {
             header('Content-Type: application/json');
-            echo json_encode(['status' => 'error', 'message' => 'Ошибка отправки письма', 'data' => $arResult]);
+            echo json_encode(['status' => 'error', 'message' => 'Ошибка отправки письма', 'errors' => $arResult]);
         }
     }
 }

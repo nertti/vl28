@@ -27,7 +27,6 @@ if ($request->isPost()) {
         $rsUsers = CUser::GetList(array(), 'sort', array('LOGIN' => $email));
         if ($rsUsers->SelectedRowsCount() > 0){
             $errors['EMAIL'] = "Данный электронный адрес зарегистрирован";
-            //$errors['DATA'] = $rsUsers->SelectedRowsCount();
         }
     }
     if (empty($password)) {
@@ -45,9 +44,10 @@ if ($request->isPost()) {
         echo json_encode(['status' => 'error', 'message' => $errors]);
         exit();
     } else {
-        //$USER->Authorize($idUser); // авторизуем
+        $USER->Authorize($idUser); // авторизуем
         $result = $USER->Update($USER->GetID(), array(
             'EMAIL' => $email,
+            'LOGIN' => $email,
             'PASSWORD' => $password,
             'UF_OLD_AUTH' => 0,
         ));
