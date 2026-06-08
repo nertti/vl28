@@ -921,9 +921,6 @@ $salePrice = 0;
             lang: 'rus',
             currency: 'RUB',
             tariffs: { office: [136, 291], door: [137, 294] },
-            hideFilters: {
-                is_dressing_room: true,
-            },
             goods: [{ width: 30, height: 20, length: 40, weight: 500 }],
             hideDeliveryOptions: { office: false, door: false },
             debug: false,

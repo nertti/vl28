@@ -14,64 +14,51 @@ Loader::includeModule("sale");
 Loader::includeModule("catalog");
 
 $request = Context::getCurrent()->getRequest();
+global $USER;
 
-// === Валидация ===
+// === Валидация обязательных полей ===
 $errors = [];
 $pattern = '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/';
 if (empty($request['email']) || !preg_match($pattern, $request['email'])) $errors['email'] = "Введите корректный email";
 if (empty($request['name'])) $errors['name'] = "Введите имя";
 if (empty($request['surname'])) $errors['surname'] = "Введите фамилию";
 if (empty($request['phone'])) $errors['phone'] = "Введите телефон";
-if (empty($request['delivery'])) {
-    $errors['delivery'] = "Пожалуйста, выберите способ доставки.";
+if (empty($request['delivery'])) $errors['delivery'] = "Пожалуйста, выберите способ доставки.";
+if (empty($request['city_cdek']) && empty($request['address_cdek'])) {
+    $errors['delivery'] = 'Пожалуйста, выберите адрес.';
 }
-if ($request['delivery'] == 135) {
-    if (empty($request['street'])) $errors['street'] = "Укажите улицу.";
-    if (empty($request['dom'])) $errors['dom'] = "Укажите номер дома.";
-    if (empty($request['kvartira'])) $errors['kvartira'] = "Укажите номер квартиры.";
-}
-//if ($request['delivery'] == 137 || $request['delivery'] == 139) {
-//    if (empty($request['city'])) $errors['city'] = "Укажите населённый пункт.";
-//}
-//if ($request['delivery'] == 136 || $request['delivery'] == 138) {
-//    if (empty($request['city'])) $errors['city'] = "Укажите населённый пункт.";
-//    if (empty($request['street'])) $errors['street'] = "Укажите улицу.";
-//    if (empty($request['dom'])) $errors['dom'] = "Укажите номер дома.";
-//    if (empty($request['kvartira'])) $errors['kvartira'] = "Укажите номер квартиры.";
-//}
 if (!empty($errors)) {
     header('Content-Type: application/json');
     echo json_encode(['status' => 'error', 'message' => $errors]);
     exit();
 }
 
-global $USER;
+// === Инициализация ===
+$siteId = $request['siteId'];
+$fUserId = $request['fUserId'];
+
+$utmSource = $request["utmSource"];
+$utmCampaign = $request["utmCampaign"];
+$utmPartner = $request["utmPartner"];
+
 $email = $request["email"];
 $phone = preg_replace("/[^0-9]/", "", $request["phone"]);
 $name = $request["name"];
 $surname = $request["surname"];
 $comment = $request["comment"];
+
 if ($request["setBonus"] == 'Y') {
     $bonusPointsWithdraw = $request["bonus"];
-}
-$bonusPoints = $request["bonusPoints"];
-if ($request["delivery"] == 135) {
-    $city = "Москва";
 } else {
-    $city = $request["city"];
+    $bonusPointsWithdraw = 0;
+    $bonusPoints = $request["bonusPoints"];
 }
-$street = $request["street"];
-$dom = $request["dom"];
-$kvartira = $request["kvartira"];
-$siteId = $request['siteId'];
-$fUserId = $request['fUserId'];
+
 $basket = Basket::loadItemsForFUser($fUserId, $siteId);
-$utmSource = $request["utmSource"];
-$utmCampaign = $request["utmCampaign"];
-$utmPartner = $request["utmPartner"];
-// == cdek ==
+
 $deliveryPrice = (float)$request['delivery_price'] ?? 0;
 
+// == cdek ==
 require_once $_SERVER['DOCUMENT_ROOT'] . '/ajax/cdek/create_cdek_order.php';
 $cdek = $request['cdek'];
 $city_cdek = $request['city_cdek'];
@@ -97,8 +84,14 @@ $order->doFinalAction(true);
 
 $totalPrice = $basket->getPrice() - (float)$bonusPointsWithdraw + $deliveryPrice;
 
+
+//echo '<pre>';
+//var_export($request);
+//echo '</pre>';
+//die();
+
 // =========================================
-// === Вариант 1: Оплата онлайн (CARD) ===
+// === Оплата онлайн TBANK ===
 // =========================================
 if ($request["payment"] === 'card') {
 
@@ -214,7 +207,92 @@ if ($request["payment"] === 'card') {
     exit();
 }
 
+// =========================================
+// === Оплата онлайн АЛЬФА ===
+// =========================================
+if ($request["payment"] === 'card_') {
 
+    require_once $_SERVER["DOCUMENT_ROOT"] . '/local/php_interface/include/alfa_auth.php';
+
+    $payKeeper = new PayKeeper(
+        'https://vl28.server.paykeeper.ru',
+        $login,
+        $password
+    );
+
+    $orderTempId = uniqid('vl28_', true);
+
+    try {
+
+        $token = $payKeeper->getToken();
+
+        $resultData = $payKeeper->createInvoice([
+            'pay_amount'   => number_format($totalPrice, 2, '.', ''),
+            'clientid'     => trim($surname . ' ' . $name),
+            'orderid'      => $orderTempId,
+            'service_name' => 'Заказ №' . $orderTempId,
+            'client_email' => $email,
+            'client_phone' => '+' . $phone,
+        ]);
+
+        $payUrl = $resultData['invoice_url'] ?? '';
+
+    } catch (Exception $e) {
+
+        header('Content-Type: application/json');
+
+        echo json_encode([
+            'status' => 'error',
+            'message' => $e->getMessage(),
+        ]);
+
+        exit();
+    }
+
+    $_SESSION['PENDING_ORDER'][$orderTempId] = [
+        'FIELDS' => [
+            'email' => $email,
+            'phone' => $phone,
+            'name' => $name,
+            'surname' => $surname,
+            'comment' => $comment,
+            'siteId' => $siteId,
+            'fUserId' => $fUserId,
+            'delivery' => $request['delivery'],
+            'city' => $request["city"],
+            'street' => $request["street"],
+            'dom' => $request["dom"],
+            'kvartira' => $request["kvartira"],
+            'bonusPoints' => empty($bonusPointsWithdraw) ? $bonusPoints : 0,
+            'promocode' => $promo,
+            'utmSource' => $utmSource,
+            'utmCampaign' => $utmCampaign,
+            'utmPartner' => $utmPartner,
+
+            'cdek' => $request['cdek'],
+            'city_cdek' => $request['city_cdek'],
+            'city_code_cdek' => $request['city_code_cdek'],
+            'tariff_cdek' => $request['tariff_cdek'],
+            'address_cdek' => $request['address_cdek'],
+            'pvz_code_cdek' => $request['pvz_code_cdek'],
+            'postal_code_cdek' => $request['postal_code_cdek'],
+            'deliveryPrice' => $deliveryPrice,
+        ]
+    ];
+
+    header('Content-Type: application/json');
+
+    echo json_encode([
+        'status' => 'success',
+        'message' => 'Перенаправление на оплату',
+        'pay_url' => $payUrl,
+        'tmp_order_id' => $orderTempId,
+    ]);
+
+    exit();
+}
+/**
+вырезали из-за ненадобности
 // =========================================
 // === Вариант 2: Другие оплаты (создаём заказ сразу) ===
 // =========================================
@@ -342,3 +420,6 @@ if ($result->isSuccess()) {
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Ошибка сохранения заказа']);
 }
+
+
+ */
