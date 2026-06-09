@@ -8,6 +8,7 @@ use Bitrix\Main\Web\WebP;
 use Bitrix\Main\EventManager;
 use Bitrix\Main\Application;
 use Bitrix\Main\Web\Json;
+use Bitrix\Highloadblock\HighloadBlockTable;
 
 function pr($o, $show = false, $die = false, $fullBackTrace = false)
 {
@@ -55,7 +56,6 @@ function pr($o, $show = false, $die = false, $fullBackTrace = false)
         return false;
     }
 }
-
 function recalculateUserSummaryPay($userId)
 {
     if ($userId <= 0) {
@@ -127,7 +127,6 @@ function recalculateUserSummaryPay($userId)
 
     return true;
 }
-
 function generateRandomString(): string {
     $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     $charactersLength = strlen($characters);
@@ -137,13 +136,11 @@ function generateRandomString(): string {
     }
     return $randomString;
 }
-
 // Функция проверки уникальности ссылки в базе
 function isLinkUnique($link) {
     $res = CUser::GetList(array(), array(), ["UF_REFERRAL_LINK" => $link], ["FIELDS" => ["ID"]]);
     return !($res->Fetch());
 }
-
 function onAfterUserUpdateHandler(&$arFields)
 {
     // 1. Определяем ID пользователя (учитываем оба события)
@@ -202,7 +199,6 @@ function OnLoyaltyCardChanged(&$arFields)
         }
     }
 }
-
 function getResponsiveImage($fileId)
 {
     if (!$fileId) return null;
@@ -238,4 +234,96 @@ function getResponsiveImage($fileId)
         'srcset' => implode(', ', $srcset),
         'sizes' => '(max-width: 768px) 90vw, (max-width: 1200px) 45vw, 450px'
     ];
+}
+function getHLData(string $hlName, array $filter = [], array $select = ['*'], array $order = []): array
+{
+    Loader::includeModule('highloadblock');
+
+    $hlblock = HighloadBlockTable::getList([
+            'filter' => ['=NAME' => $hlName]
+    ])->fetch();
+
+    if (!$hlblock) {
+        return [];
+    }
+
+    $entity = HighloadBlockTable::compileEntity($hlblock);
+    $dataClass = $entity->getDataClass();
+
+    $result = [];
+
+    $res = $dataClass::getList([
+            'filter' => $filter,
+            'select' => $select,
+            'order' => $order,
+    ]);
+
+    while ($row = $res->fetch()) {
+        $result[] = $row;
+    }
+
+    return $result;
+}
+function setHLData(string $hlName, array $fields): int
+{
+    Loader::includeModule('highloadblock');
+
+    $hlblock = HighloadBlockTable::getList([
+            'filter' => ['=NAME' => $hlName]
+    ])->fetch();
+
+    if (!$hlblock) {
+        throw new Exception("HL-блок {$hlName} не найден");
+    }
+
+    $entity = HighloadBlockTable::compileEntity($hlblock);
+    $dataClass = $entity->getDataClass();
+
+    $result = $dataClass::add($fields);
+
+    if (!$result->isSuccess()) {
+        throw new Exception(
+                implode(', ', $result->getErrorMessages())
+        );
+    }
+
+    return (int)$result->getId();
+}
+function updateHLData(string $hlName, int $id, array $fields): bool
+{
+    Loader::includeModule('highloadblock');
+
+    $hlblock = HighloadBlockTable::getList([
+            'filter' => ['=NAME' => $hlName]
+    ])->fetch();
+
+    if (!$hlblock) {
+        return false;
+    }
+
+    $entity = HighloadBlockTable::compileEntity($hlblock);
+    $dataClass = $entity->getDataClass();
+
+    $result = $dataClass::update($id, $fields);
+
+    return $result->isSuccess();
+}
+function deleteHLData(string $hlName, int $id): bool
+{
+    Loader::includeModule('highloadblock');
+
+    $hlblock = HighloadBlockTable::getList([
+            'filter' => ['=NAME' => $hlName]
+    ])->fetch();
+
+    if (!$hlblock) {
+        return false;
+    }
+
+    $entity = HighloadBlockTable::compileEntity($hlblock);
+    $dataClass = $entity->getDataClass();
+
+    $result = $dataClass::delete($id);
+
+    return $result->isSuccess();
 }

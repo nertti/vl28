@@ -46,6 +46,8 @@ $phone = preg_replace("/[^0-9]/", "", $request["phone"]);
 $name = $request["name"];
 $surname = $request["surname"];
 $comment = $request["comment"];
+$delivery = $request["delivery"];
+$deliveryPrice = (float)$request['delivery_price'] ?? 0;
 
 if ($request["setBonus"] == 'Y') {
     $bonusPointsWithdraw = $request["bonus"];
@@ -55,8 +57,6 @@ if ($request["setBonus"] == 'Y') {
 }
 
 $basket = Basket::loadItemsForFUser($fUserId, $siteId);
-
-$deliveryPrice = (float)$request['delivery_price'] ?? 0;
 
 // == cdek ==
 require_once $_SERVER['DOCUMENT_ROOT'] . '/ajax/cdek/create_cdek_order.php';
@@ -84,11 +84,6 @@ $order->doFinalAction(true);
 
 $totalPrice = $basket->getPrice() - (float)$bonusPointsWithdraw + $deliveryPrice;
 
-
-//echo '<pre>';
-//var_export($request);
-//echo '</pre>';
-//die();
 
 // =========================================
 // === Оплата онлайн TBANK ===
@@ -211,25 +206,20 @@ if ($request["payment"] === 'card') {
 // === Оплата онлайн АЛЬФА ===
 // =========================================
 if ($request["payment"] === 'card_') {
-
     require_once $_SERVER["DOCUMENT_ROOT"] . '/local/php_interface/include/alfa_auth.php';
-
     $payKeeper = new PayKeeper(
         'https://vl28.server.paykeeper.ru',
         $login,
         $password
     );
-
     $orderTempId = uniqid('vl28_', true);
-
     try {
-
         $token = $payKeeper->getToken();
 
         $resultData = $payKeeper->createInvoice([
-            'pay_amount'   => number_format($totalPrice, 2, '.', ''),
-            'clientid'     => trim($surname . ' ' . $name),
-            'orderid'      => $orderTempId,
+            'pay_amount' => number_format($totalPrice, 2, '.', ''),
+            'clientid' => trim($surname . ' ' . $name),
+            'orderid' => $orderTempId,
             'service_name' => 'Заказ №' . $orderTempId,
             'client_email' => $email,
             'client_phone' => '+' . $phone,
@@ -249,36 +239,54 @@ if ($request["payment"] === 'card_') {
         exit();
     }
 
-    $_SESSION['PENDING_ORDER'][$orderTempId] = [
-        'FIELDS' => [
-            'email' => $email,
-            'phone' => $phone,
-            'name' => $name,
-            'surname' => $surname,
-            'comment' => $comment,
-            'siteId' => $siteId,
-            'fUserId' => $fUserId,
-            'delivery' => $request['delivery'],
-            'city' => $request["city"],
-            'street' => $request["street"],
-            'dom' => $request["dom"],
-            'kvartira' => $request["kvartira"],
-            'bonusPoints' => empty($bonusPointsWithdraw) ? $bonusPoints : 0,
-            'promocode' => $promo,
-            'utmSource' => $utmSource,
-            'utmCampaign' => $utmCampaign,
-            'utmPartner' => $utmPartner,
+    $fields = [
+        'email' => $email,
+        'phone' => $phone,
+        'name' => $name,
+        'surname' => $surname,
+        'comment' => $comment,
+        'siteId' => $siteId,
+        'fUserId' => $fUserId,
+        'delivery' => $request['delivery'],
+        'city' => $request["city"],
+        'street' => $request["street"],
+        'dom' => $request["dom"],
+        'kvartira' => $request["kvartira"],
+        'bonusPoints' => empty($bonusPointsWithdraw) ? $bonusPoints : 0,
+        'promocode' => $promo,
+        'utmSource' => $utmSource,
+        'utmCampaign' => $utmCampaign,
+        'utmPartner' => $utmPartner,
 
-            'cdek' => $request['cdek'],
-            'city_cdek' => $request['city_cdek'],
-            'city_code_cdek' => $request['city_code_cdek'],
-            'tariff_cdek' => $request['tariff_cdek'],
-            'address_cdek' => $request['address_cdek'],
-            'pvz_code_cdek' => $request['pvz_code_cdek'],
-            'postal_code_cdek' => $request['postal_code_cdek'],
-            'deliveryPrice' => $deliveryPrice,
-        ]
+        'cdek' => $request['cdek'],
+        'city_cdek' => $request['city_cdek'],
+        'city_code_cdek' => $request['city_code_cdek'],
+        'tariff_cdek' => $request['tariff_cdek'],
+        'address_cdek' => $request['address_cdek'],
+        'pvz_code_cdek' => $request['pvz_code_cdek'],
+        'postal_code_cdek' => $request['postal_code_cdek'],
+        'deliveryPrice' => $deliveryPrice,
     ];
+    try {
+        setHLData(
+            'PendingPayments',
+            [
+                'UF_ORDER_ID' => $orderTempId,
+                'UF_DATA' => json_encode($fields, JSON_UNESCAPED_UNICODE),
+                'UF_STATUS' => 'NEW',
+                'UF_CREATED' => date('d.m.Y H:i:s'),
+            ]
+        );
+    } catch (Exception $e) {
+        header('Content-Type: application/json');
+
+        echo json_encode([
+            'status' => 'error',
+            'message' => $e->getMessage(),
+        ]);
+
+        exit();
+    }
 
     header('Content-Type: application/json');
 
@@ -291,135 +299,3 @@ if ($request["payment"] === 'card_') {
 
     exit();
 }
-/**
-вырезали из-за ненадобности
-// =========================================
-// === Вариант 2: Другие оплаты (создаём заказ сразу) ===
-// =========================================
-
-// Доставка
-$shipmentCollection = $order->getShipmentCollection();
-$shipment = $shipmentCollection->createItem();
-$service = Delivery\Services\Manager::getById($request["delivery"]);
-$shipment->setFields([
-    'DELIVERY_ID' => $service['ID'],
-    'DELIVERY_NAME' => $service['NAME'],
-    'BASE_PRICE_DELIVERY' => $deliveryPrice,
-    'PRICE_DELIVERY' => $deliveryPrice,
-    'CUSTOM_PRICE_DELIVERY' => 'Y',
-]);
-
-// Оплата
-$paymentCollection = $order->getPaymentCollection();
-$paySystemService = PaySystem\Manager::getObjectById(1);
-if ($bonusPointsWithdraw > 0) {
-    // Первый платеж - бонусные баллы
-    $payment = $paymentCollection->createItem();
-    $payment->setFields([
-        'PAY_SYSTEM_ID' => 6,
-        'PAY_SYSTEM_NAME' => PaySystem\Manager::getObjectById(6)->getField("NAME"),
-        'SUM' => $bonusPointsWithdraw,
-    ]);
-    $payment->setField('PAID', 'Y');
-    // Второй платеж
-    $remainingSum = $order->getPrice() - $bonusPointsWithdraw;
-    if ($remainingSum > 0) {
-        $newPayment = $paymentCollection->createItem();
-        $newPayment->setFields([
-            'PAY_SYSTEM_ID' => 1,
-            'PAY_SYSTEM_NAME' => PaySystem\Manager::getObjectById(1)->getField("NAME"),
-            'SUM' => $remainingSum,
-        ]);
-    }
-} else {
-    // Единый платеж
-    $payment = $paymentCollection->createItem();
-    $payment->setFields([
-        'PAY_SYSTEM_ID' => 1,
-        'PAY_SYSTEM_NAME' => PaySystem\Manager::getObjectById(1)->getField("NAME"),
-        'SUM' => $order->getPrice(),
-    ]);
-}
-
-// Заполняем свойства
-$propertyCollection = $order->getPropertyCollection();
-$propertyCollection->getItemByOrderPropertyCode('EMAIL')->setValue($email);
-$propertyCollection->getItemByOrderPropertyCode('PHONE')->setValue($phone);
-$propertyCollection->getItemByOrderPropertyCode('NAME')->setValue($name);
-$propertyCollection->getItemByOrderPropertyCode('SURNAME')->setValue($surname);
-$propertyCollection->getItemByOrderPropertyCode('CITY')->setValue($city);
-$propertyCollection->getItemByOrderPropertyCode('STREET')->setValue($street);
-$propertyCollection->getItemByOrderPropertyCode('HOUSE')->setValue($dom);
-$propertyCollection->getItemByOrderPropertyCode('APARTMENT')->setValue($kvartira);
-$propertyCollection->getItemByOrderPropertyCode('BONUS')->setValue(empty($bonusPointsWithdraw) ? $bonusPoints : 0);
-
-$propertyCollection->getItemByOrderPropertyCode('UTM_SOURCE')->setValue($utmSource);
-$propertyCollection->getItemByOrderPropertyCode('UTM_CAMPAIGN')->setValue($utmCampaign);
-$propertyCollection->getItemByOrderPropertyCode('UTM_PARTNER')->setValue($utmPartner);
-
-$propertyCollection->getItemByOrderPropertyCode('ADDRESS')->setValue($address_cdek);
-
-$order->doFinalAction(true);
-
-
-$orderId = $order->getId();
-
-// =========================
-// СОЗДАЁМ СДЭК
-// =========================
-if ($cdek === 'Y') {
-
-    $cdekOrderData = [
-        'order_number' => $orderId. '-' . time(),
-        'tariff_code' => $tariff_cdek,
-        'recipient_name' => $surname . ' ' . $name,
-        'recipient_phone' => $phone,
-
-        'weight' => 1000,
-
-        'items' => [
-            [
-                'name' => 'Товар из заказа #' . $orderId. '-' . time(),
-                'ware_key' => 'BX-' . $orderId,
-                'amount' => 1,
-                'cost' => $basket->getPrice(),
-                'weight' => 1200,
-                'payment' => [
-                    'value' => 0,
-                ],
-            ],
-        ],
-    ];
-
-    if (!empty($pvz_code_cdek)) {
-        $cdekOrderData['pvz_code'] = $pvz_code_cdek;
-    } else {
-        $cdekOrderData['to_location'] = [
-            'city' => $city_cdek,
-            'address' => $address_cdek,
-            'postal_code' => $postal_code_cdek,
-        ];
-    }
-
-    $cdekResult = createCdekOrder($cdekOrderData);
-
-
-    // =========================
-    // СОХРАНЯЕМ UUID В ЗАКАЗ
-    // =========================
-    $propertyCollection = $order->getPropertyCollection();
-    $cdekProp = $propertyCollection->getItemByOrderPropertyCode('CDEK_UUID');
-    $cdekProp->setValue($cdekResult['entity']['uuid']);
-}
-$result = $order->save();
-
-
-header('Content-Type: application/json');
-if ($result->isSuccess()) {
-    echo json_encode(['status' => 'success', 'message' => 'Заказ успешно создан']);
-} else {
-    echo json_encode(['status' => 'error', 'message' => 'Ошибка сохранения заказа']);
-}
-
-
- */
