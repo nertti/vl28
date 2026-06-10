@@ -15,9 +15,11 @@ Loader::includeModule('highloadblock');
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/ajax/cdek/create_cdek_order.php';
 
+
 $context = Application::getInstance()->getContext();
 $request = $context->getRequest();
 $postData = $request->getPostList()->toArray();
+
 
 $orderTempId = $postData['orderid'] ?? '';
 $paymentId = $postData['invoice_id'] ?? '';
@@ -52,23 +54,19 @@ if ($pendingOrder['UF_STATUS'] === 'PAID') {
     die('OK');
 }
 
-$data = json_decode($pendingOrder['UF_DATA'], true);
+$fields = json_decode($pendingOrder['UF_DATA'], true);
 
-if (empty($data['FIELDS'])) {
+if (empty($fields)) {
     http_response_code(500);
     die('ORDER_DATA_EMPTY');
 }
-
-$fields = $data['FIELDS'];
 
 global $USER;
 
 $siteId = $fields['siteId'];
 $fUserId = $fields['fUserId'];
 
-$userId = $USER->IsAuthorized()
-    ? $USER->GetID()
-    : 44;
+$userId = $pendingOrder['UF_USER_ID'];
 
 /**
  * Корзина
@@ -103,6 +101,15 @@ $order->doFinalAction(true);
 $shipmentCollection = $order->getShipmentCollection();
 
 $shipment = $shipmentCollection->createItem();
+
+$shipmentItemCollection = $shipment->getShipmentItemCollection();
+
+foreach ($basket as $basketItem) {
+
+    $shipmentItem = $shipmentItemCollection->createItem($basketItem);
+
+    $shipmentItem->setQuantity($basketItem->getQuantity());
+}
 
 $service = Delivery\Services\Manager::getById(
     $fields['delivery'] ?? 1

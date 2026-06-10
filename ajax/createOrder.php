@@ -207,15 +207,15 @@ if ($request["payment"] === 'card') {
 // =========================================
 if ($request["payment"] === 'card_') {
     require_once $_SERVER["DOCUMENT_ROOT"] . '/local/php_interface/include/alfa_auth.php';
+
     $payKeeper = new PayKeeper(
-        'https://vl28.server.paykeeper.ru',
+        'vl28.server.paykeeper.ru',
         $login,
         $password
     );
     $orderTempId = uniqid('vl28_', true);
-    try {
-        $token = $payKeeper->getToken();
 
+    try {
         $resultData = $payKeeper->createInvoice([
             'pay_amount' => number_format($totalPrice, 2, '.', ''),
             'clientid' => trim($surname . ' ' . $name),
@@ -272,6 +272,7 @@ if ($request["payment"] === 'card_') {
             'PendingPayments',
             [
                 'UF_ORDER_ID' => $orderTempId,
+                'UF_USER_ID' => $USER->GetID() ?: 44,
                 'UF_DATA' => json_encode($fields, JSON_UNESCAPED_UNICODE),
                 'UF_STATUS' => 'NEW',
                 'UF_CREATED' => date('d.m.Y H:i:s'),
@@ -295,6 +296,7 @@ if ($request["payment"] === 'card_') {
         'message' => 'Перенаправление на оплату',
         'pay_url' => $payUrl,
         'tmp_order_id' => $orderTempId,
+        'token' => $token,
     ]);
 
     exit();
