@@ -8,6 +8,7 @@ use Bitrix\Sale\Basket;
 use Bitrix\Sale\Order;
 use Bitrix\Sale\Delivery;
 use Bitrix\Sale\PaySystem;
+use Bitrix\Sale\DiscountCouponsManager;
 
 Loader::includeModule('sale');
 Loader::includeModule('catalog');
@@ -80,7 +81,11 @@ if ($basket->isEmpty()) {
     http_response_code(500);
     die('BASKET_EMPTY');
 }
-
+DiscountCouponsManager::clear(true);
+if (!empty($fields['promocode'])) {
+    DiscountCouponsManager::add($fields['promocode']);
+    $basket->refreshData(['PRICE', 'COUPONS']);
+}
 /**
  * Создание заказа
  */
