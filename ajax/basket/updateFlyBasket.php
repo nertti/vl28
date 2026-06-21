@@ -96,7 +96,13 @@ foreach ($basket as $item) {
                         </div>
                         <p class="cart-modal__price"><?= number_format($basketItem->getFinalPrice(), 0, '', ' ') ?>
                             ₽</p>
-                        <a href="#" class="cart-modal__remove">Убрать из корзины</a>
+                        <a href="#"
+                           class="cart-modal__remove"
+                           data-product-id="<?= $basketItem->getProductId() ?>"
+                           data-name="<?= htmlspecialcharsbx($product['NAME']) ?>"
+                           data-image="<?= CFile::GetPath($product['PREVIEW_PICTURE']) ?>">
+                            Убрать из корзины
+                        </a>
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -108,6 +114,148 @@ foreach ($basket as $item) {
             </div>
             <a href="/cart/" class="border-btn">Перейти в корзину</a>
             <a href="/cart/order/" class="black-btn">Оформить заказ</a>
+        </div>
+    </div>
+
+<script>
+    function updateHeaderBasketCountFly(count) {
+        const cartLinks = document.querySelectorAll('.header__cart');
+        if (!cartLinks.length) {
+            return;
+        }
+        cartLinks.forEach(cartLink => {
+            let counter = cartLink.querySelector('.header__cart-count');
+            if (count <= 0) {
+                if (counter) {
+                    counter.remove();
+                }
+                return;
+            }
+
+            if (!counter) {
+                counter = document.createElement('span');
+                counter.className = 'header__cart-count';
+                cartLink.appendChild(counter);
+            }
+            counter.textContent = count;
+        });
+    }
+
+    document.addEventListener('click', async function (e) {
+
+        const button = e.target.closest('.cart-modal__remove');
+
+        if (!button) {
+            return;
+        }
+
+        e.preventDefault();
+
+        try {
+
+            const response = await fetch('/ajax/basket/delFromBasket.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                },
+                body: new URLSearchParams({
+                    PRODUCT_ID: button.dataset.productId
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.status !== 'success') {
+                alert('Ошибка удаления товара');
+                return;
+            }
+
+            const item = button.closest('.cart-modal__item');
+
+            // Обновляем счетчик товаров
+            const countBlock = document.querySelector('.cart-modal__count');
+            updateHeaderBasketCountFly(result.count);
+            if (countBlock) {
+                countBlock.textContent = `Ваш выбор (${result.count})`;
+            }
+
+            // Обновляем сумму
+            const totalPrice = document.querySelector('.cart-modal__total p:last-child');
+            if (totalPrice) {
+                totalPrice.textContent =
+                    Number(result.sum).toLocaleString('ru-RU') + ' ₽';
+            }
+
+            // Обновляем счетчик в шапке
+            const headerCounter = document.querySelector('.header__cart-count');
+            if (headerCounter) {
+                headerCounter.textContent = result.count;
+            }
+
+            // Заполняем модалку
+            const modalName = document.getElementById('removeBasketModalName');
+            const modalImage = document.getElementById('removeBasketModalImage');
+
+            if (modalName) {
+                modalName.textContent = button.dataset.name;
+            }
+
+            if (modalImage) {
+                modalImage.src = button.dataset.image;
+                modalImage.alt = button.dataset.name;
+            }
+
+            // Удаляем элемент из списка
+            item.remove();
+
+            // Если корзина пустая
+            if (result.count <= 0) {
+
+                const cartModal = document.querySelector('.cart-modal');
+
+                if (cartModal) {
+                    cartModal.innerHTML = `
+                    <div class="cart__inner">
+                        <div class="cart__list">
+                            <span class="bx-sbb-empty-cart-image"></span>
+                            <span class="bx-sbb-empty-cart-text">Ваша корзина пуста</span>
+                            <a href="/catalog/" class="bx-sbb-empty-cart-desc">В каталог</a>
+                        </div>
+                    </div>
+                `;
+                }
+            }
+
+            // Открываем HystModal
+            if (window.hystModal) {
+                hystModal.open('#removeBasketModal');
+            }
+
+        } catch (error) {
+            console.error(error);
+            alert('Ошибка соединения с сервером');
+        }
+
+    });
+</script>
+
+    <div class="hystmodal" id="removeBasketModal" aria-hidden="true">
+        <div class="hystmodal__wrap">
+            <div class="hystmodal__window hystmodal__window_subscribe" role="dialog" aria-modal="true">
+                <button data-hystclose class="hystmodal__close"></button>
+
+                <div class="thanks thanks-product">
+                    <div class="thanks-product__image">
+                        <img src="" alt="" id="removeBasketModalImage">
+                    </div>
+
+                    <p class="h2">Товар удалён из корзины!</p>
+
+                    <p class="thanks-product__name" id="removeBasketModalName"></p>
+
+                    <a href="/cart/">Перейти в корзину</a>
+                </div>
+            </div>
         </div>
     </div>
 <?php else: ?>
