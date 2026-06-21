@@ -138,7 +138,12 @@ $order->doFinalAction(true);
                                     <span>Товар уже в избранном</span>
                                 <?php endif; ?>
                             </div>
-                            <a href="#" class="cart__remove pointer"></a>
+                            <a href="#"
+                               class="cart__remove pointer"
+                               data-product-id="<?= $basketItem->getProductId() ?>"
+                               data-name="<?= htmlspecialcharsbx($product['NAME']) ?>"
+                               data-image="<?= CFile::GetPath($product['PREVIEW_PICTURE']) ?>">
+                            </a>
                         </div>
                     <?php endforeach; ?>
                 </div>
@@ -148,44 +153,91 @@ $order->doFinalAction(true);
         </div>
     </section>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const deleteBtn = document.querySelectorAll('.cart__remove');
-            deleteBtn.forEach(element => {
-                element.addEventListener('click', handleDelete);
-            });
+        document.addEventListener('click', async function (e) {
 
-            // Удаление товаров в корзине
-            function handleDelete(event) {
-                setTimeout(() => {
-                    const wrapperProduct = event.target.closest('.cart__item');
-                    const siteId = '<?=$siteId?>';
-                    const fUserId = '<?=$fUserId?>';
-                    fetch('/ajax/orderProductDelete.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            id: wrapperProduct.id,    // ID товара в корзине
-                            siteId: siteId,
-                            fUserId: fUserId,
-                        })
+            const button = e.target.closest('.cart__remove');
+
+            if (!button) {
+                return;
+            }
+
+            e.preventDefault();
+
+            const productItem = button.closest('.cart__item');
+
+            try {
+
+                const response = await fetch('/ajax/basket/delFromBasket.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                    },
+                    body: new URLSearchParams({
+                        PRODUCT_ID: button.dataset.productId
                     })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.status === 'error') {
+                });
 
-                            } else {
-                                wrapperProduct.style.display = 'none';
-                                if (data.count === 0) {
-                                    location.reload();
-                                }
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Ошибка при авторизации:', error);
-                        });
-                }, 1);
+                const result = await response.json();
+
+                if (result.status !== 'success') {
+                    alert('Ошибка удаления товара');
+                    return;
+                }
+
+                // Удаляем карточку
+                productItem.remove();
+
+                // Показываем модалку удаления
+                const modalName = document.getElementById('removeBasketModalName');
+                const modalImage = document.getElementById('removeBasketModalImage');
+
+                if (modalName) {
+                    modalName.textContent = button.dataset.name;
+                }
+
+                if (modalImage) {
+                    modalImage.src = button.dataset.image;
+                    modalImage.alt = button.dataset.name;
+                }
+
+                if (window.hystModal) {
+                    hystModal.open('#removeBasketModal');
+                }
+
+                // Если корзина пустая
+                if (result.count <= 0) {
+
+                    const cartList = document.querySelector('.cart__list');
+
+                    cartList.innerHTML = `
+                <span class="bx-sbb-empty-cart-image"></span>
+                <span class="bx-sbb-empty-cart-text">Ваша корзина пуста</span>
+                <a href="/catalog/" class="bx-sbb-empty-cart-desc">В каталог</a>
+            `;
+                    const orderButton = document.querySelector('.black-btn');
+
+                    if (orderButton) {
+                        orderButton.remove();
+                    }
+                }
+
+                // Обновляем счетчик в шапке
+                const headerCounter = document.querySelector('.header__cart-count');
+
+                if (headerCounter) {
+                    headerCounter.textContent = result.count;
+                }
+
+                // Обновляем плавающую корзину если она открыта
+                const modalCounter = document.querySelector('.cart-modal__count');
+
+                if (modalCounter) {
+                    modalCounter.textContent = `Ваш выбор (${result.count})`;
+                }
+
+            } catch (error) {
+                console.error(error);
+                alert('Ошибка соединения с сервером');
             }
         });
     </script>
