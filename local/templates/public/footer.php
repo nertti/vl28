@@ -14,87 +14,87 @@ use Bitrix\Main\Page\Asset;
         <nav class="footer__nav">
             <ul class="footer__list">
                 <?php $APPLICATION->IncludeComponent("bitrix:menu", "bottom", array(
-                    "ALLOW_MULTI_SELECT" => "N",    // Разрешить несколько активных пунктов одновременно
-                    "CHILD_MENU_TYPE" => "left",    // Тип меню для остальных уровней
-                    "COMPONENT_TEMPLATE" => "bottom",
-                    "DELAY" => "N",    // Откладывать выполнение шаблона меню
-                    "MAX_LEVEL" => "1",    // Уровень вложенности меню
-                    "MENU_CACHE_GET_VARS" => "",    // Значимые переменные запроса
-                    "MENU_CACHE_TIME" => "3600",    // Время кеширования (сек.)
-                    "MENU_CACHE_TYPE" => "Y",    // Тип кеширования
-                    "MENU_CACHE_USE_GROUPS" => "Y",    // Учитывать права доступа
-                    "ROOT_MENU_TYPE" => "bottom",    // Тип меню для первого уровня
-                    "USE_EXT" => "Y",    // Подключать файлы с именами вида .тип_меню.menu_ext.php
+                        "ALLOW_MULTI_SELECT" => "N",    // Разрешить несколько активных пунктов одновременно
+                        "CHILD_MENU_TYPE" => "left",    // Тип меню для остальных уровней
+                        "COMPONENT_TEMPLATE" => "bottom",
+                        "DELAY" => "N",    // Откладывать выполнение шаблона меню
+                        "MAX_LEVEL" => "1",    // Уровень вложенности меню
+                        "MENU_CACHE_GET_VARS" => "",    // Значимые переменные запроса
+                        "MENU_CACHE_TIME" => "3600",    // Время кеширования (сек.)
+                        "MENU_CACHE_TYPE" => "Y",    // Тип кеширования
+                        "MENU_CACHE_USE_GROUPS" => "Y",    // Учитывать права доступа
+                        "ROOT_MENU_TYPE" => "bottom",    // Тип меню для первого уровня
+                        "USE_EXT" => "Y",    // Подключать файлы с именами вида .тип_меню.menu_ext.php
                 ),
-                    false
+                        false
                 ); ?>
             </ul>
             <ul class="footer__list">
                 <?php $APPLICATION->IncludeComponent("bitrix:menu", "bottom", array(
-                    "ALLOW_MULTI_SELECT" => "N",    // Разрешить несколько активных пунктов одновременно
-                    "CHILD_MENU_TYPE" => "left",    // Тип меню для остальных уровней
-                    "COMPONENT_TEMPLATE" => "bottom",
-                    "DELAY" => "N",    // Откладывать выполнение шаблона меню
-                    "MAX_LEVEL" => "1",    // Уровень вложенности меню
-                    "MENU_CACHE_GET_VARS" => "",    // Значимые переменные запроса
-                    "MENU_CACHE_TIME" => "3600",    // Время кеширования (сек.)
-                    "MENU_CACHE_TYPE" => "Y",    // Тип кеширования
-                    "MENU_CACHE_USE_GROUPS" => "Y",    // Учитывать права доступа
-                    "ROOT_MENU_TYPE" => "bottom1",    // Тип меню для первого уровня
-                    "USE_EXT" => "N",    // Подключать файлы с именами вида .тип_меню.menu_ext.php
+                        "ALLOW_MULTI_SELECT" => "N",    // Разрешить несколько активных пунктов одновременно
+                        "CHILD_MENU_TYPE" => "left",    // Тип меню для остальных уровней
+                        "COMPONENT_TEMPLATE" => "bottom",
+                        "DELAY" => "N",    // Откладывать выполнение шаблона меню
+                        "MAX_LEVEL" => "1",    // Уровень вложенности меню
+                        "MENU_CACHE_GET_VARS" => "",    // Значимые переменные запроса
+                        "MENU_CACHE_TIME" => "3600",    // Время кеширования (сек.)
+                        "MENU_CACHE_TYPE" => "Y",    // Тип кеширования
+                        "MENU_CACHE_USE_GROUPS" => "Y",    // Учитывать права доступа
+                        "ROOT_MENU_TYPE" => "bottom1",    // Тип меню для первого уровня
+                        "USE_EXT" => "N",    // Подключать файлы с именами вида .тип_меню.menu_ext.php
                 ),
-                    false
+                        false
                 ); ?>
             </ul>
             <ul class="footer__list">
                 <?php $APPLICATION->IncludeComponent("bitrix:menu", "bottom", array(
-                    "ALLOW_MULTI_SELECT" => "N",    // Разрешить несколько активных пунктов одновременно
-                    "CHILD_MENU_TYPE" => "left",    // Тип меню для остальных уровней
-                    "COMPONENT_TEMPLATE" => "bottom",
-                    "DELAY" => "N",    // Откладывать выполнение шаблона меню
-                    "MAX_LEVEL" => "1",    // Уровень вложенности меню
-                    "MENU_CACHE_GET_VARS" => "",    // Значимые переменные запроса
-                    "MENU_CACHE_TIME" => "3600",    // Время кеширования (сек.)
-                    "MENU_CACHE_TYPE" => "Y",    // Тип кеширования
-                    "MENU_CACHE_USE_GROUPS" => "Y",    // Учитывать права доступа
-                    "ROOT_MENU_TYPE" => "bottom2",    // Тип меню для первого уровня
-                    "USE_EXT" => "N",    // Подключать файлы с именами вида .тип_меню.menu_ext.php
+                        "ALLOW_MULTI_SELECT" => "N",    // Разрешить несколько активных пунктов одновременно
+                        "CHILD_MENU_TYPE" => "left",    // Тип меню для остальных уровней
+                        "COMPONENT_TEMPLATE" => "bottom",
+                        "DELAY" => "N",    // Откладывать выполнение шаблона меню
+                        "MAX_LEVEL" => "1",    // Уровень вложенности меню
+                        "MENU_CACHE_GET_VARS" => "",    // Значимые переменные запроса
+                        "MENU_CACHE_TIME" => "3600",    // Время кеширования (сек.)
+                        "MENU_CACHE_TYPE" => "Y",    // Тип кеширования
+                        "MENU_CACHE_USE_GROUPS" => "Y",    // Учитывать права доступа
+                        "ROOT_MENU_TYPE" => "bottom2",    // Тип меню для первого уровня
+                        "USE_EXT" => "N",    // Подключать файлы с именами вида .тип_меню.menu_ext.php
                 ),
-                    false
+                        false
                 ); ?>
             </ul>
             <ul class="footer__list">
                 <?php $APPLICATION->IncludeComponent("bitrix:menu", "bottom", array(
-                    "ALLOW_MULTI_SELECT" => "N",    // Разрешить несколько активных пунктов одновременно
-                    "CHILD_MENU_TYPE" => "left",    // Тип меню для остальных уровней
-                    "COMPONENT_TEMPLATE" => "bottom",
-                    "DELAY" => "N",    // Откладывать выполнение шаблона меню
-                    "MAX_LEVEL" => "1",    // Уровень вложенности меню
-                    "MENU_CACHE_GET_VARS" => "",    // Значимые переменные запроса
-                    "MENU_CACHE_TIME" => "3600",    // Время кеширования (сек.)
-                    "MENU_CACHE_TYPE" => "Y",    // Тип кеширования
-                    "MENU_CACHE_USE_GROUPS" => "Y",    // Учитывать права доступа
-                    "ROOT_MENU_TYPE" => "bottom3",    // Тип меню для первого уровня
-                    "USE_EXT" => "N",    // Подключать файлы с именами вида .тип_меню.menu_ext.php
+                        "ALLOW_MULTI_SELECT" => "N",    // Разрешить несколько активных пунктов одновременно
+                        "CHILD_MENU_TYPE" => "left",    // Тип меню для остальных уровней
+                        "COMPONENT_TEMPLATE" => "bottom",
+                        "DELAY" => "N",    // Откладывать выполнение шаблона меню
+                        "MAX_LEVEL" => "1",    // Уровень вложенности меню
+                        "MENU_CACHE_GET_VARS" => "",    // Значимые переменные запроса
+                        "MENU_CACHE_TIME" => "3600",    // Время кеширования (сек.)
+                        "MENU_CACHE_TYPE" => "Y",    // Тип кеширования
+                        "MENU_CACHE_USE_GROUPS" => "Y",    // Учитывать права доступа
+                        "ROOT_MENU_TYPE" => "bottom3",    // Тип меню для первого уровня
+                        "USE_EXT" => "N",    // Подключать файлы с именами вида .тип_меню.menu_ext.php
                 ),
-                    false
+                        false
                 ); ?>
             </ul>
             <ul class="footer__list">
                 <?php $APPLICATION->IncludeComponent("bitrix:menu", "bottom", array(
-                    "ALLOW_MULTI_SELECT" => "N",    // Разрешить несколько активных пунктов одновременно
-                    "CHILD_MENU_TYPE" => "left",    // Тип меню для остальных уровней
-                    "COMPONENT_TEMPLATE" => "bottom",
-                    "DELAY" => "N",    // Откладывать выполнение шаблона меню
-                    "MAX_LEVEL" => "1",    // Уровень вложенности меню
-                    "MENU_CACHE_GET_VARS" => "",    // Значимые переменные запроса
-                    "MENU_CACHE_TIME" => "3600",    // Время кеширования (сек.)
-                    "MENU_CACHE_TYPE" => "Y",    // Тип кеширования
-                    "MENU_CACHE_USE_GROUPS" => "Y",    // Учитывать права доступа
-                    "ROOT_MENU_TYPE" => "bottom4",    // Тип меню для первого уровня
-                    "USE_EXT" => "N",    // Подключать файлы с именами вида .тип_меню.menu_ext.php
+                        "ALLOW_MULTI_SELECT" => "N",    // Разрешить несколько активных пунктов одновременно
+                        "CHILD_MENU_TYPE" => "left",    // Тип меню для остальных уровней
+                        "COMPONENT_TEMPLATE" => "bottom",
+                        "DELAY" => "N",    // Откладывать выполнение шаблона меню
+                        "MAX_LEVEL" => "1",    // Уровень вложенности меню
+                        "MENU_CACHE_GET_VARS" => "",    // Значимые переменные запроса
+                        "MENU_CACHE_TIME" => "3600",    // Время кеширования (сек.)
+                        "MENU_CACHE_TYPE" => "Y",    // Тип кеширования
+                        "MENU_CACHE_USE_GROUPS" => "Y",    // Учитывать права доступа
+                        "ROOT_MENU_TYPE" => "bottom4",    // Тип меню для первого уровня
+                        "USE_EXT" => "N",    // Подключать файлы с именами вида .тип_меню.menu_ext.php
                 ),
-                    false
+                        false
                 ); ?>
             </ul>
         </nav>
@@ -284,7 +284,8 @@ use Bitrix\Main\Page\Asset;
             <div class="thanks" style="flex-direction: column">
                 <p class="h3">Вы уверены, что хотите выйти?</p>
                 <div class="" style="display: flex; justify-content: space-around;width: 100%;max-width: 250px;">
-                    <a href="/?logout=yes&<?=bitrix_sessid_get()?>" class="account__link account__link_out">Выйти из аккаунта</a>
+                    <a href="/?logout=yes&<?= bitrix_sessid_get() ?>" class="account__link account__link_out">Выйти из
+                        аккаунта</a>
                     <a href="" data-hystclose="" class="account__link account__link_out">Отмена</a>
                 </div>
             </div>
@@ -293,52 +294,69 @@ use Bitrix\Main\Page\Asset;
 </div>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
-    (function(m,e,t,r,i,k,a){
-        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-        m[i].l=1*new Date();
-        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=107293027', 'ym');
+    (function (m, e, t, r, i, k, a) {
+        m[i] = m[i] || function () {
+            (m[i].a = m[i].a || []).push(arguments)
+        };
+        m[i].l = 1 * new Date();
+        for (var j = 0; j < document.scripts.length; j++) {
+            if (document.scripts[j].src === r) {
+                return;
+            }
+        }
+        k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k, a)
+    })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js?id=107293027', 'ym');
 
-    ym(107293027, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+    ym(107293027, 'init', {
+        ssr: true,
+        webvisor: true,
+        clickmap: true,
+        ecommerce: "dataLayer",
+        referrer: document.referrer,
+        url: location.href,
+        accurateTrackBounce: true,
+        trackLinks: true
+    });
 </script>
-<noscript><div><img src="https://mc.yandex.ru/watch/107293027" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/107293027" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript>
 <!-- /Yandex.Metrika counter -->
 <?php $APPLICATION->IncludeFile(
-    "/include/footer/flat-cart.php",
-    array(),
-    array(
-        "MODE" => "text"
-    )
+        "/include/footer/flat-cart.php",
+        array(),
+        array(
+                "MODE" => "text"
+        )
 ); ?>
 <?php $APPLICATION->IncludeFile(
-    "/include/footer/loyalModal.php",
-    array(),
-    array(
-        "MODE" => "text"
-    )
+        "/include/footer/loyalModal.php",
+        array(),
+        array(
+                "MODE" => "text"
+        )
 ); ?>
 
 <?php $APPLICATION->IncludeFile(
-    "/include/footer/cookies.php",
-    array(),
-    array(
-        "MODE" => "text"
-    )
+        "/include/footer/cookies.php",
+        array(),
+        array(
+                "MODE" => "text"
+        )
 ); ?>
 <?php $APPLICATION->IncludeFile(
-    "/include/footer/preloader.php",
-    array(),
-    array(
-        "MODE" => "text"
-    )
+        "/include/footer/preloader.php",
+        array(),
+        array(
+                "MODE" => "text"
+        )
 ); ?>
 <?php $APPLICATION->IncludeFile(
-    "/include/footer/inc.php",
-    array(),
-    array(
-        "MODE" => "text"
-    )
+        "/include/footer/inc.php",
+        array(),
+        array(
+                "MODE" => "text"
+        )
 ); ?>
 <?php
 Asset::getInstance()->addJs(SITE_TEMPLATE_PATH . '/assets/js/jquery-3.7.1.min.js');
@@ -347,9 +365,6 @@ Asset::getInstance()->addJs(SITE_TEMPLATE_PATH . '/assets/js/swiper-bundle.min.j
 Asset::getInstance()->addJs(SITE_TEMPLATE_PATH . '/assets/js/mask.js');
 Asset::getInstance()->addJs(SITE_TEMPLATE_PATH . '/assets/js/main.js');
 
-Asset::getInstance()->addJs(SITE_TEMPLATE_PATH . '/include/footer/script.js');
 ?>
-<script src="/include/footer/script.js"></script>
-<!--<button class="hystmodal__shadow"></button>-->
 </body>
 </html>

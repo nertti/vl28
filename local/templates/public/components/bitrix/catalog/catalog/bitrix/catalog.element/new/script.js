@@ -45,6 +45,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 
+/* добавление в корзину */
 document.addEventListener('DOMContentLoaded', function () {
 
     const addToBasket = document.querySelector('#addToBasket');
@@ -96,22 +97,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
         data.append('PRODUCT_ID', currentOfferId);
 
-        fetch('/ajax/addInBasket.php', {
+        fetch('/ajax/basket/addInBasket.php', {
             method: 'POST',
             body: data
         })
             .then(response => response.json())
-            .then(result => {
+            .then(async result => {
 
                 if (result.status === 'error') {
 
                     basketModal.open('#errorBasketModal');
 
                 } else {
-
+                    updateHeaderBasketCount(result.count);
+                    await refreshCartModal();
                     basketModal.open('#addBasketModal');
-
-                    updateBasketCounter(result.count);
                 }
 
             })
@@ -136,21 +136,6 @@ document.addEventListener('DOMContentLoaded', function () {
     `;
             });
     }
-
-    function updateBasketCounter(count) {
-
-        const basketCounter =
-            document.querySelector('#basket .col');
-
-        if (!basketCounter) {
-            return;
-        }
-
-        if (count !== undefined) {
-            basketCounter.textContent = count;
-        }
-    }
-
 });
 
 
@@ -243,4 +228,36 @@ function updateFavoriteCounter(count) {
     }
 
     counter.textContent = count;
+}
+
+
+async function refreshCartModal() {
+
+    const response = await fetch('/ajax/basket/updateFlyBasket.php');
+    const html = await response.text();
+
+    document.getElementById('cartModalContent').innerHTML = html;
+}
+
+function updateHeaderBasketCount(count) {
+    const cartLinks = document.querySelectorAll('.header__cart');
+    if (!cartLinks.length) {
+        return;
+    }
+    cartLinks.forEach(cartLink => {
+        let counter = cartLink.querySelector('.header__cart-count');
+        if (count <= 0) {
+            if (counter) {
+                counter.remove();
+            }
+            return;
+        }
+
+        if (!counter) {
+            counter = document.createElement('span');
+            counter.className = 'header__cart-count';
+            cartLink.appendChild(counter);
+        }
+        counter.textContent = count;
+    });
 }
