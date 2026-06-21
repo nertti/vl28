@@ -107,7 +107,7 @@ input[type=number] {
 }
 body {
   font-weight:400;
-  font-size:16px;
+  font-size:14px;
   line-height:125%;
   font-family:"TT Hoves Pro";
   background:#fff;
@@ -126,7 +126,7 @@ body {
 }
 @media screen and (max-width:640px) {
   body {
-    font-size:12px
+    font-size:10px
   }
 }
 section {
@@ -146,11 +146,11 @@ section {
 }
 @media screen and (max-width:991px) {
   .link {
-    font-size:14px
+    font-size:12px
   }
 }
 .h2 {
-  font-size:26px;
+  font-size:22px;
   font-weight:300;
   line-height:33px;
   letter-spacing:-.02em;
@@ -159,13 +159,13 @@ section {
 @media screen and (max-width:991px) {
   .h2 {
     margin-bottom:45px;
-    font-size:20px;
+    font-size:18px;
     line-height:25px
   }
 }
 @media screen and (max-width:600px) {
   .h2 {
-    font-size:18px;
+    font-size:16px;
     margin-bottom:35px;
     line-height:23px
   }
@@ -232,7 +232,7 @@ section {
 }
 @media screen and (max-width:991px) {
   .main-btn {
-    font-size:14px
+    font-size:12px
   }
 }
 .black-btn {
@@ -429,7 +429,7 @@ section {
   -webkit-box-align:center;
   -ms-flex-align:center;
   align-items:center;
-  max-width:176px;
+  max-width:140px;
   width:100%
 }
 .logo img,
@@ -439,12 +439,12 @@ section {
 }
 @media screen and (max-width:991px) {
   .logo {
-    max-width:140px
+    max-width:120px
   }
 }
 @media screen and (max-width:600px) {
   .logo {
-    max-width:107px
+    max-width:100px
   }
 }
 @media screen and (max-width:350px) {
@@ -1313,7 +1313,7 @@ section {
   }
 }
 .hystmodal_header {
-  padding-top:80px
+  padding-top:70px
 }
 .hystmodal_header .hystmodal__window {
   width:584px
@@ -1337,7 +1337,7 @@ section {
   justify-content:flex-start
 }
 .hystmodal_menu {
-  padding-top:80px
+  padding-top:70px
 }
 .hystmodal_menu .hystmodal__window {
   width:584px;

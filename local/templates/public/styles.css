@@ -145,13 +145,30 @@ input[name="city"]:disabled {
 }
 
 .h3 {
-    font-size: 24px;
+    font-size: 18px;
     font-weight: 300;
     line-height: 33px;
     letter-spacing: -.02em;
     margin-bottom: 50px;
 }
-
+@media screen and (max-width:991px) {
+    .h3 {
+        font-size: 16px;
+        font-weight: 300;
+        line-height: 33px;
+        letter-spacing: -.02em;
+        margin-bottom: 50px;
+    }
+}
+@media screen and (max-width:600px) {
+    .h3 {
+        font-size: 14px;
+        font-weight: 300;
+        line-height: 33px;
+        letter-spacing: -.02em;
+        margin-bottom: 50px;
+    }
+}
 /*start preloader*/
 #site-preloader {
      position: fixed;
