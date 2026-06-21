@@ -1,7 +1,4 @@
-.tovar__sizes, .product-item-detail-info-section{
-	width: 100%;
-}
-.product-item-scu-item-list{
+.product-sizes{
 	display: flex;
 	justify-content: start;
 	flex-wrap: wrap;
@@ -11,12 +8,12 @@
 /*		justify-content: space-between;*/
 /*	}*/
 /*}*/
-.product-item-scu-item-text-container{
+.product-size-item{
 	margin-right: 20px;
 	cursor: pointer;
 	padding: 10px;
 }
-.product-item-scu-item-text-container.selected{
+.product-size-item.active{
 	font-weight: 500;
 	border: 1px solid black;
 }

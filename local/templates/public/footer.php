@@ -205,27 +205,6 @@ use Bitrix\Main\Page\Asset;
         </div>
     </div>
 </div>
-<div class="hystmodal" id="addFavoriteModal" aria-hidden="true">
-    <div class="hystmodal__wrap">
-        <div class="hystmodal__window hystmodal__window_subscribe" role="dialog" aria-modal="true">
-            <button data-hystclose="" class="hystmodal__close"></button>
-            <div class="thanks" style="flex-direction: column">
-                <p class="h2">Товар добавлен в Избранное!</p>
-                <a href="/profile/favorite/" class="">Всё избранное</a>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="hystmodal" id="delFavoriteModal" aria-hidden="true">
-    <div class="hystmodal__wrap">
-        <div class="hystmodal__window hystmodal__window_subscribe" role="dialog" aria-modal="true">
-            <button data-hystclose="" class="hystmodal__close"></button>
-            <div class="thanks">
-                <p class="h2">Товар удалён из Избранного!</p>
-            </div>
-        </div>
-    </div>
-</div>
 <div class="hystmodal" id="searchModal" aria-hidden="true">
     <div class="hystmodal__wrap hystmodal_search">
         <div class="hystmodal__window hystmodal__window_search" role="dialog" aria-modal="true">

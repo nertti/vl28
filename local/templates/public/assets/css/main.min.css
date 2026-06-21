@@ -1719,9 +1719,9 @@ section {
   gap:30px
 }
 .tovar__sizes {
-  display:-webkit-box;
-  display:-ms-flexbox;
-  display:flex;
+  /*display:-webkit-box;*/
+  /*display:-ms-flexbox;*/
+  /*display:flex;*/
   -webkit-box-align:center;
   -ms-flex-align:center;
   align-items:center;

@@ -759,6 +759,7 @@ foreach ($arFavorites as $favorite) {
             false
         ); ?>
     </section>
+
     <div class="bx-catalog-element bx-<?= $arParams['TEMPLATE_THEME'] ?>" id="<?= $itemIds['ID'] ?>"
          itemscope itemtype="http://schema.org/Product"
          style="display: none">
@@ -886,125 +887,7 @@ foreach ($arFavorites as $favorite) {
                 </div>
                 <div class="col-md-6 col-sm-12">
                     <div class="row">
-                        <div class="col-sm-6">
-                            <div class="product-item-detail-info-section">
-                                <?php
-                                foreach ($arParams['PRODUCT_INFO_BLOCK_ORDER'] as $blockName) {
-                                    switch ($blockName) {
-                                        case 'sku':
-                                            if ($haveOffers && !empty($arResult['OFFERS_PROP'])) {
-                                                ?>
-                                                <div id="<?= $itemIds['TREE_ID'] ?>">
-                                                    <?php
-                                                    foreach ($arResult['SKU_PROPS'] as $skuProperty) {
-                                                        if (!isset($arResult['OFFERS_PROP'][$skuProperty['CODE']]))
-                                                            continue;
 
-                                                        $propertyId = $skuProperty['ID'];
-                                                        $skuProps[] = array(
-                                                            'ID' => $propertyId,
-                                                            'SHOW_MODE' => $skuProperty['SHOW_MODE'],
-                                                            'VALUES' => $skuProperty['VALUES'],
-                                                            'VALUES_COUNT' => $skuProperty['VALUES_COUNT']
-                                                        );
-                                                        ?>
-                                                        <div class="product-item-detail-info-container"
-                                                             data-entity="sku-line-block">
-                                                            <div class="product-item-detail-info-container-title"><?= htmlspecialcharsEx($skuProperty['NAME']) ?></div>
-                                                            <div class="product-item-scu-container">
-                                                                <div class="product-item-scu-block">
-                                                                    <div class="product-item-scu-list">
-                                                                        <ul class="product-item-scu-item-list">
-                                                                            <?php
-                                                                            foreach ($skuProperty['VALUES'] as &$value) {
-                                                                                $value['NAME'] = htmlspecialcharsbx($value['NAME']);
-
-                                                                                if ($skuProperty['SHOW_MODE'] === 'PICT') {
-                                                                                    ?>
-                                                                                    <li class="product-item-scu-item-color-container"
-                                                                                        title="<?= $value['NAME'] ?>"
-                                                                                        data-treevalue="<?= $propertyId ?>_<?= $value['ID'] ?>"
-                                                                                        data-onevalue="<?= $value['ID'] ?>">
-                                                                                        <div class="product-item-scu-item-color-block">
-                                                                                            <div class="product-item-scu-item-color"
-                                                                                                 title="<?= $value['NAME'] ?>"
-                                                                                                 style="background-image: url('<?= $value['PICT']['SRC'] ?>');">
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </li>
-                                                                                    <?php
-                                                                                } else {
-                                                                                    ?>
-                                                                                    <li class="product-item-scu-item-text-container"
-                                                                                        title="<?= $value['NAME'] ?>"
-                                                                                        data-treevalue="<?= $propertyId ?>_<?= $value['ID'] ?>"
-                                                                                        data-onevalue="<?= $value['ID'] ?>">
-                                                                                        <div class="product-item-scu-item-text-block">
-                                                                                            <div class="product-item-scu-item-text"><?= $value['NAME'] ?></div>
-                                                                                        </div>
-                                                                                    </li>
-                                                                                    <?php
-                                                                                }
-                                                                            }
-                                                                            ?>
-                                                                        </ul>
-                                                                        <div style="clear: both;"></div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <?php
-                                                    }
-                                                    ?>
-                                                </div>
-                                                <?php
-                                            }
-
-                                            break;
-
-                                        case 'props':
-                                            if (!empty($arResult['DISPLAY_PROPERTIES']) || $arResult['SHOW_OFFERS_PROPS']) {
-                                                ?>
-                                                <div class="product-item-detail-info-container">
-                                                    <?php
-                                                    if (!empty($arResult['DISPLAY_PROPERTIES'])) {
-                                                        ?>
-                                                        <dl class="product-item-detail-properties">
-                                                            <?php
-                                                            foreach ($arResult['DISPLAY_PROPERTIES'] as $property) {
-                                                                if (isset($arParams['MAIN_BLOCK_PROPERTY_CODE'][$property['CODE']])) {
-                                                                    ?>
-                                                                    <dt><?= $property['NAME'] ?></dt>
-                                                                    <dd><?= (is_array($property['DISPLAY_VALUE'])
-                                                                            ? implode(' / ', $property['DISPLAY_VALUE'])
-                                                                            : $property['DISPLAY_VALUE']) ?>
-                                                                    </dd>
-                                                                    <?php
-                                                                }
-                                                            }
-                                                            unset($property);
-                                                            ?>
-                                                        </dl>
-                                                        <?php
-                                                    }
-
-                                                    if ($arResult['SHOW_OFFERS_PROPS']) {
-                                                        ?>
-                                                        <dl class="product-item-detail-properties"
-                                                            id="<?= $itemIds['DISPLAY_MAIN_PROP_DIV'] ?>"></dl>
-                                                        <?php
-                                                    }
-                                                    ?>
-                                                </div>
-                                                <?php
-                                            }
-
-                                            break;
-                                    }
-                                }
-                                ?>
-                            </div>
-                        </div>
                         <div class="col-sm-6">
                             <div class="product-item-detail-pay-block">
                                 <?php
@@ -1311,54 +1194,55 @@ foreach ($arFavorites as $favorite) {
                 </div>
             </div>
         </div>
+    </div>
 
-        <?php
-        if ($haveOffers) {
-            foreach ($arResult['JS_OFFERS'] as $offer) {
-                $currentOffersList = array();
+<?php
+if ($haveOffers) {
+    foreach ($arResult['JS_OFFERS'] as $offer) {
+        $currentOffersList = array();
 
-                if (!empty($offer['TREE']) && is_array($offer['TREE'])) {
-                    foreach ($offer['TREE'] as $propName => $skuId) {
-                        $propId = (int)mb_substr($propName, 5);
+        if (!empty($offer['TREE']) && is_array($offer['TREE'])) {
+            foreach ($offer['TREE'] as $propName => $skuId) {
+                $propId = (int)mb_substr($propName, 5);
 
-                        foreach ($skuProps as $prop) {
-                            if ($prop['ID'] == $propId) {
-                                foreach ($prop['VALUES'] as $propId => $propValue) {
-                                    if ($propId == $skuId) {
-                                        $currentOffersList[] = $propValue['NAME'];
-                                        break;
-                                    }
-                                }
+                foreach ($skuProps as $prop) {
+                    if ($prop['ID'] == $propId) {
+                        foreach ($prop['VALUES'] as $propId => $propValue) {
+                            if ($propId == $skuId) {
+                                $currentOffersList[] = $propValue['NAME'];
+                                break;
                             }
                         }
                     }
                 }
+            }
+        }
 
-                $offerPrice = $offer['ITEM_PRICES'][$offer['ITEM_PRICE_SELECTED']];
-                ?>
-                <span itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+        $offerPrice = $offer['ITEM_PRICES'][$offer['ITEM_PRICE_SELECTED']];
+        ?>
+        <span itemprop="offers" itemscope itemtype="http://schema.org/Offer">
 				<meta itemprop="sku" content="<?= htmlspecialcharsbx(implode('/', $currentOffersList)) ?>"/>
 				<meta itemprop="price" content="<?= $offerPrice['RATIO_PRICE'] ?>"/>
 				<meta itemprop="priceCurrency" content="<?= $offerPrice['CURRENCY'] ?>"/>
 				<link itemprop="availability"
                       href="http://schema.org/<?= ($offer['CAN_BUY'] ? 'InStock' : 'OutOfStock') ?>"/>
 			</span>
-                <?php
-            }
+        <?php
+    }
 
-            unset($offerPrice, $currentOffersList);
-        } else {
-            ?>
-            <span itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+    unset($offerPrice, $currentOffersList);
+} else {
+    ?>
+    <span itemprop="offers" itemscope itemtype="http://schema.org/Offer">
 			<meta itemprop="price" content="<?= $price['RATIO_PRICE'] ?>"/>
 			<meta itemprop="priceCurrency" content="<?= $price['CURRENCY'] ?>"/>
 			<link itemprop="availability"
                   href="http://schema.org/<?= ($actualItem['CAN_BUY'] ? 'InStock' : 'OutOfStock') ?>"/>
 		</span>
-            <?php
-        }
-        ?>
-    </div>
+    <?php
+}
+?>
+
     <div class="hystmodal" id="sizeModal" aria-hidden="true">
         <?php //pr($arResult['SECTION_CODE'])?>
         <div class="hystmodal__wrap">

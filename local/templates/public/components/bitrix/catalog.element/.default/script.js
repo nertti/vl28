@@ -483,7 +483,7 @@
 				this.smallCardNodes.aligner = this.getEntity(this.obProduct, 'main-button-container');
 			}
 
-			this.initPopup();
+			//this.initPopup();
 			this.initTabs();
 
 			if (this.smallCardNodes.panel)
@@ -1351,20 +1351,20 @@
 			}
 		},
 
-		initPopup: function()
-		{
-			if (this.config.usePopup)
-			{
-				this.node.imageContainer.style.cursor = 'zoom-in';
-				BX.bind(this.node.imageContainer, 'click', BX.delegate(this.toggleMainPictPopup, this));
-				BX.bind(document, 'keyup', BX.proxy(this.closeByEscape, this));
-				BX.bind(
-					this.getEntity(this.obBigSlider, 'close-popup'),
-					'click',
-					BX.proxy(this.hideMainPictPopup, this)
-				);
-			}
-		},
+		// initPopup: function()
+		// {
+		// 	if (this.config.usePopup)
+		// 	{
+		// 		this.node.imageContainer.style.cursor = 'zoom-in';
+		// 		BX.bind(this.node.imageContainer, 'click', BX.delegate(this.toggleMainPictPopup, this));
+		// 		BX.bind(document, 'keyup', BX.proxy(this.closeByEscape, this));
+		// 		BX.bind(
+		// 			this.getEntity(this.obBigSlider, 'close-popup'),
+		// 			'click',
+		// 			BX.proxy(this.hideMainPictPopup, this)
+		// 		);
+		// 	}
+		// },
 
 		checkSliderControls: function(count)
 		{
@@ -2664,6 +2664,7 @@
 			}
 			// === /CUSTOM ===
 		},
+
 		changeSkuDescription: function(index)
 		{
 			var currentDetailText = '';
@@ -2704,6 +2705,7 @@
 			}
 			BX.adjust(this.obDescription, {html: currentDescription});
 		},
+
 		drawImages: function(images)
 		{
 			if (!this.node.imageContainer)
