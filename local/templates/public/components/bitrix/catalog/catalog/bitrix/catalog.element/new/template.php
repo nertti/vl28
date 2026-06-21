@@ -386,17 +386,22 @@ $this->setFrameMode(true);
         });
     </script>
 <?php /** Конец модалки*/ ?>
-<!--
     <section class="products products_others">
         <div class="container">
             <p class="h2">Может вам понравиться</p>
         </div>
         <?php
-        $currentSectionID = $arResult['IBLOCK_SECTION_ID'];
+        $GLOBALS['CROSS_SALES_IDS'] = array_map(
+                'intval',
+                (array)$arResult['PROPERTIES']['CROSS_SALES']['VALUE']
+        );
+
+        $GLOBALS['CURRENT_SECTION_ID'] = (int)$arResult['IBLOCK_SECTION_ID'];
+
         global $arrFilter;
-        $arrFilter = [];
-        $arrFilter = array("!ID" => $arResult['ID']);
-        //$arrFilter = array("IBLOCK_SECTION_ID" => $arResult['IBLOCK_SECTION_ID']);
+        $arrFilter = [
+                '!ID' => $arResult['ID']
+        ];
         ?>
         <?php $APPLICATION->IncludeComponent(
             "bitrix:catalog.section",
@@ -496,7 +501,7 @@ $this->setFrameMode(true);
                 "PAGER_SHOW_ALWAYS" => "N",
                 "PAGER_TEMPLATE" => ".default",
                 "PAGER_TITLE" => "Товары",
-                "PAGE_ELEMENT_COUNT" => "6",
+                "PAGE_ELEMENT_COUNT" => "100",
                 "PARTIAL_PRODUCT_PROPERTIES" => "N",
                 "PRICE_CODE" => array(
                     0 => "BASE",
@@ -562,7 +567,6 @@ $this->setFrameMode(true);
             false
         ); ?>
     </section>
--->
 <div class="hystmodal" id="sizeModal" aria-hidden="true">
     <div class="hystmodal__wrap">
         <div class="hystmodal__window" role="dialog" aria-modal="true">
