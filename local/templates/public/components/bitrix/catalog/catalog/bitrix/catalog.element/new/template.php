@@ -563,52 +563,55 @@ $this->setFrameMode(true);
         ); ?>
     </section>
 -->
-    <div class="hystmodal" id="sizeModal" aria-hidden="true">
-        <?php //pr($arResult['SECTION_CODE'])?>
-        <div class="hystmodal__wrap">
-            <div class="hystmodal__window" role="dialog" aria-modal="true">
-                <button data-hystclose="" class="hystmodal__close"></button>
-                <div class="sizes">
-                    <?php if (!empty($arResult['PROPERTIES']['DETERMINE']['VALUE']['TEXT'])): ?>
-                        <?= html_entity_decode($arResult['PROPERTIES']['DETERMINE']['VALUE']['TEXT']) ?>
-                    <?php else: ?>
-                        <?= $arResult['SECTION']['DESCRIPTION'] ?>
-                    <?php endif; ?>
-                </div>
+<div class="hystmodal" id="sizeModal" aria-hidden="true">
+    <div class="hystmodal__wrap">
+        <div class="hystmodal__window" role="dialog" aria-modal="true">
+            <button data-hystclose="" class="hystmodal__close"></button>
+            <div class="sizes">
+                <?php if (!empty($arResult['PROPERTIES']['DETERMINE']['VALUE']['TEXT'])): ?>
+                    <?= html_entity_decode($arResult['PROPERTIES']['DETERMINE']['VALUE']['TEXT']) ?>
+                <?php else: ?>
+                    <?= $arResult['SECTION']['DESCRIPTION'] ?>
+                <?php endif; ?>
             </div>
         </div>
     </div>
-    <div class="hystmodal" id="howModal" aria-hidden="true">
-        <div class="hystmodal__wrap">
-            <div class="hystmodal__window" role="dialog" aria-modal="true">
-                <button data-hystclose="" class="hystmodal__close"></button>
-                <div class="how">
-                    <?php if (!empty($arResult['PROPERTIES']['INFO']['VALUE']['TEXT'])): ?>
-                        <?= html_entity_decode($arResult['PROPERTIES']['INFO']['VALUE']['TEXT']) ?>
-                    <?php endif; ?>
-                </div>
+</div>
+<div class="hystmodal" id="howModal" aria-hidden="true">
+    <div class="hystmodal__wrap">
+        <div class="hystmodal__window" role="dialog" aria-modal="true">
+            <button data-hystclose="" class="hystmodal__close"></button>
+            <div class="how">
+                <?php if (!empty($arResult['PROPERTIES']['INFO']['VALUE']['TEXT'])): ?>
+                    <?= html_entity_decode($arResult['PROPERTIES']['INFO']['VALUE']['TEXT']) ?>
+                <?php endif; ?>
             </div>
         </div>
     </div>
-    <div class="hystmodal" id="descriptionModal" aria-hidden="true">
-        <div class="hystmodal__wrap">
-            <div class="hystmodal__window" role="dialog" aria-modal="true">
-                <button data-hystclose="" class="hystmodal__close"></button>
-                <p class="h2">Информация о товаре</p>
-                <div class="gray">
-                    <?= $arResult['DETAIL_TEXT'] ?>
-                </div>
+</div>
+<div class="hystmodal" id="descriptionModal" aria-hidden="true">
+    <div class="hystmodal__wrap">
+        <div class="hystmodal__window" role="dialog" aria-modal="true">
+            <button data-hystclose="" class="hystmodal__close"></button>
+            <p class="h2">Информация о товаре</p>
+            <div class="gray">
+                <?= $arResult['DETAIL_TEXT'] ?>
             </div>
         </div>
     </div>
+</div>
 
 <div class="hystmodal" id="addBasketModal" aria-hidden="true">
     <div class="hystmodal__wrap">
         <div class="hystmodal__window hystmodal__window_subscribe" role="dialog" aria-modal="true">
             <button data-hystclose class="hystmodal__close"></button>
-            <div class="thanks" style="flex-direction: column">
+            <div class="thanks thanks-product">
+                <div class="thanks-product__image">
+                    <img src="<?=$arResult['DETAIL_PICTURE']['SRC']?>" alt="<?=$arResult['NAME']?>">
+                </div>
                 <p class="h2">Товар добавлен в корзину!</p>
-                <a href="/basket/">Перейти в корзину</a>
+                <p class="thanks-product__name" id="basketModalName"></p>
+                <a href="/cart/">Перейти в корзину</a>
             </div>
         </div>
     </div>
@@ -628,7 +631,10 @@ $this->setFrameMode(true);
     <div class="hystmodal__wrap">
         <div class="hystmodal__window hystmodal__window_subscribe" role="dialog" aria-modal="true">
             <button data-hystclose="" class="hystmodal__close"></button>
-            <div class="thanks" style="flex-direction: column">
+            <div class="thanks thanks-product" style="flex-direction: column">
+                <div class="thanks-product__image">
+                    <img src="<?=$arResult['DETAIL_PICTURE']['SRC']?>" alt="<?=$arResult['NAME']?>">
+                </div>
                 <p class="h2">Товар добавлен в Избранное!</p>
                 <a href="/profile/favorite/" class="">Всё избранное</a>
             </div>
@@ -639,7 +645,10 @@ $this->setFrameMode(true);
     <div class="hystmodal__wrap">
         <div class="hystmodal__window hystmodal__window_subscribe" role="dialog" aria-modal="true">
             <button data-hystclose="" class="hystmodal__close"></button>
-            <div class="thanks">
+            <div class="thanks thanks-product">
+                <div class="thanks-product__image">
+                    <img src="<?=$arResult['DETAIL_PICTURE']['SRC']?>" alt="<?=$arResult['NAME']?>">
+                </div>
                 <p class="h2">Товар удалён из Избранного!</p>
             </div>
         </div>

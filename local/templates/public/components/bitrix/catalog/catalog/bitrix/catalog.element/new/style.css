@@ -183,3 +183,11 @@
 	margin: 0 30px;
 	color: #929292;
 }
+.thanks.thanks-product {
+	display: flex;
+	flex-direction: column;
+}
+.thanks-product__image{
+	width: 100%;
+	max-width: 200px;
+}

@@ -230,7 +230,6 @@ function updateFavoriteCounter(count) {
     counter.textContent = count;
 }
 
-
 async function refreshCartModal() {
 
     const response = await fetch('/ajax/basket/updateFlyBasket.php');
