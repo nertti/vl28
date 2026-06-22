@@ -1,11 +1,16 @@
 <?php
+// 1. Инициализация ядра Битрикса
+define("NO_KEEP_STATISTIC", true);
+define("NOT_CHECK_PERMISSIONS", true);
+define("BX_NO_ACCELERATOR_RESET", true);
 
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php");
 
-global $APPLICATION;
-global $USER;
+// 2. Импорт необходимых классов D7
+use Bitrix\Main\Context;
+use Bitrix\Main\Web\Cookie;
 
-header('Content-Type: application/json');
+global $USER;
 
 $result = [
     'success' => false,
@@ -13,92 +18,104 @@ $result = [
     'count' => 0,
 ];
 
-$productId = (int)($_POST['id'] ?? 0);
+// Получаем объекты контекста, запроса и ответа
+$context = Context::getCurrent();
+$request = $context->getRequest();
+$response = $context->getResponse();
+
+// Безопасно получаем ID товара из POST-запроса
+$productId = (int)($request->getPost('id') ?? 0);
 
 if ($productId <= 0) {
+    header('Content-Type: application/json');
     echo json_encode($result);
     die();
 }
 
-if (!$USER->IsAuthorized()) {
+$favorites = [];
 
-    $favorites = unserialize($APPLICATION->get_cookie('favorites'));
+if (!$USER->IsAuthorized()) {
+    // === НЕАВТОРИЗОВАННЫЙ ПОЛЬЗОВАТЕЛЬ (РАБОТА С КУКАМИ) ===
+
+    // Читаем куку через D7 (Битрикс сам подставит префикс BITRIX_SM_)
+    $favoritesCookie = $request->getCookie('favorites');
+    
+    // Декодируем из JSON формата
+    $favorites = !empty($favoritesCookie) ? json_decode($favoritesCookie, true) : [];
 
     if (!is_array($favorites)) {
         $favorites = [];
     }
 
+    // Логика добавления / удаления
     if (!in_array($productId, $favorites)) {
-
         $favorites[] = $productId;
-
         $result['success'] = true;
         $result['action'] = 'add';
-
     } else {
-
         $key = array_search($productId, $favorites);
-
         if ($key !== false) {
             unset($favorites[$key]);
         }
-
         $favorites = array_values($favorites);
-
         $result['success'] = true;
         $result['action'] = 'delete';
     }
 
-    setcookie(
-        'BITRIX_SM_favorites',
-        serialize($favorites),
-        time() + 60 * 60 * 24 * 60,
-        '/',
-        'vl28.pro'
-    );
+    // Сохраняем обновленный массив обратно в куку в формате JSON
+    $cookieValue = json_encode($favorites);
+    $cookie = new Cookie('favorites', $cookieValue, time() + 5184000); // 60 дней
+    $cookie->setPath('/');
+    $cookie->setDomain('vl28.pro');
+    $cookie->setHttpOnly(false); // Разрешаем чтение через JS
 
-    $result['count'] = count($favorites);
+    $response->addCookie($cookie);
 
 } else {
+    // === АВТОРИЗОВАННЫЙ ПОЛЬЗОВАТЕЛЬ (РАБОТА С ПРОФИЛЕМ) ===
 
     $userId = (int)$USER->GetID();
 
-    $rsUser = CUser::GetByID($userId);
-    $arUser = $rsUser->Fetch();
+    // Оптимизировано: получаем только нужное нам свойство UF_FAVORITES
+    $arUser = CUser::GetList(
+        'by', 'order', 
+        ['ID' => $userId], 
+        ['SELECT' => ['UF_FAVORITES']]
+    )->Fetch();
 
-    $favorites = $arUser['UF_FAVORITES'];
+    $favorites = $arUser['UF_FAVORITES'] ?? [];
 
     if (!is_array($favorites)) {
         $favorites = [];
     }
 
+    // Логика добавления / удаления
     if (!in_array($productId, $favorites)) {
-
         $favorites[] = $productId;
-
         $result['success'] = true;
         $result['action'] = 'add';
-
     } else {
-
         $key = array_search($productId, $favorites);
-
         if ($key !== false) {
             unset($favorites[$key]);
         }
-
         $favorites = array_values($favorites);
-
         $result['success'] = true;
         $result['action'] = 'delete';
     }
 
+    // Обновляем свойство в профиле пользователя
     $USER->Update($userId, [
         'UF_FAVORITES' => $favorites
     ]);
-
-    $result['count'] = count($favorites);
 }
 
-echo json_encode($result);
+// Записываем количество элементов для ответа
+$result['count'] = count($favorites);
+
+// === ИСПРАВЛЕНИЕ ВЫВОДА ДЛЯ AJAX ===
+header('Content-Type: application/json');
+
+// Передаем JSON прямо в метод flush, чтобы Битрикс вывел его одновременно с куками
+$response->flush(json_encode($result));
 die();

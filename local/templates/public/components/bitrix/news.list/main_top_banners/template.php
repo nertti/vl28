@@ -28,7 +28,7 @@ $this->setFrameMode(true);
                     </video>
                 </div>
             <?php else: ?>
-                <img src="<?=$arItem['PREVIEW_PICTURE']['SRC']?>" alt="<?=$arItem['NAME']?>" class="banner__img banner__img_position">
+                <img src="<?=$arItem['PREVIEW_PICTURE']['SRC']?>" alt="<?=$arItem['NAME']?>" fetchpriority="high" class="banner__img banner__img_position">
             <?php endif; ?>
                 <div class="banner__content">
                     <span class="banner__subtitle"><?=$arItem['PROPERTIES']['SUBTITLE']['VALUE']?></span>

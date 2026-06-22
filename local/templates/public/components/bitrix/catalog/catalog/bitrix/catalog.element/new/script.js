@@ -211,23 +211,10 @@ function toggleFavorite(productId, favoriteModal) {
                 favoriteModal.open('#delFavoriteModal');
             }
 
-            updateFavoriteCounter(result.count);
-
         })
         .catch(error => {
             console.error('Favorite error:', error);
         });
-}
-
-function updateFavoriteCounter(count) {
-
-    const counter = document.querySelector('#want .col');
-
-    if (!counter) {
-        return;
-    }
-
-    counter.textContent = count;
 }
 
 async function refreshCartModal() {

@@ -30,10 +30,11 @@ $APPLICATION->SetTitle("Связаться с нами");
 	</ul>
 	<ul class="footer__list">
 		<li class="footer__item"> <span class="footer__link">Реквизиты</span> </li>
+<!--
 		<li class="footer__item" style="color: #959595;"> ИП ЛЕОНОВ ВИТАЛИЙ ВИКТОРОВИЧ </li>
 		<li class="footer__item" style="color: #959595;"> ИНН: 505011743603 </li>
 		<li class="footer__item" style="color: #959595;"> ОГРН/ОГРНИП: 324508100134856 </li>
-
+-->
 		<li class="footer__item" style="color: #959595;"> ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ "ВЛ28.ПРО" </li>
 		<li class="footer__item" style="color: #959595;"> 129226, РОССИЯ, Г.МОСКВА, ВН.ТЕР.Г. МУНИЦИПАЛЬНЫЙ ОКРУГ РОСТОКИНО, УЛ СЕЛЬСКОХОЗЯЙСТВЕННАЯ, Д. 17, К. 1, ПОМЕЩ. 9/П </li>
 		<li class="footer__item" style="color: #959595;"> ИНН: 9717181318 </li>

@@ -8,13 +8,15 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        window.addEventListener('load', function () {
-            const preloader = document.getElementById('site-preloader');
-            if (preloader) {
-                preloader.classList.add('hide');
-                setTimeout(() => preloader.remove(), 700);
-            }
-        });
+    // Слушаем полную загрузку страницы напрямую (без DOMContentLoaded)
+    window.addEventListener('load', function () {
+        const preloader = document.getElementById('site-preloader');
+        if (preloader) {
+            preloader.classList.add('hide'); // Запускает плавное скрытие за 0.6s
+            document.body.classList.remove('preloader-active'); // Возвращает прокрутку сайту
+            
+            // Удаляем элемент из дерева DOM через 600мс (время вашей transition анимации)
+            setTimeout(() => preloader.remove(), 600);
+        }
     });
 </script>

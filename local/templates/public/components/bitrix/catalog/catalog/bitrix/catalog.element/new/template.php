@@ -15,7 +15,7 @@ use Bitrix\Catalog\ProductTable;
  * @var string $templateFolder
  */
 
-$this->setFrameMode(true);
+//$this->setFrameMode(true);
 //pr($arResult);
 //pr($arResult['OFFERS'][0])
 ?>
@@ -25,91 +25,46 @@ $this->setFrameMode(true);
         <div class="tovar__left">
             <div class="tovar__left-inner">
                 <a href="/catalog/<?= $arResult['SECTION_CODE'] ?>" class="tovar__back">Назад</a>
-                <span class="favorite-btn favor <?php if ($active): ?>active<?php endif; ?>"
-                      data-item="<?= $arResult['ID'] ?>"></span>
+                <span class="favorite-btn favor <?$APPLICATION->AddBufferContent("getFavoriteClass", $arResult['ID']);?>" data-item="<?= $arResult['ID'] ?>" data-item="<?= $arResult['ID'] ?>"></span>
             </div>
             <div class="swiper product-swiper">
-                <div class="swiper-wrapper">
-                    <?php foreach ($arResult['PROPERTIES']['IMAGES']['VALUE'] as $index => $imageId): ?>
-
-                        <?php if ($index === 0 && !empty($arResult['PROPERTIES']['VIDEO']['VALUE'])): ?>
-                            <div class="swiper-slide  gallery-item">
-                                <video
-                                        data-index="0"
-                                        class="catalog-cart-video"
-                                        autoplay
-                                        muted
-                                        playsinline
-                                        loop
-                                        src="<?= CFile::GetPath($arResult['PROPERTIES']['VIDEO']['VALUE']) ?>">
-                                </video>
-                            </div>
-                        <?php endif; ?>
-
-                        <?php
-                        $file = CFile::ResizeImageGet(
-                            $imageId,
-                            ['width' => 760, 'height' => 760],
-                            BX_RESIZE_IMAGE_EXACT,
-                            true
-                        );
-                        if (!empty($arResult['PROPERTIES']['VIDEO']['VALUE'])) {
-                            $index++;
-                        }
-                        ?>
-
-                        <div class="swiper-slide  gallery-item">
-                            <img
-                                    data-index="<?= $index ?>"
-                                    src="<?= $file['src'] ?>"
-                                    width="<?= $file['width'] ?>"
-                                    height="<?= $file['height'] ?>"
-                                    alt="Фото"
-                                    loading="lazy"
-                            >
-                        </div>
-
-                    <?php endforeach; ?>
-                </div>
-                <div class="swiper-pagination"></div>
-            </div>
-            <div class="images">
-                <?php foreach ($arResult['PROPERTIES']['IMAGES']['VALUE'] as $index => $imageId): ?>
-                    <?php if ($index === 0 && !empty($arResult['PROPERTIES']['VIDEO']['VALUE'])): ?>
-                        <video
-                                class="catalog-cart-video gallery-item"
-                                data-index="0"
-                                autoplay
-                                muted
-                                playsinline
-                                loop
-                                src="<?= CFile::GetPath($arResult['PROPERTIES']['VIDEO']['VALUE']) ?>">
-                        </video>
-                    <?php endif; ?>
-
-                    <?php
-                    $file = CFile::GetFileArray($imageId);
-
-                    if (!empty($arResult['PROPERTIES']['VIDEO']['VALUE'])) {
-                        $index++;
-                    }
-                    ?>
-
-                    <img
-                            src="<?= $file['SRC'] ?>"
-                            width=""
-                            height=""
-                            alt="Фото"
-                            loading="lazy"
-                            data-index="<?= $index ?>"
-                            class="gallery-item"
-                    >
-
-                <?php endforeach; ?>
-            </div>
-        </div>
+				<div class="swiper-wrapper">
+					<?php $slideIndex = 0; ?>
+					
+					<?php if (!empty($arResult['VIDEO_PATH_URL'])): ?>
+						<div class="swiper-slide gallery-item">
+							<video data-index="0" class="catalog-cart-video" autoplay muted playsinline loop src="<?= $arResult['VIDEO_PATH_URL'] ?>"></video>
+						</div>
+						<?php $slideIndex++; ?>
+					<?php endif; ?>
+			
+					<?php foreach ($arResult['PROCESSED_GALLERY'] as $item): ?>
+						<div class="swiper-slide gallery-item">
+							<img data-index="<?= $slideIndex ?>" src="<?= $item['RESIZED_SRC'] ?>" width="<?= $item['WIDTH'] ?>" height="<?= $item['HEIGHT'] ?>" alt="Фото" loading="lazy">
+						</div>
+						<?php $slideIndex++; ?>
+					<?php endforeach; ?>
+				</div>
+				<div class="swiper-pagination"></div>
+					</div>
+								<div class="images">
+						<?php $galleryIndex = 0; ?>
+						
+						<?php if (!empty($arResult['VIDEO_PATH_URL'])): ?>
+							<video class="catalog-cart-video gallery-item" data-index="0" autoplay muted playsinline loop src="<?= $arResult['VIDEO_PATH_URL'] ?>"></video>
+							<?php $galleryIndex++; ?>
+						<?php endif; ?>
+					
+						<?php foreach ($arResult['PROCESSED_GALLERY'] as $item): ?>
+							<img src="<?= $item['ORIGINAL_SRC'] ?>" width="" height="" alt="Фото" loading="lazy" data-index="<?= $galleryIndex ?>" class="gallery-item">
+							<?php $galleryIndex++; ?>
+						<?php endforeach; ?>
+					</div>
+				</div>
         <div class="tovar__right">
-            <?php $APPLICATION->IncludeComponent(
+            <?php
+
+			 $APPLICATION->IncludeComponent(
                 "bitrix:breadcrumb",
                 "breadcrumb",
                 array(
@@ -119,12 +74,13 @@ $this->setFrameMode(true);
                     "START_FROM" => "-1"
                 ),
                 false
-            ); ?>
+            ); 
+
+			?>
             <div class="tovar__head">
                 <h1 class="h2"><?= $arResult['NAME'] ?></h1>
-
-                <span class="favorite-btn favor <?php if ($active): ?>active<?php endif; ?>"
-                      data-item="<?= $arResult['ID'] ?>"></span>
+				<!--<span class="favorite-btn favor <? //$APPLICATION->ShowViewContent('fav_class_'.$arResult['ID']);?>"></span>-->
+<span class="favorite-btn favor <?$APPLICATION->AddBufferContent("getFavoriteClass", $arResult['ID']);?>" data-item="<?= $arResult['ID'] ?>"></span>
             </div>
             <?php if($arResult['OFFERS'][0]['PROPERTIES']['ARTICLE']['VALUE']):?>
             <div class="product-article" id="productArticle" style="margin-bottom: 10px">
@@ -386,187 +342,7 @@ $this->setFrameMode(true);
         });
     </script>
 <?php /** Конец модалки*/ ?>
-    <section class="products products_others">
-        <div class="container">
-            <p class="h2">Может вам понравиться</p>
-        </div>
-        <?php
-        $GLOBALS['CROSS_SALES_IDS'] = array_map(
-                'intval',
-                (array)$arResult['PROPERTIES']['CROSS_SALES']['VALUE']
-        );
 
-        $GLOBALS['CURRENT_SECTION_ID'] = (int)$arResult['IBLOCK_SECTION_ID'];
-
-        global $arrFilter;
-        $arrFilter = [
-                '!ID' => $arResult['ID']
-        ];
-        ?>
-        <?php $APPLICATION->IncludeComponent(
-            "bitrix:catalog.section",
-            "main",
-            array(
-                "ACTION_VARIABLE" => "action",
-                "ADD_PICT_PROP" => "IMAGES",
-                "ADD_PROPERTIES_TO_BASKET" => "Y",
-                "ADD_SECTIONS_CHAIN" => "N",
-                "ADD_TO_BASKET_ACTION" => "ADD",
-                "AJAX_MODE" => "N",
-                "AJAX_OPTION_ADDITIONAL" => "",
-                "AJAX_OPTION_HISTORY" => "N",
-                "AJAX_OPTION_JUMP" => "N",
-                "AJAX_OPTION_STYLE" => "Y",
-                "BACKGROUND_IMAGE" => "UF_BACKGROUND_IMAGE",
-                "BASKET_URL" => "",
-                "BRAND_PROPERTY" => "COLLECTION",
-                "BROWSER_TITLE" => "-",
-                "CACHE_FILTER" => "N",
-                "CACHE_GROUPS" => "Y",
-                "CACHE_TIME" => "36000000",
-                "CACHE_TYPE" => "A",
-                "COMPATIBLE_MODE" => "Y",
-                "CONVERT_CURRENCY" => "Y",
-                "CURRENCY_ID" => "RUB",
-                "CUSTOM_FILTER" => "{\"CLASS_ID\":\"CondGroup\",\"DATA\":{\"All\":\"AND\",\"True\":\"True\"},\"CHILDREN\":[]}",
-                "DATA_LAYER_NAME" => "dataLayer",
-                "DETAIL_URL" => "/catalog/#SECTION_CODE#/#ELEMENT_CODE#/",
-                "DISABLE_INIT_JS_IN_COMPONENT" => "N",
-                "DISCOUNT_PERCENT_POSITION" => "bottom-right",
-                "DISPLAY_BOTTOM_PAGER" => "Y",
-                "DISPLAY_TOP_PAGER" => "N",
-//                "SORT_BY1" => "IBLOCK_SECTION_ID",  // первичная сортировка по разделу
-//                "SORT_ORDER1" => "DESC",
-                "ELEMENT_SORT_FIELD" => "CASE 
-                    WHEN IBLOCK_SECTION_ID = {$currentSectionID} THEN 0 
-                    ELSE 1 
-                END",
-                "ELEMENT_SORT_ORDER" => "ASK",
-                "ELEMENT_SORT_FIELD2" => "id",
-                "ELEMENT_SORT_ORDER2" => "desc",
-                "ENLARGE_PRODUCT" => "PROP",
-                "ENLARGE_PROP" => "COLLECTION",
-                "FILTER_NAME" => "arrFilter",
-                "HIDE_NOT_AVAILABLE" => "N",
-                "HIDE_NOT_AVAILABLE_OFFERS" => "N",
-                "IBLOCK_ID" => "2",
-                "IBLOCK_TYPE" => "rest_entity",
-                "INCLUDE_SUBSECTIONS" => "Y",
-                "LABEL_PROP" => array(),
-                "LABEL_PROP_MOBILE" => "",
-                "LABEL_PROP_POSITION" => "top-left",
-                "LAZY_LOAD" => "Y",
-                "LINE_ELEMENT_COUNT" => "3",
-                "LOAD_ON_SCROLL" => "N",
-                "MESSAGE_404" => "",
-                "MESS_BTN_ADD_TO_BASKET" => "В корзину",
-                "MESS_BTN_BUY" => "Купить",
-                "MESS_BTN_DETAIL" => "Подробнее",
-                "MESS_BTN_LAZY_LOAD" => "Показать ещё",
-                "MESS_BTN_SUBSCRIBE" => "Подписаться",
-                "MESS_NOT_AVAILABLE" => "Нет в наличии",
-                "META_DESCRIPTION" => "-",
-                "META_KEYWORDS" => "-",
-                "OFFERS_CART_PROPERTIES" => array(
-                    0 => "ARTNUMBER",
-                    1 => "COLOR_REF",
-                    2 => "SIZES_SHOES",
-                    3 => "SIZES_CLOTHES",
-                ),
-                "OFFERS_FIELD_CODE" => array(
-                    0 => "",
-                    1 => "",
-                ),
-                "OFFERS_LIMIT" => "5",
-                "OFFERS_PROPERTY_CODE" => array(
-                    0 => "COLOR_REF",
-                    1 => "SIZES_SHOES",
-                    2 => "SIZES_CLOTHES",
-                    3 => "",
-                ),
-                "OFFERS_SORT_FIELD" => "sort",
-                "OFFERS_SORT_FIELD2" => "id",
-                "OFFERS_SORT_ORDER" => "asc",
-                "OFFERS_SORT_ORDER2" => "desc",
-                "OFFER_ADD_PICT_PROP" => "",
-                "OFFER_TREE_PROPS" => array(
-                    0 => "COLOR_REF",
-                    1 => "SIZES_SHOES",
-                    2 => "SIZES_CLOTHES",
-                ),
-                "PAGER_BASE_LINK_ENABLE" => "N",
-                "PAGER_DESC_NUMBERING" => "N",
-                "PAGER_DESC_NUMBERING_CACHE_TIME" => "36000",
-                "PAGER_SHOW_ALL" => "N",
-                "PAGER_SHOW_ALWAYS" => "N",
-                "PAGER_TEMPLATE" => ".default",
-                "PAGER_TITLE" => "Товары",
-                "PAGE_ELEMENT_COUNT" => "100",
-                "PARTIAL_PRODUCT_PROPERTIES" => "N",
-                "PRICE_CODE" => array(
-                    0 => "BASE",
-                ),
-                "PRICE_VAT_INCLUDE" => "Y",
-                "PRODUCT_BLOCKS_ORDER" => "price,props,sku,quantityLimit,quantity,buttons,compare",
-                "PRODUCT_DISPLAY_MODE" => "Y",
-                "PRODUCT_ID_VARIABLE" => "id",
-                "PRODUCT_PROPERTIES" => array(
-                    0 => "NEWPRODUCT",
-                    1 => "MATERIAL",
-                ),
-                "PRODUCT_PROPS_VARIABLE" => "prop",
-                "PRODUCT_QUANTITY_VARIABLE" => "",
-                "PRODUCT_ROW_VARIANTS" => "[{'VARIANT':'2','BIG_DATA':false}]",
-                "PRODUCT_SUBSCRIPTION" => "Y",
-                "PROPERTY_CODE" => array(
-                    0 => "NEWPRODUCT",
-                    1 => "",
-                ),
-                "PROPERTY_CODE_MOBILE" => array(
-                    0 => "IMAGES",
-                ),
-                "RCM_PROD_ID" => $_REQUEST["PRODUCT_ID"],
-                "RCM_TYPE" => "personal",
-                "SECTION_CODE" => $_REQUEST["SECTION_CODE"],
-                "SECTION_ID" => "",
-                "SECTION_ID_VARIABLE" => "SECTION_ID",
-                "SECTION_URL" => "",
-                "SECTION_USER_FIELDS" => array(
-                    0 => "",
-                    1 => "",
-                ),
-                "SEF_MODE" => "Y",
-                "SET_BROWSER_TITLE" => "Y",
-                "SET_LAST_MODIFIED" => "N",
-                "SET_META_DESCRIPTION" => "Y",
-                "SET_META_KEYWORDS" => "Y",
-                "SET_STATUS_404" => "N",
-                "SET_TITLE" => "Y",
-                "SHOW_404" => "N",
-                "SHOW_ALL_WO_SECTION" => "Y",
-                "SHOW_CLOSE_POPUP" => "N",
-                "SHOW_DISCOUNT_PERCENT" => "N",
-                "SHOW_FROM_SECTION" => "N",
-                "SHOW_MAX_QUANTITY" => "N",
-                "SHOW_OLD_PRICE" => "N",
-                "SHOW_PRICE_COUNT" => "1",
-                "SHOW_SLIDER" => "Y",
-                "SLIDER_INTERVAL" => "3000",
-                "SLIDER_PROGRESS" => "N",
-                "TEMPLATE_THEME" => "blue",
-                "USE_ENHANCED_ECOMMERCE" => "Y",
-                "USE_MAIN_ELEMENT_SECTION" => "N",
-                "USE_PRICE_COUNT" => "N",
-                "USE_PRODUCT_QUANTITY" => "N",
-                "COMPONENT_TEMPLATE" => "main",
-                "MESS_NOT_AVAILABLE_SERVICE" => "Недоступно",
-                "SEF_RULE" => "#SECTION_CODE#",
-                "SECTION_CODE_PATH" => "",
-                "DISPLAY_COMPARE" => "N"
-            ),
-            false
-        ); ?>
-    </section>
 <div class="hystmodal" id="sizeModal" aria-hidden="true">
     <div class="hystmodal__wrap">
         <div class="hystmodal__window" role="dialog" aria-modal="true">

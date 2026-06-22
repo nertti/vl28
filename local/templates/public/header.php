@@ -62,7 +62,7 @@ if (!$isCartPage && !$isCartPage) {
     ?>
     <?php $APPLICATION->ShowHead(); ?>
 </head>
-<body>
+<body class="preloader-active">
 <?php $APPLICATION->ShowPanel(); ?>
 
 <?php if (checkCatalogPath($APPLICATION->GetCurPageParam())):?>

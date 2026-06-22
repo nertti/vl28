@@ -2,6 +2,7 @@
 /** @var \CMain $APPLICATION */
 
 use \Bitrix\Main\Application;
+use Bitrix\Main\Context;
 
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
 $APPLICATION->SetTitle("Избранное");
@@ -14,8 +15,14 @@ $arUser = $rsUser->Fetch();
 
 if (!$USER->IsAuthorized()) // Для неавторизованного
 {
-    global $APPLICATION;
-    $favorites = unserialize(Application::getInstance()->getContext()->getRequest()->getCookie("favorites"));
+
+	$request = Context::getCurrent()->getRequest();
+	$cookieData = $request->getCookie("favorites");
+	$favorites = !empty($cookieData) ? json_decode($cookieData, true) : [];
+
+	if (!is_array($favorites)) {
+		$favorites = [];
+	}
 } else {
     $idUser = $USER->GetID();
     $rsUser = CUser::GetByID($idUser);

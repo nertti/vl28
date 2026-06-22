@@ -32,7 +32,7 @@ $arUrlRewrite=array (
     'PATH' => '/local/templates/public/components/bitrix/catalog.element/.default/template.php',
     'SORT' => 100,
   ),
-  14 => 
+  24 => 
   array (
     'CONDITION' => '#^/catalog/#',
     'RULE' => '',
@@ -46,6 +46,14 @@ $arUrlRewrite=array (
     'RULE' => '',
     'ID' => 'bitrix:news',
     'PATH' => '/news/index.php',
+    'SORT' => 100,
+  ),
+  23 => 
+  array (
+    'CONDITION' => '#^#',
+    'RULE' => '',
+    'ID' => 'bitrix:catalog.section',
+    'PATH' => '/profile/favorite/index.php',
     'SORT' => 100,
   ),
 );

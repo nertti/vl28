@@ -1,4 +1,4 @@
-#bx-panel { z-index: 99995 !important;}
+#bx-panel {z-index: 99995 !important; position: absolute !important; width: 100% !important;}
 .top100{
     padding-top: 100px;
 }
