@@ -10,3 +10,16 @@
 .swiper-wrapper{
     background-color: transparent;
 }
+.news-wrapper{
+	display: flex;
+	justify-content: space-between;
+	gap: 10px;
+}
+@media screen and (max-width: 640px) {
+	.news-wrapper {
+		flex-direction: column
+	}
+	.news-wrapper.reverse {
+		flex-direction: column-reverse;
+	}
+}
