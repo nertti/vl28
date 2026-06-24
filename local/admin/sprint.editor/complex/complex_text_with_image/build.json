@@ -1,0 +1,21 @@
+{
+    "title": "Текст с картинкой справа",
+    "sort": "100",
+    "layouts": [
+        {
+            "title": "",
+            "columns": [
+                {
+                    "blocks": [
+                        "text"
+                    ]
+                },
+                {
+                    "blocks": [
+                        "image"
+                    ]
+                }
+            ]
+        }
+    ]
+}
