@@ -1354,7 +1354,7 @@ section {
   width:100%;
   max-width:930px;
   padding:30px;
-  border-radius:10px;
+  /*border-radius:10px;*/
   height:auto;
   -webkit-transform:none;
   transform:none
@@ -1364,7 +1364,7 @@ section {
   width:calc(100% - 40px);
   max-width:646px;
   padding:30px 50px 50px;
-  border-radius:10px;
+  /*border-radius:10px;*/
   height:auto;
   -webkit-transform:none;
   transform:none;

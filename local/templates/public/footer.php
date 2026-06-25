@@ -205,6 +205,7 @@ use Bitrix\Main\Page\Asset;
         </div>
     </div>
 </div>
+<!--
 <div class="hystmodal" id="searchModal" aria-hidden="true">
     <div class="hystmodal__wrap hystmodal_search">
         <div class="hystmodal__window hystmodal__window_search" role="dialog" aria-modal="true">
@@ -277,6 +278,7 @@ use Bitrix\Main\Page\Asset;
         </div>
     </div>
 </div>
+-->
 <div class="hystmodal" id="exitModal" aria-hidden="true">
     <div class="hystmodal__wrap">
         <div class="hystmodal__window hystmodal__window_subscribe" role="dialog" aria-modal="true">
