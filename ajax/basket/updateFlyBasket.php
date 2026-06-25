@@ -9,6 +9,13 @@ $fUserId = Bitrix\Sale\Fuser::getId();
 $siteId = Bitrix\Main\Context::getCurrent()->getSite();
 $basket = Bitrix\Sale\Basket::loadItemsForFUser($fUserId, $siteId);
 
+
+$order = Bitrix\Sale\Order::create($siteId, $fUserId);
+$order->setPersonTypeId(1);
+$order->setBasket($basket);
+$order->setField('CURRENCY', Bitrix\Currency\CurrencyManager::getBaseCurrency());
+$order->doFinalAction(true);
+
 $totalQuantity = 0;
 foreach ($basket as $item) {
     $totalQuantity += $item->getQuantity();
@@ -70,6 +77,16 @@ foreach ($basket as $item) {
                 $propertySize = getElementProperties($product['IBLOCK_ID'], $product['ID'], 'SIZE');
                 $propertyColor = getElementProperties(2, $product2['ID'], 'COLOR');
                 ?>
+                <?php
+                // Цена за единицу со скидкой (текущая)
+                $price = $basketItem->getPrice();
+                // Базовая цена за единицу (до скидки)
+                $basePrice = $basketItem->getBasePrice();
+                // Общая стоимость позиции (цена * количество)
+                $finalPrice = $basketItem->getFinalPrice();
+                // Проверяем, есть ли скидка
+                $hasDiscount = $basePrice > $price;
+                ?>
                 <div class="cart-modal__item" id="<?= $basketItem->getField('ID') ?>">
                     <div class="cart-modal__left">
                         <img src="<?= CFile::getPath($product['PREVIEW_PICTURE']) ?>"
@@ -94,7 +111,13 @@ foreach ($basket as $item) {
                             <p class="cart-modal__name">Количество:</p>
                             <p class="cart-modal__value"><?= $basketItem->getQuantity() ?></p>
                         </div>
-                        <p class="cart-modal__price"><?= number_format($basketItem->getFinalPrice(), 0, '', ' ') ?>
+                        <p class="cart-modal__price">
+                            <?php if ($hasDiscount): ?>
+                                <span style="text-decoration: line-through; color: #999; margin-right: 20px">
+                                            <?= number_format($basePrice * $basketItem->getQuantity(), 0, '', ' ') ?> ₽
+                                        </span>
+                            <?php endif; ?>
+                            <?= number_format($basketItem->getFinalPrice(), 0, '', ' ') ?>
                             ₽</p>
                         <a href="#"
                            class="cart-modal__remove"
