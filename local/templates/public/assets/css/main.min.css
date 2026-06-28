@@ -1899,7 +1899,8 @@ section {
   height:17px;
   background:url(../img/favorite-black.svg) no-repeat center/cover;
   -webkit-transition:all .4s ease;
-  transition:all .4s ease
+  transition:all .4s ease;
+  cursor: pointer;
 }
 .favorite-btn_active {
   background-image:url(../img/favorite-active.svg)
@@ -2702,7 +2703,8 @@ section {
 }
 .cart__favorite {
   padding-bottom:5px;
-  border-bottom:1px solid #222
+  border-bottom:1px solid #222;
+  cursor: pointer;
 }
 @media screen and (max-width:600px) {
   .cart .h2 {

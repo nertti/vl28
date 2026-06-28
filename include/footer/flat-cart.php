@@ -2,8 +2,8 @@
 /** @var \CMain $APPLICATION */
 /** @var bool $isCartPage */
 /** @var bool $isOrderPage */
-$isCartPage = $APPLICATION->GetCurPage(false) === '/cart/';
-$isOrderPage = $APPLICATION->GetCurPage(false) === '/cart/order/';
+$isCartPage = $APPLICATION->GetCurPage(false) === '/basket/';
+$isOrderPage = $APPLICATION->GetCurPage(false) === '/order/';
 ?>
 <?php if (!$isCartPage && !$isOrderPage): ?>
     <div class="hystmodal hystmodal_header" id="cartModal" aria-hidden="true">

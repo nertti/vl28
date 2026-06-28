@@ -266,3 +266,11 @@ input[name="city"]:disabled {
     }
 }
 /*end cookies*/
+
+.vertical-modal{
+    flex-direction: column;
+}
+.vertical-modal img{
+    width: 100%;
+    max-width: 200px;
+}

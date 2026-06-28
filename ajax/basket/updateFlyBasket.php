@@ -135,8 +135,8 @@ foreach ($basket as $item) {
                 <p>Итого</p>
                 <p><?= number_format($basket->getPrice(), 0, '', ' ') ?> ₽</p>
             </div>
-            <a href="/cart/" class="border-btn">Перейти в корзину</a>
-            <a href="/cart/order/" class="black-btn">Оформить заказ</a>
+            <a href="/basket/" class="border-btn">Перейти в корзину</a>
+            <a href="/order/" class="black-btn">Оформить заказ</a>
         </div>
     </div>
 
