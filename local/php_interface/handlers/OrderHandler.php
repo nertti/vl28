@@ -372,7 +372,6 @@ function afterOrderCreate(Event $event)
 
     /*
      * Флаг отправки письма
-     * Создай свойство заказа SEND_EMAIL с ID 29
      */
     $sendEmailProp = $propertyCollection->getItemByOrderPropertyId(29);
     if ($sendEmailProp && $sendEmailProp->getValue() === 'Y') {
@@ -386,7 +385,7 @@ function afterOrderCreate(Event $event)
     $sendEmail = false;
 
     foreach ($paymentCollection as $paymentItem) {
-        if ($paymentItem->getPaymentSystemId() == 7) {
+        if ($paymentItem->getPaymentSystemId() == 8) { // 7 ТБанк || 8 АльфаБанк
             $sendEmail = true;
             break;
         }
@@ -394,7 +393,7 @@ function afterOrderCreate(Event $event)
 
     if (!$sendEmail) {
         foreach ($paymentCollection as $paymentItem) {
-            if ($paymentItem->getPaymentSystemId() != 7 && !$paymentItem->isPaid()) {
+            if ($paymentItem->getPaymentSystemId() != 8 && !$paymentItem->isPaid()) { // 7 ТБанк || 8 АльфаБанк
                 $sendEmail = true;
                 break;
             }
@@ -402,6 +401,11 @@ function afterOrderCreate(Event $event)
     }
 
     if (!$sendEmail) {
+        file_put_contents(
+            $_SERVER['DOCUMENT_ROOT'] . '/local/log.txt',
+            "\n[FAIL] Email не отправлен для заказа {$orderId}:  Другой статус\n",
+            FILE_APPEND
+        );
         return;
     }
 
