@@ -36,7 +36,7 @@ function checkCatalogPath($url) {
 
 if ($isProfilePages && !$isFavoritePage){
     if (!$USER->IsAuthorized()) {
-        header('Location: /login/');
+        header('Location: /signin/');
         exit();
     }
 }
