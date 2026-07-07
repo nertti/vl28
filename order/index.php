@@ -261,9 +261,9 @@ $salePrice = 0;
                 <div class="checkout__form-right">
 
                     <div class="checkout__links">
-                        <a href="/cart/" class="checkout__back">Назад</a>
+                        <a href="/basket/" class="checkout__back">Назад</a>
                         <?php if (!$USER->isAuthorized()): ?>
-                            <a href="/login/" class="checkout__login">Войти в личный кабинет</a>
+                            <a href="/signin/" class="checkout__login">Войти в личный кабинет</a>
                         <?php endif; ?>
                     </div>
 

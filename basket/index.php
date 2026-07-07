@@ -31,14 +31,14 @@ $order->doFinalAction(true);
     function getProductInfo($productId)
     {
         $result = \CIBlockElement::GetList(
-                array(),
-                array(
-                        "ID" => $productId,
-                        "=ACTIVE" => "Y"
-                ),
-                false,
-                false,
-                array("*")
+            array(),
+            array(
+                "ID" => $productId,
+                "=ACTIVE" => "Y"
+            ),
+            false,
+            false,
+            array("*")
         );
 
         if ($item = $result->Fetch()) {
@@ -69,43 +69,43 @@ $order->doFinalAction(true);
         $arFavorites = $arUser['UF_FAVORITES'];  // Достаём избранное пользователя
 
     }
-        ?>
+    ?>
     <?php
-        $offerIds = [];
+    $offerIds = [];
 
-        foreach ($basket as $basketItem) {
-            $offerIds[] = (int)$basketItem->getProductId();
-        }
+    foreach ($basket as $basketItem) {
+        $offerIds[] = (int)$basketItem->getProductId();
+    }
 
-        $offerIds = array_unique($offerIds);
+    $offerIds = array_unique($offerIds);
 
-        $offers = [];
+    $offers = [];
 
-        $res = ElementTable::getList([
-                'filter' => [
-                        '=IBLOCK_ID' => 5,
-                        '@ID' => $offerIds
-                ],
-                'select' => [
-                        'ID',
-                        'IBLOCK_ID',
-                        'NAME',
-                        'IBLOCK_SECTION_ID'
-                ]
-        ]);
+    $res = ElementTable::getList([
+        'filter' => [
+            '=IBLOCK_ID' => 5,
+            '@ID' => $offerIds
+        ],
+        'select' => [
+            'ID',
+            'IBLOCK_ID',
+            'NAME',
+            '*',
+        ]
+    ]);
 
-        while ($offer = $res->fetch()) {
+    while ($offer = $res->fetch()) {
 
-            $offer['SIZE'] = getElementProperties(
-                    5,
-                    $offer['ID'],
-                    'SIZE'
-            );
+        $offer['SIZE'] = getElementProperties(
+            5,
+            $offer['ID'],
+            'SIZE'
+        );
 
-            $offers[$offer['ID']] = $offer;
-        }
-        //pr($offers);
-        ?>
+        $offers[$offer['ID']] = $offer;
+    }
+    //pr($offers);
+    ?>
     <section class="cart first-section">
         <div class="container">
             <p class="h2">Корзина</p>
@@ -131,9 +131,9 @@ $order->doFinalAction(true);
                             $product2 = getProductInfo($basketItem->getField('PRODUCT_XML_ID'));
                             $propertySize = getElementProperties($product['IBLOCK_ID'], $product['ID'], 'SIZE');
                             $propertyColor = getElementProperties(2, $product2['ID'], 'COLOR');
-//                            echo '<pre>';
-//                            var_export($basketItem);
-//                            echo '</pre>';
+                            //                            echo '<pre>';
+                            //                            var_export($basketItem);
+                            //                            echo '</pre>';
 
                             ?>
                             <?php
@@ -166,10 +166,10 @@ $order->doFinalAction(true);
                                     <?= number_format($finalPrice, 0, '', ' ') ?> ₽
                                 </p>
                                 <span
-                                        class="cart__favorite favor <?= $active ? 'active' : '' ?>"
-                                        data-item="<?= explode('#', $basketItem->getField('PRODUCT_XML_ID'))[0] ?>"
-                                        data-name="<?= htmlspecialcharsbx($product['NAME']) ?>"
-                                        data-image="<?= CFile::GetPath($product['PREVIEW_PICTURE']) ?>"
+                                    class="cart__favorite favor <?= $active ? 'active' : '' ?>"
+                                    data-item="<?= explode('#', $basketItem->getField('PRODUCT_XML_ID'))[0] ?>"
+                                    data-name="<?= htmlspecialcharsbx($product['NAME']) ?>"
+                                    data-image="<?= CFile::GetPath($product['PREVIEW_PICTURE']) ?>"
                                 >
                                     <?= $active ? 'Товар уже в избранном' : 'Добавить в избранное' ?>
                                 </span>
@@ -188,7 +188,7 @@ $order->doFinalAction(true);
 
         </div>
     </section>
-<?php
+    <?php
     ?>
     <script>
         document.addEventListener('DOMContentLoaded', function () {

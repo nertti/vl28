@@ -391,7 +391,7 @@ use Bitrix\Catalog\ProductTable;
                 </div>
                 <p class="h2">Товар добавлен в корзину!</p>
                 <p class="thanks-product__name" id="basketModalName"></p>
-                <a href="/cart/">Перейти в корзину</a>
+                <a href="/basket/">Перейти в корзину</a>
             </div>
         </div>
     </div>

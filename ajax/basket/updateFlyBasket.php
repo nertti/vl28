@@ -276,7 +276,7 @@ foreach ($basket as $item) {
 
                     <p class="thanks-product__name" id="removeBasketModalName"></p>
 
-                    <a href="/cart/">Перейти в корзину</a>
+                    <a href="/basket/">Перейти в корзину</a>
                 </div>
             </div>
         </div>

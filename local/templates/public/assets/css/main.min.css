@@ -56,7 +56,7 @@ main {
   -webkit-box-flex:1;
   -ms-flex-positive:1;
   flex-grow:1;
-  padding-top:80px
+  padding-top:65px
 }
 main.product-page {
   padding-top:0
@@ -432,7 +432,7 @@ section {
   -webkit-box-align:center;
   -ms-flex-align:center;
   align-items:center;
-  max-width:176px;
+  max-width:150px;
   width:100%
 }
 .logo img,
@@ -440,14 +440,19 @@ section {
   width:100%;
   height:auto
 }
+@media screen and (max-width:1900px) {
+  .logo {
+    max-width:130px
+  }
+}
 @media screen and (max-width:991px) {
   .logo {
-    max-width:140px
+    max-width:110px
   }
 }
 @media screen and (max-width:600px) {
   .logo {
-    max-width:107px
+    max-width:95px
   }
 }
 @media screen and (max-width:350px) {
@@ -1316,7 +1321,7 @@ section {
   }
 }
 .hystmodal_header {
-  padding-top:80px
+  padding-top:65px
 }
 .hystmodal_header .hystmodal__window {
   width:584px
@@ -1340,7 +1345,7 @@ section {
   justify-content:flex-start
 }
 .hystmodal_menu {
-  padding-top:80px
+  padding-top:65px
 }
 .hystmodal_menu .hystmodal__window {
   width:584px;

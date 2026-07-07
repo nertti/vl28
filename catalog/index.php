@@ -20,7 +20,7 @@ $APPLICATION->SetTitle("Каталог");
 		"AJAX_OPTION_STYLE" => "Y",
 		"ALSO_BUY_ELEMENT_COUNT" => "3",
 		"ALSO_BUY_MIN_BUYES" => "2",
-		"BASKET_URL" => "/cart/",
+		"BASKET_URL" => "/basket/",
 		"BIG_DATA_RCM_TYPE" => "bestsell",
 		"CACHE_FILTER" => "N",
 		"CACHE_GROUPS" => "Y",
