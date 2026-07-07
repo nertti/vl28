@@ -16,5 +16,8 @@ if(file_exists($_SERVER['DOCUMENT_ROOT']."/local/php_interface/classes/RememberA
     require_once ($_SERVER['DOCUMENT_ROOT']."/local/php_interface/classes/RememberAuth.php");
 if(file_exists($_SERVER['DOCUMENT_ROOT']."/local/php_interface/classes/OutUser.php"))
     require_once ($_SERVER['DOCUMENT_ROOT']."/local/php_interface/classes/OutUser.php");
+
 if(file_exists($_SERVER['DOCUMENT_ROOT']."/local/php_interface/classes/PayKeeper.php"))
     require_once ($_SERVER['DOCUMENT_ROOT']."/local/php_interface/classes/PayKeeper.php");
+if(file_exists($_SERVER['DOCUMENT_ROOT']."/local/php_interface/classes/BasketData.php"))
+    require_once ($_SERVER['DOCUMENT_ROOT']."/local/php_interface/classes/BasketData.php");

@@ -11,6 +11,7 @@ use Bitrix\Sale\Order;
 use Bitrix\Currency\CurrencyManager;
 use Bitrix\Iblock\ElementTable;
 
+
 Loader::includeModule('sale');
 Loader::includeModule('catalog');
 
@@ -23,160 +24,96 @@ $order->setPersonTypeId(1);
 $order->setBasket($basket);
 $order->setField('CURRENCY', CurrencyManager::getBaseCurrency());
 $order->doFinalAction(true);
-
+// Чтобы высчитать скидку
 ?>
 
-<?php if (!empty($basket)): ?>
-    <?php
-    function getProductInfo($productId)
-    {
-        $result = \CIBlockElement::GetList(
-            array(),
-            array(
-                "ID" => $productId,
-                "=ACTIVE" => "Y"
-            ),
-            false,
-            false,
-            array("*")
-        );
-
-        if ($item = $result->Fetch()) {
-            return $item;
-        }
-        return false;
-    }
-
-    function getElementProperties($iblockId, $elementId, $code)
-    {
-        $db_props = CIBlockElement::GetProperty($iblockId, $elementId, "sort", "asc", array("CODE" => $code));
-        if ($ar_props = $db_props->Fetch()) {
-            return $ar_props;
-        }
-    }
-
-    ?>
+<?php if ($basket->count()): ?>
     <?php
     global $APPLICATION;
     global $USER;
 
-    if (!$USER->IsAuthorized()) {
-        $arFavorites = unserialize($APPLICATION->get_cookie("favorites"));
-    } else {
-        $idUser = $USER->GetID();
-        $rsUser = CUser::GetByID($idUser);
-        $arUser = $rsUser->Fetch();
-        $arFavorites = $arUser['UF_FAVORITES'];  // Достаём избранное пользователя
+    $arFavorites = [];
 
+    if (!$USER->IsAuthorized()) {
+        $cookie = $APPLICATION->get_cookie("favorites");
+        if ($cookie) {
+            $arFavorites = unserialize($cookie);
+        }
+    } else {
+        $arFavorites = CUser::GetByID($USER->GetID())
+                ->Fetch()['UF_FAVORITES'] ?? [];
     }
     ?>
     <?php
-    $offerIds = [];
-
-    foreach ($basket as $basketItem) {
-        $offerIds[] = (int)$basketItem->getProductId();
-    }
-
-    $offerIds = array_unique($offerIds);
-
-    $offers = [];
-
-    $res = ElementTable::getList([
-        'filter' => [
-            '=IBLOCK_ID' => 5,
-            '@ID' => $offerIds
-        ],
-        'select' => [
-            'ID',
-            'IBLOCK_ID',
-            'NAME',
-            '*',
-        ]
-    ]);
-
-    while ($offer = $res->fetch()) {
-
-        $offer['SIZE'] = getElementProperties(
-            5,
-            $offer['ID'],
-            'SIZE'
-        );
-
-        $offers[$offer['ID']] = $offer;
-    }
-    //pr($offers);
+    $basketData = new BasketData($basket);
+    $basketData->setFavorites($arFavorites);
+    $items = $basketData->getItems();
     ?>
     <section class="cart first-section">
         <div class="container">
             <p class="h2">Корзина</p>
             <div class="cart__inner">
                 <div class="cart__list">
-                    <?php foreach ($basket as $basketItem): ?>
-                        <div class="cart__item" id="<?= $basketItem->getField('ID') ?>">
-                            <?php
-                            // Цена за единицу со скидкой (текущая)
-                            $price = $basketItem->getPrice();
+                    <?php foreach ($items as $item): ?>
+                        <?php
+                        $basketItem = $item['BASKET'];
+                        $product = $item['PRODUCT'];
+                        $offer = $item['OFFER'];
+                        $propertySize = $item['SIZE'];
+                        $propertyColor = $item['COLOR'];
 
-                            // Базовая цена за единицу (до скидки)
-                            $basePrice = $basketItem->getBasePrice();
+                        $price = $item['PRICE'];
+                        $basePrice = $item['BASE_PRICE'];
+                        $finalPrice = $item['FINAL_PRICE'];
 
-                            // Общая стоимость позиции (цена * количество)
-                            $finalPrice = $basketItem->getFinalPrice();
+                        $hasDiscount = $item['HAS_DISCOUNT'];
 
-                            // Проверяем, есть ли скидка
-                            $hasDiscount = $basePrice > $price;
-                            ?>
-                            <?php
-                            $product = getProductInfo($basketItem->getField('PRODUCT_ID'));
-                            $product2 = getProductInfo($basketItem->getField('PRODUCT_XML_ID'));
-                            $propertySize = getElementProperties($product['IBLOCK_ID'], $product['ID'], 'SIZE');
-                            $propertyColor = getElementProperties(2, $product2['ID'], 'COLOR');
-                            //                            echo '<pre>';
-                            //                            var_export($basketItem);
-                            //                            echo '</pre>';
-
-                            ?>
-                            <?php
-                            $active = false;
-                            foreach ($arFavorites as $favorite) {
-                                if ($favorite == explode('#', $basketItem->getField('PRODUCT_XML_ID'))[0]) {
-                                    $active = true;
-                                }
-                            }
-                            ?>
+                        $quantity = $item['QUANTITY'];
+                        ?>
+                        <div class="cart__item" id="<?= $product['ID'] ?>">
                             <div class="cart__left">
-                                <img src="<?= CFile::getPath($product['PREVIEW_PICTURE']) ?>"
+                                <img src="<?= CFile::getPath($offer['PREVIEW_PICTURE']) ?>"
                                      alt="<?= $product['NAME'] ?>">
                             </div>
-                            <div class="cart__right">
+                            <div class="cart__middle">
                                 <p class="cart__title"><?= $product['NAME'] ?></p>
                                 <div class="cart__param">
-                                    <p class="cart__value"><?= $propertySize['VALUE_ENUM'] ?></p>
-                                    <p class="cart__value"><?= $basketItem->getQuantity() ?> шт</p>
+                                    <p class="cart__value"><?= $propertySize ?></p>
                                     <div class="cart__color">
-                                        <span style="background: #<?= $propertyColor['VALUE'] ?>;"></span>
+                                        <span style="background: #<?= $propertyColor ?>;"></span>
                                     </div>
                                 </div>
                                 <p class="cart__price">
-                                    <?php if ($hasDiscount): ?>
-                                        <span style="text-decoration: line-through; color: #999; margin-right: 20px">
-                                            <?= number_format($basePrice * $basketItem->getQuantity(), 0, '', ' ') ?> ₽
+                                    <?php if ($item['HAS_DISCOUNT']): ?>
+                                        <span class="cart__price-old">
+                                            <?= number_format($item['SUM_BASE_PRICE'], 0, '', ' ') ?> ₽
                                         </span>
                                     <?php endif; ?>
-                                    <?= number_format($finalPrice, 0, '', ' ') ?> ₽
+
+                                    <span class="cart__price-current">
+                                        <?= number_format($item['SUM_PRICE'], 0, '', ' ') ?> ₽
+                                    </span>
                                 </p>
                                 <span
-                                    class="cart__favorite favor <?= $active ? 'active' : '' ?>"
-                                    data-item="<?= explode('#', $basketItem->getField('PRODUCT_XML_ID'))[0] ?>"
-                                    data-name="<?= htmlspecialcharsbx($product['NAME']) ?>"
-                                    data-image="<?= CFile::GetPath($product['PREVIEW_PICTURE']) ?>"
+                                        class="cart__favorite favor <?= $item['IS_FAVORITE'] ? 'active' : '' ?>"
+                                        data-item="<?= $offer['ID'] ?>"
+                                        data-name="<?= htmlspecialcharsbx($product['NAME']) ?>"
+                                        data-image="<?= CFile::GetPath($offer['PREVIEW_PICTURE']) ?>"
                                 >
-                                    <?= $active ? 'Товар уже в избранном' : 'Добавить в избранное' ?>
+                                    <?= $item['IS_FAVORITE'] ? 'Товар уже в избранном' : 'Добавить в избранное' ?>
                                 </span>
+                            </div>
+                            <div class="cart__right">
+                                <div class="checkout__cart-quantity" data-basket-id="<?= $basketItem->getId() ?>">
+                                    <div class="minus"></div>
+                                    <input type="number" min="1" max="30" class="checkout__cart-input countProduct"
+                                           value="<?= $quantity ?>">
+                                    <div class="plus"></div>
+                                </div>
                             </div>
                             <a href="#"
                                class="cart__remove pointer"
-                               data-product-id="<?= $basketItem->getProductId() ?>"
+                               data-product-id="<?= $offer['ID'] ?>"
                                data-name="<?= htmlspecialcharsbx($product['NAME']) ?>"
                                data-image="<?= CFile::GetPath($product['PREVIEW_PICTURE']) ?>">
                             </a>
@@ -188,8 +125,97 @@ $order->doFinalAction(true);
 
         </div>
     </section>
-    <?php
-    ?>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.addEventListener('click', async function (e) {
+                const button = e.target.closest('.plus, .minus');
+                if (!button) {
+                    return;
+                }
+                const wrapper = button.closest('.checkout__cart-quantity');
+                const input = wrapper.querySelector('.countProduct');
+                let quantity = parseInt(input.value);
+                if (button.classList.contains('plus')) {
+                    quantity++;
+                }
+                if (button.classList.contains('minus')) {
+                    quantity--;
+                    if(quantity < 1){
+                        quantity = 1;
+                    }
+                }
+                input.value = quantity;
+                await updateQuantity(
+                    wrapper.dataset.basketId,
+                    quantity,
+                    wrapper
+                );
+            });
+        });
+        async function updateQuantity(
+            basketId,
+            quantity,
+            wrapper
+        ){
+            try {
+                const response = await fetch(
+                    '/ajax/basket/updateQuantity.php',
+                    {
+                        method:'POST',
+                        headers:{
+                            'Content-Type':
+                                'application/x-www-form-urlencoded'
+                        },
+                        body:new URLSearchParams({
+                            BASKET_ID:basketId,
+                            QUANTITY:quantity
+                        })
+                    }
+                );
+                const result = await response.json();
+                if(!result.success){
+                    return;
+                }
+                // цена товара
+                const cartItem =
+                    wrapper.closest('.cart__item');
+                const currentPrice =
+                    cartItem.querySelector('.cart__price-current');
+                if(currentPrice){
+                    currentPrice.textContent =
+                        numberFormat(result.itemPrice) + ' ₽';
+
+                }
+                const oldPrice =
+                    cartItem.querySelector('.cart__price-old');
+                if(oldPrice){
+                    if(result.hasDiscount){
+                        oldPrice.style.display = 'inline';
+                        oldPrice.textContent =
+                            numberFormat(result.itemBasePrice) + ' ₽';
+                    } else {
+                        oldPrice.style.display = 'none';
+                    }
+                }
+                // общая сумма корзины
+                const total =
+                    document.querySelector('.cart-total');
+                if(total){
+                    total.textContent =
+                        numberFormat(result.totalPrice) + ' ₽';
+                }
+            }
+            catch(e){
+                console.error(e);
+            }
+        }
+        function numberFormat(number){
+
+            return new Intl.NumberFormat('ru-RU')
+                .format(number);
+
+        }
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             document.addEventListener('click', async function (e) {

@@ -2625,7 +2625,8 @@ section {
   display:flex;
   -webkit-box-align:start;
   -ms-flex-align:start;
-  align-items:flex-start;
+  /*align-items:flex-start;*/
+  align-items:center;
   padding-top:25px;
   padding-bottom:25px;
   border-top:1px solid #bebebe;
@@ -2654,7 +2655,7 @@ section {
   height:19px;
   background:url(../img/trash.svg) no-repeat center
 }
-.cart__right {
+.cart__middle {
   display:-webkit-box;
   display:-ms-flexbox;
   display:flex;
@@ -2665,6 +2666,26 @@ section {
   -webkit-box-align:start;
   -ms-flex-align:start;
   align-items:flex-start
+}
+.cart__right {
+  display:-webkit-box;
+  display:-ms-flexbox;
+  display:flex;
+  -webkit-box-orient:vertical;
+  -webkit-box-direction:normal;
+  -ms-flex-direction:column;
+  flex-direction:column;
+  -webkit-box-align:center;
+  -ms-flex-align:center;
+  align-items:center;
+  width: 100%;
+  max-width: 300px;
+}
+.cart__price-old {
+  text-decoration: line-through;
+  color: #999;
+  margin-right: 20px;
+  font-size: 0.95em;
 }
 .cart__title {
   margin-bottom:15px
