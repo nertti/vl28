@@ -188,7 +188,7 @@ $salePrice = 0;
                             <?php endforeach; ?>
                         </div>
                     </div>
-                    <div class="address address_more" style="flex-direction: column">
+                    <div class="address address_more" style="flex-direction: column; display: none">
                         <div class="checkout__label" style="padding-bottom: 20px">
                             <p class="checkout__name">Населённый пункт</p>
                             <div class="checkout__inputs">
@@ -862,7 +862,8 @@ $salePrice = 0;
             const isAddressHidden = ['140'].includes(selected);
             const isMoscowDelivery = selected === '135';
 
-            addressMore.style.display = isAddressHidden ? 'none' : 'flex';
+            // addressMore.style.display = isAddressHidden ? 'none' : 'flex';
+            addressMore.style.display = 'none';
             cdekMap.style.display = isAddressHidden ? 'flex' : 'none';
             cityInput.disabled = isMoscowDelivery;
 
