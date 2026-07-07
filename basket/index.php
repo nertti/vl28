@@ -110,6 +110,9 @@ $order->doFinalAction(true);
                                            value="<?= $quantity ?>">
                                     <div class="plus"></div>
                                 </div>
+                                <span class="cart__price-current-mini">
+                                        <?= number_format($price, 0, '', ' ') ?> ₽/шт
+                                    </span>
                             </div>
                             <a href="#"
                                class="cart__remove pointer"
