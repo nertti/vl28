@@ -49,12 +49,8 @@ $comment = $request["comment"];
 $delivery = $request["delivery"];
 $deliveryPrice = (float)$request['delivery_price'] ?? 0;
 
-if ($request["setBonus"] == 'Y') {
-    $bonusPointsWithdraw = $request["bonus"];
-} else {
-    $bonusPointsWithdraw = 0;
-    $bonusPoints = $request["bonusPoints"];
-}
+$bonusPointsWithdraw = ($request["setBonus"] == 'Y') ? (float)$request["bonus"] : 0;
+$bonusPoints = $request["bonusPoints"] ?? 0;
 
 $basket = Basket::loadItemsForFUser($fUserId, $siteId);
 
@@ -74,7 +70,7 @@ DiscountCouponsManager::clear(true);
 if ($promo) {
     DiscountCouponsManager::add($promo);
 }
-$basket->refreshData(['PRICE', 'COUPONS']);
+$basket->refreshData(['PRICE', 'COUPON']);
 $order = Order::create($siteId, $USER->GetID() ?: 44);
 $order->setBasket($basket);
 
@@ -97,6 +93,10 @@ if ($request["payment"] === 'card') {
     );
     $orderTempId = uniqid('vl28_', true);
 
+    $protocol = $request->isHttps() ? 'https' : 'http';
+    $host = Context::getCurrent()->getServer()->getHttpHost();
+    $userReturnUrl = $protocol . '://' . $host . '/ajax/paySuccess.php?tmp_order_id=' . urlencode($orderTempId);
+
     try {
         $resultData = $payKeeper->createInvoice([
             'pay_amount' => number_format($totalPrice, 2, '.', ''),
@@ -105,6 +105,7 @@ if ($request["payment"] === 'card') {
             'service_name' => 'Заказ №' . $orderTempId,
             'client_email' => $email,
             'client_phone' => '+' . $phone,
+            'user_result_callback' => $userReturnUrl,
         ]);
 
         $payUrl = $resultData['invoice_url'] ?? '';
@@ -135,6 +136,9 @@ if ($request["payment"] === 'card') {
         'dom' => $request["dom"],
         'kvartira' => $request["kvartira"],
         'bonusPoints' => empty($bonusPointsWithdraw) ? $bonusPoints : 0,
+        'bonusWithdraw' => $bonusPointsWithdraw,
+        'setBonus' => $request['setBonus'] ?? 'N',
+        'payAmount' => $totalPrice,
         'promocode' => $promo,
         'utmSource' => $utmSource,
         'utmCampaign' => $utmCampaign,

@@ -1,5 +1,16 @@
 <?php
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
+
+$tmpOrderId = trim($_GET['tmp_order_id'] ?? '');
+$orderId = null;
+
+if ($tmpOrderId !== '') {
+    $pendingRows = getHLData('PendingPayments', ['=UF_ORDER_ID' => $tmpOrderId]);
+    if (!empty($pendingRows[0]['UF_DATA'])) {
+        $pendingData = json_decode($pendingRows[0]['UF_DATA'], true);
+        $orderId = $pendingData['bitrixOrderId'] ?? null;
+    }
+}
 ?>
 <style>
     body {
@@ -81,6 +92,15 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
         Ваш платеж был успешно оплачен.<br>
         Мы отправили детали вашего заказа на ваш email.
     </p>
+
+    <?php if ($orderId): ?>
+    <div class="order-details">
+        <div class="details-item">
+            <span class="details-label">Номер заказа:</span>
+            <span class="details-value">#<?= (int)$orderId ?></span>
+        </div>
+    </div>
+    <?php endif; ?>
 
     <button class="continue-button" onclick="window.location.href='/catalog/'">
         Вернуться в магазин

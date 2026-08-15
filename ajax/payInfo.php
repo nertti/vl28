@@ -16,11 +16,28 @@ Loader::includeModule('highloadblock');
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/ajax/cdek/create_cdek_order.php';
 
-
 $context = Application::getInstance()->getContext();
 $request = $context->getRequest();
 $postData = $request->getPostList()->toArray();
+$getData = $request->getQueryList()->toArray();
 
+// Визит браузера (редирект PayKeeper) — не обрабатываем как callback
+if (!$request->isPost() || empty($postData['orderid'])) {
+    $tmpOrderId = $getData['tmp_order_id'] ?? $getData['orderid'] ?? '';
+    $redirectUrl = '/ajax/paySuccess.php';
+
+    if (($getData['result'] ?? '') === 'fail') {
+        LocalRedirect('/ajax/payError.php');
+    }
+
+    if ($tmpOrderId !== '') {
+        $redirectUrl .= '?tmp_order_id=' . urlencode($tmpOrderId);
+    } elseif (!empty($getData['payment_id'])) {
+        $redirectUrl .= '?payment_id=' . urlencode($getData['payment_id']);
+    }
+
+    LocalRedirect($redirectUrl);
+}
 
 $orderTempId = $postData['orderid'] ?? '';
 $paymentId = $postData['invoice_id'] ?? '';
@@ -31,9 +48,6 @@ if (empty($orderTempId)) {
     die('ORDER_ID_EMPTY');
 }
 
-/**
- * Ищем временный заказ
- */
 $pendingRows = getHLData(
     'PendingPayments',
     [
@@ -48,15 +62,12 @@ if (empty($pendingRows)) {
 
 $pendingOrder = $pendingRows[0];
 
-/**
- * Защита от повторного callback
- */
 if ($pendingOrder['UF_STATUS'] === 'PAID') {
-    die('OK');
+    echo 'OK ' . ($postData['id'] ?? '');
+    exit;
 }
 
 $fields = json_decode($pendingOrder['UF_DATA'], true);
-file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/local/payInfoLog.txt', print_r($fields, 1), FILE_APPEND);
 if (empty($fields)) {
     http_response_code(500);
     die('ORDER_DATA_EMPTY');
@@ -66,59 +77,44 @@ global $USER;
 
 $siteId = $fields['siteId'];
 $fUserId = $fields['fUserId'];
-
 $userId = $pendingOrder['UF_USER_ID'];
+$bonusWithdraw = (float)($fields['bonusWithdraw'] ?? 0);
+$expectedAmount = (float)($fields['payAmount'] ?? 0);
 
-/**
- * Корзина
- */
-$basket = Basket::loadItemsForFUser(
-    $fUserId,
-    $siteId
-);
+$basket = Basket::loadItemsForFUser($fUserId, $siteId);
 
 if ($basket->isEmpty()) {
     http_response_code(500);
     die('BASKET_EMPTY');
 }
+
 DiscountCouponsManager::clear(true);
 if (!empty($fields['promocode'])) {
     DiscountCouponsManager::add($fields['promocode']);
 }
-$basket->refreshData(['PRICE', 'COUPONS']);
-/**
- * Создание заказа
- */
+$basket->refreshData(['PRICE', 'COUPON']);
+
 $order = Order::create($siteId, $userId);
-$order->setBasket($basket);
-
-$discounts = $order->getDiscount();
-$discounts->calculate();
-
 $order->setPersonTypeId(1);
-$order->setField('USER_DESCRIPTION', $fields['comment']);
+$order->setBasket($basket);
+$order->setField('USER_DESCRIPTION', $fields['comment'] ?? '');
 
-$order->doFinalAction(true);
-
-/**
- * Доставка
- */
 $shipmentCollection = $order->getShipmentCollection();
-
 $shipment = $shipmentCollection->createItem();
-
 $shipmentItemCollection = $shipment->getShipmentItemCollection();
 
 foreach ($basket as $basketItem) {
-
     $shipmentItem = $shipmentItemCollection->createItem($basketItem);
-
     $shipmentItem->setQuantity($basketItem->getQuantity());
 }
 
-$service = Delivery\Services\Manager::getById(
-    $fields['delivery'] ?? 1
-);
+$deliveryId = (int)($fields['delivery'] ?? 1);
+$service = Delivery\Services\Manager::getById($deliveryId);
+$deliveryService = Delivery\Services\Manager::getObjectById($deliveryId);
+
+if ($deliveryService) {
+    $shipment->setDeliveryService($deliveryService);
+}
 
 $shipment->setFields([
     'DELIVERY_ID' => $service['ID'],
@@ -128,49 +124,40 @@ $shipment->setFields([
     'CUSTOM_PRICE_DELIVERY' => 'Y',
 ]);
 
-/**
- * Оплата
- */
-$paymentCollection = $order->getPaymentCollection();
+$order->doFinalAction(true);
 
+$orderPrice = (float)$order->getPrice();
+$cardAmount = $amount > 0 ? $amount : max(0, $orderPrice - $bonusWithdraw);
+
+if ($expectedAmount > 0 && abs($cardAmount - $expectedAmount) > 0.02) {
+    file_put_contents(
+        $_SERVER['DOCUMENT_ROOT'] . '/local/payInfoLog.txt',
+        date('Y-m-d H:i:s') . " AMOUNT_MISMATCH tmp={$orderTempId} paid={$cardAmount} expected={$expectedAmount} order={$orderPrice}\n",
+        FILE_APPEND
+    );
+}
+
+$paymentCollection = $order->getPaymentCollection();
 $paySystemService = PaySystem\Manager::getObjectById(8);
 
-if ($amount < $order->getPrice()) {
-
+if ($bonusWithdraw > 0) {
     $bonusPayment = $paymentCollection->createItem();
-
     $bonusPayment->setFields([
         'PAY_SYSTEM_ID' => 6,
         'PAY_SYSTEM_NAME' => PaySystem\Manager::getObjectById(6)->getField('NAME'),
-        'SUM' => (float)$order->getPrice() - (float)$amount,
+        'SUM' => $bonusWithdraw,
     ]);
-
     $bonusPayment->setField('PAID', 'Y');
-
-    $cardPayment = $paymentCollection->createItem();
-
-    $cardPayment->setFields([
-        'PAY_SYSTEM_ID' => $paySystemService->getField('PAY_SYSTEM_ID'),
-        'PAY_SYSTEM_NAME' => $paySystemService->getField('NAME'),
-        'SUM' => $amount,
-        'PAID' => 'Y',
-    ]);
-
-} else {
-
-    $payment = $paymentCollection->createItem();
-
-    $payment->setFields([
-        'PAY_SYSTEM_ID' => $paySystemService->getField('PAY_SYSTEM_ID'),
-        'PAY_SYSTEM_NAME' => $paySystemService->getField('NAME'),
-        'SUM' => $order->getPrice(),
-        'PAID' => 'Y',
-    ]);
 }
 
-/**
- * Свойства заказа
- */
+$cardPayment = $paymentCollection->createItem();
+$cardPayment->setFields([
+    'PAY_SYSTEM_ID' => $paySystemService->getField('PAY_SYSTEM_ID'),
+    'PAY_SYSTEM_NAME' => $paySystemService->getField('NAME'),
+    'SUM' => $cardAmount,
+    'PAID' => 'Y',
+]);
+
 $propertyCollection = $order->getPropertyCollection();
 
 if ($prop = $propertyCollection->getItemByOrderPropertyCode('PAYMENT_ID')) {
@@ -229,15 +216,11 @@ if ($prop = $propertyCollection->getItemByOrderPropertyCode('UTM_PARTNER')) {
     $prop->setValue($fields['utmPartner']);
 }
 
-/**
- * Сохраняем заказ
- */
 $order->doFinalAction(true);
 
 $result = $order->save();
 
 if (!$result->isSuccess()) {
-
     file_put_contents(
         $_SERVER['DOCUMENT_ROOT'] . '/paykeeper_error.log',
         print_r($result->getErrorMessages(), true),
@@ -250,11 +233,7 @@ if (!$result->isSuccess()) {
 
 $orderId = $order->getId();
 
-/**
- * СДЭК
- */
 if ($fields['cdek'] === 'Y') {
-
     $cdekOrderData = [
         'order_number' => $orderId . '-' . time(),
         'tariff_code' => $fields['tariff_cdek'],
@@ -276,11 +255,8 @@ if ($fields['cdek'] === 'Y') {
     ];
 
     if (!empty($fields['pvz_code_cdek'])) {
-
         $cdekOrderData['pvz_code'] = $fields['pvz_code_cdek'];
-
     } else {
-
         $cdekOrderData['to_location'] = [
             'city' => $fields['city_cdek'],
             'address' => $fields['address_cdek'],
@@ -294,7 +270,6 @@ if ($fields['cdek'] === 'Y') {
     file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/local/cdekResultLog.txt', print_r($cdekResultInfo, 1), FILE_APPEND);
 
     if (!empty($cdekResult['entity']['uuid'])) {
-
         $propertyCollection = $order->getPropertyCollection();
 
         if ($cdekProp = $propertyCollection->getItemByOrderPropertyCode('CDEK_UUID')) {
@@ -308,17 +283,17 @@ if ($fields['cdek'] === 'Y') {
     }
 }
 
-/**
- * Помечаем как обработанный
- */
+$fields['bitrixOrderId'] = $orderId;
+
 updateHLData(
     'PendingPayments',
     (int)$pendingOrder['ID'],
     [
         'UF_STATUS' => 'PAID',
         'UF_PAYKEEPER_ID' => $paymentId,
+        'UF_DATA' => json_encode($fields, JSON_UNESCAPED_UNICODE),
     ]
 );
 
-echo 'OK';
+echo 'OK ' . ($postData['id'] ?? '');
 exit;
