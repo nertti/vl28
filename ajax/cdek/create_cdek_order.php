@@ -83,3 +83,28 @@ function createCdekOrder(array $orderData): array
 
     return $result;
 }
+
+function getCdekInfo(string $uuid): array
+{
+    $token = getCdekToken();
+
+    $url = CDEK_API_URL . '/v2/orders/'.$uuid;
+
+    $response = curlRequest(
+        $url,
+        array(),
+        'GET',
+        [
+            'Authorization: Bearer ' . $token,
+        ]
+    );
+
+    $result = json_decode($response, true);
+
+    if (!empty($result['errors'])) {
+        cdekLog('CDEK ERROR: ' . json_encode($result, JSON_UNESCAPED_UNICODE));
+        throw new Exception('Ошибка создания отправления СДЭК');
+    }
+
+    return $result;
+}

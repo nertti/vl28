@@ -56,7 +56,7 @@ if ($pendingOrder['UF_STATUS'] === 'PAID') {
 }
 
 $fields = json_decode($pendingOrder['UF_DATA'], true);
-
+file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/local/payInfoLog.txt', print_r($fields, 1), FILE_APPEND);
 if (empty($fields)) {
     http_response_code(500);
     die('ORDER_DATA_EMPTY');
@@ -84,8 +84,8 @@ if ($basket->isEmpty()) {
 DiscountCouponsManager::clear(true);
 if (!empty($fields['promocode'])) {
     DiscountCouponsManager::add($fields['promocode']);
-    $basket->refreshData(['PRICE', 'COUPONS']);
 }
+$basket->refreshData(['PRICE', 'COUPONS']);
 /**
  * Создание заказа
  */
@@ -289,6 +289,9 @@ if ($fields['cdek'] === 'Y') {
     }
 
     $cdekResult = createCdekOrder($cdekOrderData);
+    $cdekResultInfo = getCdekInfo($cdekResult['entity']['uuid']);
+
+    file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/local/cdekResultLog.txt', print_r($cdekResultInfo, 1), FILE_APPEND);
 
     if (!empty($cdekResult['entity']['uuid'])) {
 
@@ -296,6 +299,10 @@ if ($fields['cdek'] === 'Y') {
 
         if ($cdekProp = $propertyCollection->getItemByOrderPropertyCode('CDEK_UUID')) {
             $cdekProp->setValue($cdekResult['entity']['uuid']);
+            $order->save();
+        }
+        if ($cdekNumberProp = $propertyCollection->getItemByOrderPropertyCode('CDEK_NUMBER')) {
+            $cdekNumberProp->setValue($cdekResultInfo['entity']['number']);
             $order->save();
         }
     }

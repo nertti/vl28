@@ -439,6 +439,7 @@ function afterOrderCreate(Event $event)
     $home = $propertyCollection->getItemByOrderPropertyId(19)->getValue();
     $apartment = $propertyCollection->getItemByOrderPropertyId(20)->getValue();
     $addressCdek = $propertyCollection->getItemByOrderPropertyId(31)->getValue();
+    $numberCdek = $propertyCollection->getItemByOrderPropertyId(36)->getValue();
 
     $parts = array_filter([$city, $street, $home, $apartment]);
     $address = implode(', ', $parts);
@@ -504,7 +505,7 @@ function afterOrderCreate(Event $event)
     $currency = $order->getCurrency();
 
     if ($promoCode) {
-        $discountsText = "Промокод: {$promoCode}\nСкидка: {$promoDiscount} {$currency}";
+        $discountsText = "{$promoDiscount} {$currency}";
     } else {
         $discountsText = "Промокод не применён";
     }
@@ -530,13 +531,16 @@ function afterOrderCreate(Event $event)
             "EMAIL" => $userEmail,
             "PHONE" => $userPhone,
             "PRICE" => $amount . ' ' . $currency,
+            "AMOUNT" => $order->getPrice() . ' ' . $currency,
             "DISCOUNT" => $discountsText,
+            "PROMO_CODE" => $promoCode,
             "PAY_METHOD" => $payMethod,
             "BONUS" => $bonusPaidAmount,
             "ITEMS" => $itemsList,
             "ADMIN_LINK" => $adminOrderUrl,
+            "CDEK_NUMBER" => $numberCdek,
 
-            "EMAIL_TO"=>'neretindaniil01@gmail.com'
+            "EMAIL_TO"=>$userEmail
         ]
     ]);
 

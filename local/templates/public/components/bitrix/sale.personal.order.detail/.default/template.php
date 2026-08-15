@@ -127,6 +127,7 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
                     btn.innerHTML = `Отменить заказ`;
                     if (data.status === 'error') {
                         console.log('Ошибка отмены оплаты');
+                        cancelOrder.open('#alertModal2');
                     } else {
                         cancelOrder.open('#alertModal2');
                         // if (data.data.Success === '1') {
