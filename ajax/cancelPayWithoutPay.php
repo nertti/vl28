@@ -12,6 +12,8 @@ if (CModule::IncludeModule('sale')) {
     $orderId = $_POST['ID'];
     $order = Sale\Order::load($orderId);
     $order->setField('STATUS_ID', 'C'); // статус Отмены
+    $order->setField('CANCELED', 'Y');
+    $order->setField('REASON_CANCELED', 'Отменён покупателем');
     $order->save();
 
     header('Content-Type: application/json');

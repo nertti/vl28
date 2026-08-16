@@ -5,6 +5,7 @@ $eventManager->addEventHandler('sale', 'OnOrderUpdate', 'onOrderPaid');
 $eventManager->addEventHandler('sale', 'OnOrderAdd', 'onOrderPaid');
 //$eventManager->addEventHandler('sale', 'OnSaleOrderSaved', 'onOrderCreate');
 $eventManager->addEventHandler('sale', 'OnSaleOrderSaved', 'afterOrderCreate');
+$eventManager->addEventHandler('sale', 'OnSaleOrderSaved', 'onOrderCancel');
 $eventManager->addEventHandler('sale', 'OnOrderUpdate', 'onOrderPaidHandler');
 
 // после регистрации считаем какая карта лояльности и скидка

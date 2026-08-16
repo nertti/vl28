@@ -1,8 +1,10 @@
 <?php
 
+use Bitrix\Main\Config\Option;
 use Bitrix\Main\Loader;
 use Bitrix\Sale;
 use Bitrix\Sale\Delivery;
+use Bitrix\Sale\Helpers\Order as OrderHelper;
 use Bitrix\Highloadblock\HighloadBlockTable;
 use Bitrix\Main\Entity;
 use Bitrix\Sale\DiscountCouponsManager;
@@ -565,6 +567,212 @@ function afterOrderCreate(Event $event)
             $logPath,
             "\n[FAIL] Email не отправлен для заказа {$orderId}: " .
             implode(', ', $result->getErrorMessages()) . "\n",
+            FILE_APPEND
+        );
+    }
+}
+
+function onOrderCancel(Event $event)
+{
+    Loader::includeModule('sale');
+
+    $order = $event->getParameter("ENTITY");
+    $isNew = $event->getParameter("IS_NEW");
+
+    if (!$order || $isNew) {
+        return;
+    }
+
+    if ($order->getField('STATUS_ID') !== 'C') {
+        return;
+    }
+
+    if (!$order->getFields()->isChanged('STATUS_ID')) {
+        return;
+    }
+
+    $accountNumber = (string)$order->getField('ACCOUNT_NUMBER');
+    if ($accountNumber === '') {
+        $accountNumber = (string)$order->getId();
+    }
+
+    $orderId = $order->getId();
+    $lid = $order->getSiteId() ?: 's1';
+    $propertyCollection = $order->getPropertyCollection();
+    $paymentCollection = $order->getPaymentCollection();
+    $currency = $order->getCurrency();
+
+    $getProp = static function ($propertyCollection, $propId) {
+        $prop = $propertyCollection->getItemByOrderPropertyId($propId);
+        return $prop ? trim((string)$prop->getValue()) : '';
+    };
+
+    $userName = trim($getProp($propertyCollection, 13) . ' ' . $getProp($propertyCollection, 14));
+    $userEmail = $getProp($propertyCollection, 12);
+    $userPhone = $getProp($propertyCollection, 15);
+
+    if ($userEmail === '' && $order->getUserId()) {
+        $user = CUser::GetByID($order->getUserId())->Fetch();
+        if ($user) {
+            $userEmail = (string)$user['EMAIL'];
+            if ($userName === '') {
+                $userName = trim($user['NAME'] . ' ' . $user['LAST_NAME']);
+            }
+        }
+    }
+
+    $city = $getProp($propertyCollection, 17);
+    $street = $getProp($propertyCollection, 18);
+    $home = $getProp($propertyCollection, 19);
+    $apartment = $getProp($propertyCollection, 20);
+    $addressCdek = $getProp($propertyCollection, 31);
+    $numberCdek = $getProp($propertyCollection, 36);
+    $deliveryAddress = implode(', ', array_filter([$city, $street, $home, $apartment])) ?: $addressCdek;
+
+    $deliveryIds = $order->getDeliverySystemId();
+    $deliveryId = is_array($deliveryIds) && !empty($deliveryIds) ? $deliveryIds[0] : null;
+    $deliveryName = 'Неизвестно';
+    if ($deliveryId) {
+        $service = Delivery\Services\Manager::getById($deliveryId);
+        if ($service && !empty($service['NAME'])) {
+            $deliveryName = $service['NAME'];
+        }
+    }
+
+    $items = [];
+    foreach ($order->getBasket()->getListOfFormatText() as $basketItem) {
+        $items[] = html_entity_decode($basketItem);
+    }
+    $itemsList = implode("\n", preg_replace('/\[[^\]]*\]/u', '', $items));
+
+    $bonusPaidAmount = 0;
+    $payMethodNames = [];
+    foreach ($paymentCollection as $paymentItem) {
+        if ($paymentItem->getPaymentSystemId() == 6 && $paymentItem->isPaid()) {
+            $bonusPaidAmount += $paymentItem->getSum();
+        }
+        $paySystem = $paymentItem->getPaySystem();
+        if ($paySystem) {
+            $payMethodNames[] = $paySystem->getField('NAME');
+        }
+    }
+    $payMethodNames = array_unique(array_filter($payMethodNames));
+    $amount = $order->getPrice() - $bonusPaidAmount;
+    $payStatus = $order->isPaid() ? 'Заказ оплачен' : 'Заказ не оплачен';
+    $payMethod = $payMethodNames
+        ? implode(', ', $payMethodNames)
+        : ($order->isPaid() ? 'Оплата онлайн' : 'Оплата при получении');
+
+    $coupons = DiscountCouponsManager::get(true);
+    $promoCode = '';
+    $promoDiscount = 0;
+    foreach ($coupons as $coupon) {
+        if ($coupon['STATUS'] === DiscountCouponsManager::STATUS_APPLYED) {
+            $promoCode = $coupon['COUPON'];
+            break;
+        }
+    }
+
+    $discountData = $order->getDiscount()->getApplyResult(true);
+    if (!empty($discountData['PRICES']['BASKET'])) {
+        foreach ($discountData['PRICES']['BASKET'] as $item) {
+            if (!empty($item['DISCOUNT'])) {
+                $promoDiscount += $item['DISCOUNT'];
+            }
+        }
+    }
+    $promoDiscount = round($promoDiscount);
+    $discountsText = $promoCode ? "{$promoDiscount} {$currency}" : 'Промокод не применён';
+
+    $orderDate = '';
+    $dateInsert = $order->getDateInsert();
+    if ($dateInsert) {
+        $orderDate = $dateInsert->toString();
+    }
+
+    $cancelDescription = trim((string)$order->getField('REASON_CANCELED'));
+    if ($cancelDescription === '') {
+        $cancelDescription = 'Отменён покупателем';
+    }
+
+    $site = CSite::GetByID($lid)->Fetch() ?: [];
+    $serverName = $site['SERVER_NAME']
+        ?: Option::get('main', 'server_name', '')
+        ?: ($_SERVER['SERVER_NAME'] ?? 'vl28.pro');
+    $siteName = $site['SITE_NAME']
+        ?: $site['NAME']
+        ?: Option::get('main', 'site_name', '')
+        ?: $serverName;
+    $saleEmail = Option::get('sale', 'order_email', '');
+    if ($saleEmail === '') {
+        $saleEmail = 'order@' . $serverName;
+    }
+    $defaultEmailFrom = Option::get('main', 'email_from', '');
+    if ($defaultEmailFrom === '') {
+        $defaultEmailFrom = $saleEmail;
+    }
+
+    $publicUrl = '';
+    if (class_exists(OrderHelper::class) && OrderHelper::isAllowGuestView($order)) {
+        $publicUrl = (string)OrderHelper::getPublicLink($order);
+    }
+    if ($publicUrl === '') {
+        $publicUrl = 'https://' . $serverName . '/profile/orders/';
+    }
+
+    $adminOrderUrl = 'https://' . $serverName . '/bitrix/admin/sale_order_view.php?ID=' . $orderId;
+
+    $fields = [
+        "ORDER_ID" => $accountNumber,
+        "ORDER_ACCOUNT_NUMBER_ENCODE" => urlencode(urlencode($accountNumber)),
+        "ORDER_REAL_ID" => $orderId,
+        "ORDER_DATE" => $orderDate,
+        "EMAIL" => $userEmail,
+        "EMAIL_TO" => $userEmail,
+        "ORDER_CANCEL_DESCRIPTION" => $cancelDescription,
+        "ORDER_PUBLIC_URL" => $publicUrl,
+        "SALE_EMAIL" => $saleEmail,
+        "DEFAULT_EMAIL_FROM" => $defaultEmailFrom,
+        "SITE_NAME" => $siteName,
+        "SERVER_NAME" => $serverName,
+
+        "USER_NAME" => $userName,
+        "PHONE" => $userPhone,
+        "ADDRESS" => $deliveryAddress,
+        "DELIVERY" => $deliveryName,
+        "PAY_STATUS" => $payStatus,
+        "PAY_METHOD" => $payMethod,
+        "PRICE" => $amount . ' ' . $currency,
+        "AMOUNT" => $order->getPrice() . ' ' . $currency,
+        "DISCOUNT" => $discountsText,
+        "PROMO_CODE" => $promoCode,
+        "BONUS" => $bonusPaidAmount,
+        "ITEMS" => $itemsList,
+        "ADMIN_LINK" => $adminOrderUrl,
+        "CDEK_NUMBER" => $numberCdek,
+    ];
+
+    $result = MailEvent::send([
+        "EVENT_NAME" => "CANCEL_ORDER",
+        "LID" => $lid,
+        "C_FIELDS" => $fields,
+    ]);
+
+    $logPath = $_SERVER['DOCUMENT_ROOT'] . '/local/log.txt';
+
+    if ($result->isSuccess()) {
+        file_put_contents(
+            $logPath,
+            "\n[OK] CANCEL_ORDER email отправлен для заказа {$orderId}\n" .
+            print_r($fields, true) . "\n",
+            FILE_APPEND
+        );
+    } else {
+        file_put_contents(
+            $logPath,
+            "\n[FAIL] CANCEL_ORDER email не отправлен для заказа {$orderId}: " .
+            implode(', ', $result->getErrorMessages()) . "\n" .
+            print_r($fields, true) . "\n",
             FILE_APPEND
         );
     }
