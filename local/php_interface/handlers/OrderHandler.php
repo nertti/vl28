@@ -357,6 +357,12 @@ function afterOrderCreate(Event $event)
 
     $orderId = $order->getId();
     $propertyCollection = $order->getPropertyCollection();
+    $currency = $order->getCurrency();
+
+    $getProp = static function ($propertyCollection, $propId) {
+        $prop = $propertyCollection->getItemByOrderPropertyId($propId);
+        return $prop ? trim((string)$prop->getValue()) : '';
+    };
 
     /*
      * Удаляем группу 8 после оформления заказа
@@ -387,7 +393,7 @@ function afterOrderCreate(Event $event)
     $sendEmail = false;
 
     foreach ($paymentCollection as $paymentItem) {
-        if ($paymentItem->getPaymentSystemId() == 8) { // 7 ТБанк || 8 АльфаБанк
+        if ($paymentItem->getPaymentSystemId() == 8) { // 8 АльфаБанк / PayKeeper
             $sendEmail = true;
             break;
         }
@@ -395,7 +401,7 @@ function afterOrderCreate(Event $event)
 
     if (!$sendEmail) {
         foreach ($paymentCollection as $paymentItem) {
-            if ($paymentItem->getPaymentSystemId() != 8 && !$paymentItem->isPaid()) { // 7 ТБанк || 8 АльфаБанк
+            if ($paymentItem->getPaymentSystemId() != 8 && !$paymentItem->isPaid()) {
                 $sendEmail = true;
                 break;
             }
@@ -416,32 +422,41 @@ function afterOrderCreate(Event $event)
      */
     $deliveryIds = $order->getDeliverySystemId();
     $deliveryId = is_array($deliveryIds) && !empty($deliveryIds) ? $deliveryIds[0] : null;
-    $service = null;
+    $deliveryName = 'Неизвестно';
 
     if ($deliveryId) {
-        $service = \Bitrix\Sale\Delivery\Services\Manager::getById($deliveryId);
+        $service = Delivery\Services\Manager::getById($deliveryId);
+        if ($service && !empty($service['NAME'])) {
+            $deliveryName = $service['NAME'];
+        }
     }
 
     /*
      * Данные клиента
      */
-    $userName = trim(
-        $propertyCollection->getItemByOrderPropertyId(13)->getValue() . ' ' .
-        $propertyCollection->getItemByOrderPropertyId(14)->getValue()
-    );
+    $userName = trim($getProp($propertyCollection, 13) . ' ' . $getProp($propertyCollection, 14));
+    $userEmail = $getProp($propertyCollection, 12);
+    $userPhone = $getProp($propertyCollection, 15);
 
-    $userEmail = $propertyCollection->getItemByOrderPropertyId(12)->getValue();
-    $userPhone = $propertyCollection->getItemByOrderPropertyId(15)->getValue();
+    if ($userEmail === '' && $userId) {
+        $userData = CUser::GetByID($userId)->Fetch();
+        if ($userData) {
+            $userEmail = (string)$userData['EMAIL'];
+            if ($userName === '') {
+                $userName = trim($userData['NAME'] . ' ' . $userData['LAST_NAME']);
+            }
+        }
+    }
 
     /*
      * Адрес
      */
-    $city = $propertyCollection->getItemByOrderPropertyId(17)->getValue();
-    $street = $propertyCollection->getItemByOrderPropertyId(18)->getValue();
-    $home = $propertyCollection->getItemByOrderPropertyId(19)->getValue();
-    $apartment = $propertyCollection->getItemByOrderPropertyId(20)->getValue();
-    $addressCdek = $propertyCollection->getItemByOrderPropertyId(31)->getValue();
-    $numberCdek = $propertyCollection->getItemByOrderPropertyId(36)->getValue();
+    $city = $getProp($propertyCollection, 17);
+    $street = $getProp($propertyCollection, 18);
+    $home = $getProp($propertyCollection, 19);
+    $apartment = $getProp($propertyCollection, 20);
+    $addressCdek = $getProp($propertyCollection, 31);
+    $numberCdek = $getProp($propertyCollection, 36);
 
     $parts = array_filter([$city, $street, $home, $apartment]);
     $address = implode(', ', $parts);
@@ -450,39 +465,58 @@ function afterOrderCreate(Event $event)
     /*
      * Товары
      */
-    $basket = $order->getBasket();
     $items = [];
-
-    foreach ($basket->getListOfFormatText() as $basketItem) {
+    foreach ($order->getBasket()->getListOfFormatText() as $basketItem) {
         $items[] = html_entity_decode($basketItem);
     }
-
     $itemsList = implode("\n", preg_replace('/\[[^\]]*\]/u', '', $items));
 
     /*
-     * Бонусы
+     * Бонусы и способ оплаты
      */
     $bonusPaidAmount = 0;
+    $typePayNames = [];
 
     foreach ($paymentCollection as $paymentItem) {
-        if ($paymentItem->getPaymentSystemId() == 6 && $paymentItem->isPaid()) {
-            $bonusPaidAmount += $paymentItem->getSum();
+        $paySystemId = (int)$paymentItem->getPaymentSystemId();
+
+        if ($paySystemId === 6) {
+            if ($paymentItem->isPaid()) {
+                $bonusPaidAmount += $paymentItem->getSum();
+            }
+            continue;
+        }
+
+        $payName = trim((string)$paymentItem->getPaymentSystemName());
+        if ($payName === '') {
+            $paySystem = $paymentItem->getPaySystem();
+            if ($paySystem) {
+                $payName = trim((string)$paySystem->getField('NAME'));
+            }
+        }
+
+        if ($payName !== '') {
+            $typePayNames[] = $payName;
         }
     }
 
-    $amount = $order->getPrice() - $bonusPaidAmount;
+    $typePayNames = array_values(array_unique($typePayNames));
+    if ($typePayNames) {
+        $typePay = implode(', ', $typePayNames);
+    } elseif ($order->isPaid()) {
+        $typePay = 'Оплата картой';
+    } else {
+        $typePay = 'Оплата при получении';
+    }
 
-    /*
-     * Статусы оплаты
-     */
+    $orderPrice = (float)$order->getPrice();
+    $amountToPay = $orderPrice - $bonusPaidAmount;
     $payStatus = $order->isPaid() ? 'Заказ оплачен' : 'Заказ не оплачен';
-    $payMethod = $order->isPaid() ? 'Оплата онлайн' : 'Оплата при получении';
 
     /*
-     * Промокоды
+     * Промокоды и скидки
      */
     $coupons = DiscountCouponsManager::get(true);
-
     $promoCode = '';
     $promoDiscount = 0;
 
@@ -495,6 +529,17 @@ function afterOrderCreate(Event $event)
 
     $discountData = $order->getDiscount()->getApplyResult(true);
 
+    if ($promoCode === '' && !empty($discountData['COUPON_LIST'])) {
+        foreach ($discountData['COUPON_LIST'] as $coupon) {
+            $promoCode = is_array($coupon)
+                ? (string)($coupon['COUPON'] ?? $coupon['COUPON_NUMBER'] ?? '')
+                : (string)$coupon;
+            if ($promoCode !== '') {
+                break;
+            }
+        }
+    }
+
     if (!empty($discountData['PRICES']['BASKET'])) {
         foreach ($discountData['PRICES']['BASKET'] as $item) {
             if (!empty($item['DISCOUNT'])) {
@@ -504,51 +549,46 @@ function afterOrderCreate(Event $event)
     }
 
     $promoDiscount = round($promoDiscount);
-    $currency = $order->getCurrency();
+    $discountLabel = $promoCode !== '' ? $promoCode : 'не применён';
+    $discountAmountLabel = $promoDiscount > 0
+        ? $promoDiscount . ' ' . $currency
+        : '0 ' . $currency;
 
-    if ($promoCode) {
-        $discountsText = "{$promoDiscount} {$currency}";
-    } else {
-        $discountsText = "Промокод не применён";
-    }
+    $bonusLabel = $bonusPaidAmount > 0
+        ? $bonusPaidAmount . ' ' . $currency
+        : '0 ' . $currency;
 
-    /*
-     * Ссылка на заказ
-     */
-    $adminOrderUrl = "https://vl28.pro/bitrix/admin/sale_order_view.php?ID=" . $orderId;
+    $adminOrderUrl = 'https://vl28.pro/bitrix/admin/sale_order_view.php?ID=' . $orderId;
 
-    /*
-     * Отправка email
-     */
+    $fields = [
+        "ORDER_ID" => $orderId,
+        "ORDER_TYPE" => $isNew ? "Новый заказ" : "Оплата заказа",
+        "ITEMS" => $itemsList,
+        "PRICE" => $orderPrice . ' ' . $currency,
+        "AMOUNT" => $amountToPay . ' ' . $currency,
+        "DISCOUNT" => $discountLabel,
+        "DISCOUNT_AMOUNT" => $discountAmountLabel,
+        "PROMO_CODE" => $promoCode,
+        "TYPE_PAY" => $typePay,
+        "PAY_METHOD" => $typePay,
+        "PAY_STATUS" => $payStatus,
+        "BONUS" => $bonusLabel,
+        "USER_NAME" => $userName,
+        "EMAIL" => $userEmail,
+        "EMAIL_TO" => $userEmail,
+        "PHONE" => $userPhone,
+        "DELIVERY" => $deliveryName,
+        "ADDRESS" => $deliveryAddress,
+        "CDEK_NUMBER" => $numberCdek,
+        "ADMIN_LINK" => $adminOrderUrl,
+    ];
+
     $result = MailEvent::send([
         "EVENT_NAME" => "NEW_ORDER_NOTIFICATION",
-        "LID" => "s1",
-        "C_FIELDS" => [
-            "ORDER_ID" => $orderId,
-            "ORDER_TYPE" => $isNew ? "Новый заказ" : "Оплата заказа",
-            "PAY_STATUS" => $payStatus,
-            "DELIVERY" => $service ? $service['NAME'] : 'Неизвестно',
-            "ADDRESS" => $deliveryAddress,
-            "USER_NAME" => $userName,
-            "EMAIL" => $userEmail,
-            "PHONE" => $userPhone,
-            "PRICE" => $amount . ' ' . $currency,
-            "AMOUNT" => $order->getPrice() . ' ' . $currency,
-            "DISCOUNT" => $discountsText,
-            "PROMO_CODE" => $promoCode,
-            "PAY_METHOD" => $payMethod,
-            "BONUS" => $bonusPaidAmount,
-            "ITEMS" => $itemsList,
-            "ADMIN_LINK" => $adminOrderUrl,
-            "CDEK_NUMBER" => $numberCdek,
-
-            "EMAIL_TO"=>$userEmail
-        ]
+        "LID" => $order->getSiteId() ?: "s1",
+        "C_FIELDS" => $fields,
     ]);
 
-    /*
-     * Логирование
-     */
     $logPath = $_SERVER['DOCUMENT_ROOT'] . '/local/log.txt';
 
     if ($result->isSuccess()) {
@@ -559,14 +599,15 @@ function afterOrderCreate(Event $event)
 
         file_put_contents(
             $logPath,
-            "\n[OK] Email отправлен для заказа {$orderId}\n",
+            "\n[OK] Email отправлен для заказа {$orderId}\n" . print_r($fields, true) . "\n",
             FILE_APPEND
         );
     } else {
         file_put_contents(
             $logPath,
             "\n[FAIL] Email не отправлен для заказа {$orderId}: " .
-            implode(', ', $result->getErrorMessages()) . "\n",
+            implode(', ', $result->getErrorMessages()) . "\n" .
+            print_r($fields, true) . "\n",
             FILE_APPEND
         );
     }

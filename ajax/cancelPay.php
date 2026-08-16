@@ -1,10 +1,12 @@
 <?php
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php");
-require_once $_SERVER["DOCUMENT_ROOT"] . '/local/php_interface/include/t_auth.php';
+require_once $_SERVER["DOCUMENT_ROOT"] . '/local/php_interface/include/alfa_auth.php';
 
 use Bitrix\Main\Loader;
 use Bitrix\Sale;
-global $USER;
+
+/** @var string $login */
+/** @var string $password */
 
 header('Content-Type: application/json');
 
@@ -13,9 +15,8 @@ if (!Loader::includeModule('sale')) {
     exit;
 }
 
-$orderId   = (int)$_POST['ID'];
-$paymentId = $_POST['PAYMENT_ID'];
-$arOrder = CSaleOrder::GetByID($orderId);
+$orderId = (int)($_POST['ID'] ?? 0);
+$paymentId = trim((string)($_POST['PAYMENT_ID'] ?? ''));
 
 $order = Sale\Order::load($orderId);
 
@@ -25,9 +26,33 @@ if (!$order) {
 }
 
 try {
+    $propertyCollection = $order->getPropertyCollection();
+
+    if ($paymentId === '') {
+        $paymentIdProp = $propertyCollection->getItemByOrderPropertyCode('PAYMENT_ID');
+        if ($paymentIdProp) {
+            $paymentId = trim((string)$paymentIdProp->getValue());
+        }
+    }
+
+    if ($paymentId === '') {
+        throw new Exception('Не найден ID платежа PayKeeper');
+    }
 
     // =============================
-    // 1️⃣ Снимаем оплату в Битриксе
+    // 1️⃣ Возврат в PayKeeper
+    // =============================
+
+    $payKeeper = new PayKeeper(
+        'vl28.server.paykeeper.ru',
+        $login,
+        $password
+    );
+
+    $payKeeper->reversePayment($paymentId);
+
+    // =============================
+    // 2️⃣ Снимаем оплату в Битриксе
     // =============================
 
     $paymentCollection = $order->getPaymentCollection();
@@ -39,10 +64,12 @@ try {
     }
 
     // =============================
-    // 2️⃣ Ставим статус отмены
+    // 3️⃣ Ставим статус отмены
     // =============================
 
     $order->setField('STATUS_ID', 'C');
+    $order->setField('CANCELED', 'Y');
+    $order->setField('REASON_CANCELED', 'Отменён покупателем');
 
     $result = $order->save();
 
@@ -50,58 +77,15 @@ try {
         throw new Exception(implode(', ', $result->getErrorMessages()));
     }
 
-    //отнимаем бонусы
-    $propertyCollection = $order->getPropertyCollection();
-    $bonus = $propertyCollection->getItemByOrderPropertyCode('BONUS')->getValue();
-    $accountID = CSaleUserAccount::Withdraw($arOrder["USER_ID"], $bonus, "RUB");
-
     // =============================
-    // 3️⃣ Отправляем Cancel в Т-Банк
+    // 4️⃣ Списание начисленных бонусов
     // =============================
 
-    $data = [
-        "TerminalKey" => $terminalKey,
-        "PaymentId"   => $paymentId,
-        "Password"    => $secretKey
-    ];
+    $bonusProp = $propertyCollection->getItemByOrderPropertyCode('BONUS');
+    $bonus = $bonusProp ? (float)$bonusProp->getValue() : 0;
 
-    ksort($data);
-    $token = hash('sha256', implode('', $data));
-
-    $requestData = [
-        "TerminalKey" => $terminalKey,
-        "PaymentId"   => $paymentId,
-        "Token"       => $token,
-    ];
-
-    $ch = curl_init('https://securepay.tinkoff.ru/v2/Cancel');
-
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_POST => true,
-        CURLOPT_POSTFIELDS => json_encode($requestData),
-        CURLOPT_HTTPHEADER => [
-            'Content-Type: application/json',
-            'Accept: application/json'
-        ],
-        CURLOPT_SSL_VERIFYPEER => true,
-        CURLOPT_CONNECTTIMEOUT => 30,
-        CURLOPT_TIMEOUT => 30
-    ]);
-
-    $response = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-    curl_close($ch);
-
-    if ($httpCode !== 200) {
-        throw new Exception('Ошибка запроса к Т-Банку');
-    }
-
-    $responseData = json_decode($response, true);
-
-    if (!$responseData['Success']) {
-        throw new Exception($responseData['Message']);
+    if ($bonus > 0) {
+        CSaleUserAccount::Withdraw($order->getUserId(), $bonus, 'RUB');
     }
 
     echo json_encode([
@@ -110,7 +94,6 @@ try {
     ]);
 
 } catch (Exception $e) {
-
     echo json_encode([
         'status' => 'error',
         'message' => $e->getMessage()
