@@ -579,7 +579,7 @@ function afterOrderCreate(Event $event)
         "PHONE" => $userPhone,
         "DELIVERY" => $deliveryName,
         "ADDRESS" => $deliveryAddress,
-        "CDEK_NUMBER" => $numberCdek,
+        "DELIVERY_NUMBER" => $numberCdek,
         "ADMIN_LINK" => $adminOrderUrl,
     ];
 
@@ -790,7 +790,7 @@ function onOrderCancel(Event $event)
         "BONUS" => $bonusPaidAmount,
         "ITEMS" => $itemsList,
         "ADMIN_LINK" => $adminOrderUrl,
-        "CDEK_NUMBER" => $numberCdek,
+        "DELIVERY_NUMBER" => $numberCdek,
     ];
 
     $result = MailEvent::send([
