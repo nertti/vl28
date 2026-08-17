@@ -40,8 +40,10 @@ if (!$request->isPost() || empty($postData['orderid'])) {
 }
 
 $orderTempId = $postData['orderid'] ?? '';
-$paymentId = $postData['invoice_id'] ?? '';
+$paymentId = $postData['id'] ?? '';
 $amount = (float)($postData['sum'] ?? 0);
+
+file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/local/orderFieldsLog.txt', print_r($postData, 1), FILE_APPEND);
 
 if (empty($orderTempId)) {
     http_response_code(400);
@@ -267,7 +269,6 @@ if ($fields['cdek'] === 'Y') {
     $cdekResult = createCdekOrder($cdekOrderData);
     $cdekResultInfo = getCdekInfo($cdekResult['entity']['uuid']);
 
-    file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/local/cdekResultLog.txt', print_r($cdekResultInfo, 1), FILE_APPEND);
 
     if (!empty($cdekResult['entity']['uuid'])) {
         $propertyCollection = $order->getPropertyCollection();
