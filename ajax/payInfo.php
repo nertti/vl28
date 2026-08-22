@@ -220,19 +220,6 @@ if ($prop = $propertyCollection->getItemByOrderPropertyCode('UTM_PARTNER')) {
 
 $order->doFinalAction(true);
 
-$result = $order->save();
-
-if (!$result->isSuccess()) {
-    file_put_contents(
-        $_SERVER['DOCUMENT_ROOT'] . '/paykeeper_error.log',
-        print_r($result->getErrorMessages(), true),
-        FILE_APPEND
-    );
-
-    http_response_code(500);
-    die('ORDER_SAVE_ERROR');
-}
-
 $orderId = $order->getId();
 
 if ($fields['cdek'] === 'Y') {
@@ -275,16 +262,15 @@ if ($fields['cdek'] === 'Y') {
 
         if ($cdekProp = $propertyCollection->getItemByOrderPropertyCode('CDEK_UUID')) {
             $cdekProp->setValue($cdekResult['entity']['uuid']);
-            $order->save();
         }
         if ($cdekNumberProp = $propertyCollection->getItemByOrderPropertyCode('CDEK_NUMBER')) {
             $cdekNumberProp->setValue($cdekResultInfo['entity']['number']);
-            $order->save();
         }
     }
 }
 
 $fields['bitrixOrderId'] = $orderId;
+$order->save();
 
 updateHLData(
     'PendingPayments',
