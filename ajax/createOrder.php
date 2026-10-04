@@ -84,6 +84,172 @@ $totalPrice = $basket->getPrice() - (float)$bonusPointsWithdraw + $deliveryPrice
 // === Оплата онлайн АЛЬФА ===
 // =========================================
 if ($request["payment"] === 'card') {
+
+    $discounts = $order->getDiscount();
+    $discounts->calculate();
+
+    $order->doFinalAction(true);
+
+    /**
+     * =========================================================
+     * Формирование корзины для чека PayKeeper
+     * =========================================================
+     */
+
+    $cart = [];
+
+    $basketItemsTotal = 0.0;
+
+    /**
+     * Сначала собираем товары.
+     *
+     * $basketItem->getPrice() уже содержит цену после
+     * применения скидок Bitrix / промокода.
+     */
+    foreach ($basket as $basketItem) {
+        if ($basketItem->isDelay()) {
+            continue;
+        }
+
+        $quantity = (float)$basketItem->getQuantity();
+        $price = (float)$basketItem->getPrice();
+
+        if ($quantity <= 0 || $price < 0) {
+            continue;
+        }
+
+        $sum = round($price * $quantity, 2);
+
+        if ($sum <= 0) {
+            continue;
+        }
+
+        $cart[] = [
+            'name' => $basketItem->getField('NAME'),
+            'price' => $price,
+            'quantity' => $quantity,
+            'sum' => $sum,
+            'tax' => 'none',
+            'item_type' => 'goods',
+            'payment_type' => 'full_payment',
+        ];
+
+        $basketItemsTotal += $sum;
+    }
+
+    /**
+     * =========================================================
+     * Распределяем списанные бонусы по товарам
+     * =========================================================
+     *
+     * Бонусы распределяются пропорционально стоимости товаров.
+     *
+     * Например:
+     *
+     * Товар 1 = 6000
+     * Товар 2 = 4000
+     * Бонусы = 500
+     *
+     * Получим:
+     *
+     * Товар 1 = 5700
+     * Товар 2 = 3800
+     */
+    $bonusDiscount = min(
+        max((float)$bonusPointsWithdraw, 0),
+        $basketItemsTotal
+    );
+
+    if ($bonusDiscount > 0 && $basketItemsTotal > 0) {
+        $distributedBonus = 0.0;
+        $lastIndex = count($cart) - 1;
+
+        foreach ($cart as $index => &$item) {
+            $itemSum = (float)$item['sum'];
+
+            if ($index === $lastIndex) {
+                // Последней позиции отдаём остаток,
+                // чтобы избежать расхождения в 1 копейку.
+                $itemDiscount = round(
+                    $bonusDiscount - $distributedBonus,
+                    2
+                );
+            } else {
+                $itemDiscount = round(
+                    $bonusDiscount * ($itemSum / $basketItemsTotal),
+                    2
+                );
+
+                $distributedBonus += $itemDiscount;
+            }
+
+            $itemDiscount = min($itemDiscount, $itemSum);
+
+            $newSum = round($itemSum - $itemDiscount, 2);
+
+            $item['sum'] = $newSum;
+
+            /**
+             * Цена одной единицы после распределения скидки.
+             *
+             * Для количества > 1 считаем от общей суммы позиции.
+             */
+            $item['price'] = round(
+                $newSum / $item['quantity'],
+                2
+            );
+        }
+
+        unset($item);
+    }
+
+    /**
+     * =========================================================
+     * Добавляем доставку отдельной позицией
+     * =========================================================
+     */
+    if ($deliveryPrice > 0) {
+        $cart[] = [
+            'name' => 'Доставка',
+            'price' => round($deliveryPrice, 2),
+            'quantity' => 1,
+            'sum' => round($deliveryPrice, 2),
+            'tax' => 'none',
+            'item_type' => 'service',
+            'payment_type' => 'full_payment',
+        ];
+    }
+
+    /**
+     * =========================================================
+     * Проверяем итоговую сумму чека
+     * =========================================================
+     */
+    $cartTotal = 0.0;
+
+    foreach ($cart as $item) {
+        $cartTotal += (float)$item['sum'];
+    }
+
+    $cartTotal = round($cartTotal, 2);
+
+    $totalPrice = round(
+        $basketItemsTotal - $bonusDiscount + $deliveryPrice,
+        2
+    );
+
+    /**
+     * Защита от расхождения суммы.
+     */
+    if (abs($cartTotal - $totalPrice) > 0.01) {
+        throw new Exception(
+            'Ошибка формирования чека PayKeeper: ' .
+            'сумма товаров в чеке (' . $cartTotal . ') ' .
+            'не совпадает с суммой заказа (' . $totalPrice . ')'
+        );
+    }
+
+
     require_once $_SERVER["DOCUMENT_ROOT"] . '/local/php_interface/include/alfa_auth.php';
 
     $payKeeper = new PayKeeper(
@@ -102,7 +268,12 @@ if ($request["payment"] === 'card') {
             'pay_amount' => number_format($totalPrice, 2, '.', ''),
             'clientid' => trim($surname . ' ' . $name),
             'orderid' => $orderTempId,
-            'service_name' => 'Заказ №' . $orderTempId,
+
+            'service_name' => ';PKC|' . json_encode(
+                    $cart,
+                    JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+                ) . '|',
+
             'client_email' => $email,
             'client_phone' => '+' . $phone,
             'user_result_callback' => $userReturnUrl,
