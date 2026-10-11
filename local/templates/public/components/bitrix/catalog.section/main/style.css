@@ -1,4 +1,4 @@
-@media screen and (min-width: 991px) {
+@media screen and (min-width: 1500px) {
     main .products .products__list .product:last-child {
         display: none;
     }

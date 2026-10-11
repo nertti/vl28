@@ -740,10 +740,16 @@ section {
   -ms-flex-direction:column;
   flex-direction:column;
   width:33.3333333333%;
+  /*width:25%;*/
   position:relative;
   background-color:#d5d5d5;
   background:linear-gradient(to top, #d5d5d5, #fff);
 }
+@media screen and (min-width: 800px) and (max-width: 1500px) {
+  .product {
+    width:25%;
+  }}
+
 .product__inner {
   padding-left:40px;
   padding-right:40px;

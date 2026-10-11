@@ -129,9 +129,9 @@ if ($request["payment"] === 'card') {
             'price' => $price,
             'quantity' => $quantity,
             'sum' => $sum,
-            'tax' => 'none',
+            'tax' => 'vat22',
             'item_type' => 'goods',
-            'payment_type' => 'full_payment',
+            'payment_type' => 'full',
         ];
 
         $basketItemsTotal += $sum;
@@ -214,9 +214,9 @@ if ($request["payment"] === 'card') {
             'price' => round($deliveryPrice, 2),
             'quantity' => 1,
             'sum' => round($deliveryPrice, 2),
-            'tax' => 'none',
+            'tax' => 'vat22',
             'item_type' => 'service',
-            'payment_type' => 'full_payment',
+            'payment_type' => 'full',
         ];
     }
 
