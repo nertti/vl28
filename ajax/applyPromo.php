@@ -22,24 +22,25 @@ if (!$promoCode) {
 }
 
 // ОПРЕДЕЛЯЕМ КТО ДЕЛАЕТ ЗАКАЗ
-// Если пользователь авторизован, берем его ID, иначе ID анонимной корзины
-$userId = ($USER instanceof CUser && $USER->IsAuthorized()) ? $USER->GetID() : \Bitrix\Sale\Fuser::getId();
+// Используем того же владельца, что и при создании заказа (FUSER_ID — ID корзины).
+$userId = (int)(($USER instanceof CUser && $USER->IsAuthorized()) ? $USER->GetID() : 44);
 $siteId = \Bitrix\Main\Context::getCurrent()->getSite();
 
 if (!$siteId) $siteId = 's1'; // Страховка для SITE_ID
 
 // 1. Сначала купон
-DiscountCouponsManager::clear(true);
+DiscountCouponsManager::reInit(DiscountCouponsManager::MODE_CLIENT, ['userId' => $userId], true);
 DiscountCouponsManager::add($promoCode);
 
 // 2. Загружаем корзину именно для этого пользователя
 $fUserId = \Bitrix\Sale\Fuser::getId();
 $basket = Sale\Basket::loadItemsForFUser($fUserId, $siteId);
-$basket->refreshData(['PRICE', 'COUPON']);
+$basket->refreshData(['PRICE', 'COUPONS']);
 
 // 3. Создаем заказ С УКАЗАНИЕМ КОРРЕКТНОГО USER_ID
 // Это критично для проверки ограничений по группам пользователей!
 $order = Sale\Order::create($siteId, $userId); 
+$order->setPersonTypeId(1);
 $order->setBasket($basket);
 
 // 4. Расчет

@@ -90,11 +90,16 @@ if ($basket->isEmpty()) {
     die('BASKET_EMPTY');
 }
 
-DiscountCouponsManager::clear(true);
+// Callback PayKeeper не содержит сессию покупателя: используем владельца заказа.
+DiscountCouponsManager::reInit(
+    DiscountCouponsManager::MODE_CLIENT,
+    ['userId' => (int)$userId],
+    true
+);
 if (!empty($fields['promocode'])) {
     DiscountCouponsManager::add($fields['promocode']);
 }
-$basket->refreshData(['PRICE', 'COUPON']);
+$basket->refreshData(['PRICE', 'COUPONS']);
 
 $order = Order::create($siteId, $userId);
 $order->setPersonTypeId(1);
@@ -220,6 +225,19 @@ if ($prop = $propertyCollection->getItemByOrderPropertyCode('UTM_PARTNER')) {
 
 $order->doFinalAction(true);
 
+// Сохраняем только реально применённые купоны, а не введённый клиентом текст.
+// COMMENTS виден менеджеру в карточке заказа и не зависит от текущей сессии.
+$discountData = $order->getDiscount()->getApplyResult(true);
+$appliedPromoCodes = [];
+foreach (($discountData['COUPON_LIST'] ?? []) as $couponCode => $coupon) {
+    if (($coupon['APPLY'] ?? 'N') === 'Y') {
+        $appliedPromoCodes[] = (string)($coupon['COUPON'] ?? $couponCode);
+    }
+}
+if ($appliedPromoCodes) {
+    $order->setField('COMMENTS', 'Промокод: ' . implode(', ', array_unique($appliedPromoCodes)));
+}
+
 $orderId = $order->getId();
 
 if ($fields['cdek'] === 'Y') {
@@ -269,8 +287,12 @@ if ($fields['cdek'] === 'Y') {
     }
 }
 
-$fields['bitrixOrderId'] = $orderId;
-$order->save();
+$saveResult = $order->save();
+if (!$saveResult->isSuccess()) {
+    http_response_code(500);
+    die('ORDER_SAVE_ERROR');
+}
+$fields['bitrixOrderId'] = $order->getId();
 
 updateHLData(
     'PendingPayments',

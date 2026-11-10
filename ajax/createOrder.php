@@ -66,12 +66,14 @@ $postal_code_cdek = $request['postal_code_cdek'];
 $formatted_cdek = $request['formatted_cdek'];
 $promo = trim($request['promo'] ?? '');
 // ===== ПРОМОКОД =====
-DiscountCouponsManager::clear(true);
+$userId = (int)($USER->GetID() ?: 44);
+DiscountCouponsManager::reInit(DiscountCouponsManager::MODE_CLIENT, ['userId' => $userId], true);
 if ($promo) {
     DiscountCouponsManager::add($promo);
 }
-$basket->refreshData(['PRICE', 'COUPON']);
-$order = Order::create($siteId, $USER->GetID() ?: 44);
+$basket->refreshData(['PRICE', 'COUPONS']);
+$order = Order::create($siteId, $userId);
+$order->setPersonTypeId(1);
 $order->setBasket($basket);
 
 $discounts = $order->getDiscount();
@@ -329,7 +331,7 @@ if ($request["payment"] === 'card') {
             'PendingPayments',
             [
                 'UF_ORDER_ID' => $orderTempId,
-                'UF_USER_ID' => $USER->GetID() ?: 44,
+                'UF_USER_ID' => $userId,
                 'UF_DATA' => json_encode($fields, JSON_UNESCAPED_UNICODE),
                 'UF_STATUS' => 'NEW',
                 'UF_CREATED' => date('d.m.Y H:i:s'),
