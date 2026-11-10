@@ -564,7 +564,7 @@ function afterOrderCreate(Event $event)
         "ORDER_ID" => $orderId,
         "ORDER_TYPE" => $isNew ? "Новый заказ" : "Оплата заказа",
         "ITEMS" => $itemsList,
-        "PRICE" => $orderPrice . ' ' . $currency,
+        "PRICE" => number_format($orderPrice, 0, '.', ' ') . ' ' . $currency,
         "AMOUNT" => $amountToPay . ' ' . $currency,
         "DISCOUNT" => $discountLabel,
         "DISCOUNT_AMOUNT" => $discountAmountLabel,

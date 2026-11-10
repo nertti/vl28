@@ -55,7 +55,7 @@
             "LABEL_PROP_MOBILE" => "",
             "LABEL_PROP_POSITION" => "top-left",
             "LAZY_LOAD" => "Y",
-            "LINE_ELEMENT_COUNT" => "3",
+            "LINE_ELEMENT_COUNT" => "5",
             "LOAD_ON_SCROLL" => "N",
             "MESSAGE_404" => "",
             "MESS_BTN_ADD_TO_BASKET" => "В корзину",

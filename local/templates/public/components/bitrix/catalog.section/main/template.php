@@ -24,7 +24,7 @@ $this->setFrameMode(true);
             ?>
             <?php
             $count++;
-            if ($count > 4) {
+            if ($count > 5) {
                 break;
             }
             ?>

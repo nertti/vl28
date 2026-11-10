@@ -18,6 +18,7 @@ $isAboutPage = $APPLICATION->GetCurPage(false) === '/about/';
 $isCartPage = $APPLICATION->GetCurPage(false) === '/basket/';
 $isOrderPage = $APPLICATION->GetCurPage(false) === '/order/';
 $isProfilePages = strpos($APPLICATION->GetCurPage(false), '/profile/') !== false;
+$isCatalogPages = strpos($APPLICATION->GetCurPage(false), '/catalog/') !== false;
 $isFavoritePage = $APPLICATION->GetCurPage(false) === '/profile/favorite/';
 $isCustomersPage = $APPLICATION->GetCurPage(false) === '/customers/';
 
@@ -62,7 +63,7 @@ if (!$isCartPage && !$isCartPage) {
     ?>
     <?php $APPLICATION->ShowHead(); ?>
 </head>
-<body class="preloader-active">
+<body class="preloader-active <?php if($isMainPage):?>is-main<?php endif;?>">
 <?php $APPLICATION->ShowPanel(); ?>
 
 <?php if (checkCatalogPath($APPLICATION->GetCurPageParam())):?>
@@ -254,23 +255,23 @@ if (!$isCartPage && !$isCartPage) {
               </div>
             </section>
         <?php endif;?>
-        <?php if(!defined('ERROR_404') && !checkCatalogPath($APPLICATION->GetCurPageParam()) && !$isCartPage&& !$isOrderPage):?>
+        <?php if(!defined('ERROR_404') && !checkCatalogPath($APPLICATION->GetCurPageParam()) && !$isCartPage&& !$isOrderPage && !$isCatalogPages):?>
             <div class="container <?php if (!$isAboutPage):?>top40<?php else:?>top50<?php endif;?>">
                 <?php if (!$isServicePages):?>
                 <?php $APPLICATION->IncludeComponent(
-	"bitrix:breadcrumb", 
-	"breadcrumb", 
-	[
-		"COMPONENT_TEMPLATE" => "breadcrumb",
-		"PATH" => "",
-		"SITE_ID" => "s1",
-		"START_FROM" => "-1"
-	],
-	false,
-	[
-		"ACTIVE_COMPONENT" => "N"
-	]
-); ?>
+                    "bitrix:breadcrumb",
+                    "breadcrumb",
+                    [
+                        "COMPONENT_TEMPLATE" => "breadcrumb",
+                        "PATH" => "",
+                        "SITE_ID" => "s1",
+                        "START_FROM" => "-1"
+                    ],
+                    false,
+                    [
+                        "ACTIVE_COMPONENT" => "N"
+                    ]
+                ); ?>
                 <?php endif;?>
                 <?php if (!$isAboutPage && !$isProfilePages && !$isCustomersPage && $APPLICATION->GetPageProperty("PRINT_TITLE") !== 'N'):?>
                 <p class="h2"><?php $APPLICATION->ShowTitle(); ?></p>

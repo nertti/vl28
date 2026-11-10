@@ -14,7 +14,7 @@ $this->setFrameMode(true);
 ?>
 
 <?php if (!empty($arResult["ITEMS"])): ?>
-<p class="h2">Новости</p>
+<p class="h2 container">Новости</p>
 <div class="blog__list blog__list_home">
     <?php foreach($arResult["ITEMS"] as $arItem):?>
         <?php
